@@ -11,6 +11,8 @@ import {
   Database,
   Film,
   Cpu,
+  Music,
+  Instagram,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -113,16 +115,16 @@ export const orbitalNodes: OrbitalNode[] = [
 
   // Ring 2: Key Frameworks & Security Tools
   {
-    id: 'sawitdb',
-    label: 'SawitDB',
-    labelId: 'nav.sawitdb',
+    id: 'octodos',
+    label: 'OctoDos',
+    labelId: 'nav.octodos',
     category: 'tool',
     tagline: {
-      en: 'Agricultural-based database for data sovereignty',
-      id: 'Database berbasis agrikultur untuk kedaulatan data',
+      en: 'Cross-platform interactive task manager and TUI',
+      id: 'Manajer tugas interaktif lintas platform dengan TUI',
     },
-    href: 'https://github.com/ZetaGo-Aurum/SawitDB',
-    icon: Database,
+    href: 'https://github.com/ZetaGo-Aurum/OctoDos',
+    icon: Layers,
     angle: 30,
     ring: 2,
     accent: 'gold',
@@ -221,12 +223,45 @@ export const orbitalNodes: OrbitalNode[] = [
     },
     href: 'https://www.npmjs.com/package/@zetagoaurum-dev/plester',
     icon: Palette,
+    angle: 150,
+    ring: 3,
+    accent: 'gold',
+    external: true,
+  },
+  {
+    id: 'audiomack',
+    label: 'Audiomack',
+    labelId: 'nav.audiomack',
+    category: 'faction',
+    tagline: {
+      en: 'Music releases and original tracks by ZetaGo-Aurum',
+      id: 'Rilis musik dan karya orisinal dari ZetaGo-Aurum',
+    },
+    href: 'https://audiomack.com/deltaastra24',
+    icon: Music,
     angle: 240,
+    ring: 3,
+    accent: 'bright',
+    external: true,
+  },
+  {
+    id: 'suno',
+    label: 'Suno AI',
+    labelId: 'nav.suno',
+    category: 'faction',
+    tagline: {
+      en: 'AI-assisted music compositions and sonic experiments',
+      id: 'Komposisi musik berbasis AI dan eksperimen sonik',
+    },
+    href: 'https://suno.com/@ZetaGo-Aurum',
+    icon: Sparkles,
+    angle: 320,
     ring: 3,
     accent: 'gold',
     external: true,
   },
 ]
+
 
 export interface WorkItem {
   id: string
@@ -242,17 +277,17 @@ export interface WorkItem {
 
 export const works: WorkItem[] = [
   {
-    id: 'sawitdb',
-    title: 'SawitDB',
-    category: { en: 'Database & Sovereignty', id: 'Database & Kedaulatan' },
+    id: 'octodos',
+    title: 'OctoDos',
+    category: { en: 'Productivity Tool', id: 'Alat Produktivitas' },
     description: {
-      en: 'The first agricultural-based database with anti-corruption protocols. Engineered for complete data sovereignty and high resilience.',
-      id: 'Database pertama berbasis agrikultur dengan protokol anti-korupsi. Dirancang untuk kedaulatan data penuh dan ketahanan tinggi.',
+      en: 'Cross-platform interactive task manager built with a sleek TUI. Designed for terminal-native workflows with multi-layer task organization.',
+      id: 'Manajer tugas interaktif lintas platform dengan TUI yang elegan. Dirancang untuk alur kerja berbasis terminal dengan organisasi tugas berlapis.',
     },
-    href: 'https://github.com/ZetaGo-Aurum/SawitDB',
+    href: 'https://github.com/ZetaGo-Aurum/OctoDos',
     year: '2025',
     accent: 'gold',
-    tags: ['Database', 'Sovereignty', 'Anti-Corruption'],
+    tags: ['CLI', 'TUI', 'Task Manager', 'Cross-Platform'],
     external: true,
   },
   {
@@ -486,4 +521,32 @@ export const socialLinks: SocialLink[] = [
     handle: 'kyoko.biz.id',
     external: true,
   },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    labelId: 'connect.instagram',
+    href: 'https://instagram.com/kyokounerge',
+    icon: Instagram,
+    handle: '@kyokounerge',
+    external: true,
+  },
+  {
+    id: 'audiomack',
+    label: 'Audiomack',
+    labelId: 'connect.audiomack',
+    href: 'https://audiomack.com/deltaastra24',
+    icon: Music,
+    handle: 'deltaastra24',
+    external: true,
+  },
+  {
+    id: 'suno',
+    label: 'Suno AI',
+    labelId: 'connect.suno',
+    href: 'https://suno.com/@ZetaGo-Aurum',
+    icon: Music,
+    handle: '@ZetaGo-Aurum',
+    external: true,
+  },
 ]
+

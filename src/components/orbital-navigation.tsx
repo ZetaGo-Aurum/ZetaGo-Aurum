@@ -61,7 +61,14 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
   const [activeCategory, setActiveCategory] = React.useState<FilterCategory>('all')
   const [hoveredNode, setHoveredNode] = React.useState<OrbitalNode | null>(null)
   const [selectedNode, setSelectedNode] = React.useState<OrbitalNode | null>(null)
+  const [tappedNode, setTappedNode] = React.useState<OrbitalNode | null>(null) // mobile tap detail
   const [isDragging, setIsDragging] = React.useState<boolean>(false)
+  const isMobile = React.useRef<boolean>(false)
+
+  // Detect touch device on mount
+  React.useEffect(() => {
+    isMobile.current = window.matchMedia('(pointer: coarse)').matches
+  }, [])
 
   // Interaction refs for gesture physics
   const containerRef = React.useRef<HTMLDivElement>(null)
@@ -401,6 +408,8 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
         {projectedNodes.map(
           ({ node, screenX, screenY, scale, opacity, zIndex, blur, matchesCategory }) => {
             const isHovered = hoveredNode?.id === node.id
+            const isTapped = tappedNode?.id === node.id
+            const showDetail = isHovered || isTapped
             const isSelected = selectedNode?.id === node.id
 
             return (
@@ -409,25 +418,36 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                 className="absolute left-1/2 top-1/2 will-change-transform"
                 style={{
                   transform: `translate3d(calc(${screenX}px - 50%), calc(${screenY}px - 50%), 0) scale(${
-                    isHovered ? scale * 1.18 : scale
+                    showDetail ? scale * 1.18 : scale
                   })`,
                   opacity,
-                  zIndex: isHovered || isSelected ? 999 : zIndex,
-                  filter: blur > 0 && !isHovered ? `blur(${blur}px)` : 'none',
+                  zIndex: showDetail || isSelected ? 999 : zIndex,
+                  filter: blur > 0 && !showDetail ? `blur(${blur}px)` : 'none',
                   transition: isDragging
                     ? 'none'
                     : 'transform 0.15s ease-out, opacity 0.15s ease-out',
                 }}
-                onPointerEnter={() => setHoveredNode(node)}
-                onPointerLeave={() => setHoveredNode(null)}
+                onPointerEnter={() => {
+                  if (!isMobile.current) setHoveredNode(node)
+                }}
+                onPointerLeave={() => {
+                  if (!isMobile.current) setHoveredNode(null)
+                }}
               >
                 <a
-                  href={node.href}
+                  href={showDetail ? node.href : undefined}
                   target={node.external ? '_blank' : undefined}
                   rel={node.external ? 'noopener noreferrer' : undefined}
                   onClick={(e) => {
                     if (isDragging) {
                       e.preventDefault()
+                      return
+                    }
+                    if (isMobile.current) {
+                      e.preventDefault()
+                      // Toggle tap detail on mobile
+                      setTappedNode(isTapped ? null : node)
+                      setAutoOrbit(false)
                     } else {
                       setSelectedNode(node)
                     }
@@ -435,7 +455,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                   className={cn(
                     'group relative flex items-center gap-2 rounded-full border bg-card/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-md transition-all duration-200',
                     accentBorder[node.accent],
-                    isHovered &&
+                    showDetail &&
                       'ring-2 ring-[oklch(0.72_0.13_80)] shadow-xl shadow-[oklch(0.72_0.13_80_/_0.3)] scale-105',
                     !matchesCategory && 'pointer-events-none'
                   )}
@@ -468,31 +488,48 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                   )}
                 </a>
 
-                {/* Floating Tooltip Card on Hover */}
+                {/* Floating Detail Card - hover on PC, tap-toggle on mobile */}
                 <AnimatePresence>
-                  {isHovered && (
+                  {showDetail && (
                     <motion.div
                       initial={{ opacity: 0, y: 8, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
                       transition={{ duration: 0.18 }}
-                      className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 rounded-xl border border-border/80 bg-popover/95 p-3 text-left shadow-2xl backdrop-blur-xl"
+                      className="absolute left-1/2 top-full z-50 mt-2 w-60 -translate-x-1/2 rounded-xl border border-border/80 bg-popover/98 p-3.5 text-left shadow-2xl backdrop-blur-xl"
+                      style={{ pointerEvents: isTapped ? 'auto' : 'none' }}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] uppercase tracking-wider text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]">
                           {node.category}
                         </span>
-                        <span className="text-[9px] text-muted-foreground">
-                          Ring {node.ring} · {node.angle}°
-                        </span>
+                        {/* Close button for mobile tap */}
+                        {isTapped && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setTappedNode(null) }}
+                            className="text-[10px] text-muted-foreground hover:text-foreground px-1"
+                          >
+                            x
+                          </button>
+                        )}
                       </div>
-                      <p className="mt-1 text-xs font-medium text-foreground">
+                      <p className="mt-1 text-xs font-semibold text-foreground leading-snug">
+                        {node.label}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                         {node.tagline[lang]}
                       </p>
-                      <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
+                      {/* Tappable visit link on mobile */}
+                      <a
+                        href={node.href}
+                        target={node.external ? '_blank' : undefined}
+                        rel={node.external ? 'noopener noreferrer' : undefined}
+                        className="mt-2.5 flex items-center gap-1 text-[10px] font-medium text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)] hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <ArrowUpRight className="h-3 w-3" />
                         <span>{node.href.replace('https://', '')}</span>
-                      </div>
+                      </a>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -500,6 +537,15 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
             )
           }
         )}
+
+        {/* Dismiss tapped node by clicking empty space */}
+        {tappedNode && (
+          <div
+            className="absolute inset-0 z-10"
+            onClick={() => setTappedNode(null)}
+          />
+        )}
+
 
         {/* Onboarding Guidance Badge */}
         <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between text-[11px] text-muted-foreground">
