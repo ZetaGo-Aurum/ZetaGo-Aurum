@@ -67,7 +67,7 @@ export type TranslationKey =
 
 export const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
-    'brand.name': 'ZetAgo Aurum',
+    'brand.name': 'ZetaGo-Aurum',
     'brand.tagline': 'Crafting Gold-Standard Digital Works',
     'nav.home': 'Home',
     'nav.works': 'Works',
@@ -138,7 +138,7 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     'section.about': 'About',
   },
   id: {
-    'brand.name': 'ZetAgo Aurum',
+    'brand.name': 'ZetaGo-Aurum',
     'brand.tagline': 'Mengukir Karya Digital Bernilai Emas',
     'nav.home': 'Beranda',
     'nav.works': 'Karya',

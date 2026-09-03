@@ -20,11 +20,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "ZetAgo Aurum: A Central Atelier of Digital Works",
+  title: "ZetaGo-Aurum: A Central Atelier of Digital Works",
   description:
-    "ZetAgo Aurum is a personal hub for designs, domains, code, and systems: refined with patience, polished to a golden standard. Forward. Endlessly. Like gold.",
+    "ZetaGo-Aurum is a personal hub for designs, domains, code, and systems: refined with patience, polished to a golden standard. Forward. Endlessly. Like gold.",
   keywords: [
-    "ZetAgo Aurum",
+    "ZetaGo-Aurum",
     "zetagoaurum",
     "portfolio",
     "kyoko.biz.id",
@@ -39,22 +39,29 @@ export const metadata: Metadata = {
     "plester",
     "personal hub",
   ],
-  authors: [{ name: "ZetAgo Aurum" }],
+  authors: [{ name: "ZetaGo-Aurum" }],
   icons: {
-    icon: "/logo.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "ZetAgo Aurum: A Central Atelier of Digital Works",
+    title: "ZetaGo-Aurum: A Central Atelier of Digital Works",
     description:
       "A personal hub for designs, domains, code, and systems: polished to a golden standard.",
-    url: "https://zetagoaurum.com",
-    siteName: "ZetAgo Aurum",
+    url: "https://zetago-aurum.vercel.app",
+    siteName: "ZetaGo-Aurum",
     type: "website",
+    images: [{ url: "/icon-512.png", width: 512, height: 512, alt: "ZetaGo-Aurum" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ZetAgo Aurum",
+    title: "ZetaGo-Aurum",
     description: "A personal hub: polished to a golden standard.",
+    images: ["/icon-512.png"],
   },
 };
 
@@ -70,7 +77,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange={false}
         >
