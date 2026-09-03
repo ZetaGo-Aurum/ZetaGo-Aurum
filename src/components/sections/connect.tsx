@@ -31,7 +31,7 @@ export function ConnectSection() {
           </p>
         </motion.div>
 
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {socialLinks.map((link, i) => (
             <motion.a
               key={link.id}
@@ -41,7 +41,7 @@ export function ConnectSection() {
               initial={reduce ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
+              transition={{ duration: 0.4, delay: i * 0.06 }}
               className="group relative flex flex-col items-start gap-3 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-[oklch(0.72_0.13_80_/_0.5)] hover:shadow-lg hover:shadow-[oklch(0.72_0.13_80_/_0.12)] hover:-translate-y-1 dark:hover:border-[oklch(0.82_0.14_85_/_0.5)]"
             >
               <div className="flex w-full items-center justify-between">
@@ -64,14 +64,16 @@ export function ConnectSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-10 flex justify-center"
+          className="mt-10 flex flex-col items-center justify-center gap-2"
         >
           <a
-            href="mailto:hello@zetagoaurum.com"
-            className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-[oklch(0.72_0.13_80)] dark:hover:text-[oklch(0.85_0.14_85)]"
+            href="mailto:deltaastra24@gmail.com"
+            className="group inline-flex items-center gap-2.5 rounded-full border border-border/80 bg-card/60 px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-[oklch(0.72_0.13_80_/_0.6)] hover:text-[oklch(0.72_0.13_80)] hover:shadow-md dark:hover:border-[oklch(0.82_0.14_85_/_0.6)] dark:hover:text-[oklch(0.85_0.14_85)]"
           >
-            <Mail className="h-3.5 w-3.5" strokeWidth={1.75} />
-            <span className="border-b border-dashed border-current pb-0.5">hello@zetagoaurum.com</span>
+            <Mail className="h-4 w-4 text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]" strokeWidth={1.75} />
+            <span className="border-b border-dashed border-current pb-0.5 font-mono text-xs sm:text-sm">
+              deltaastra24@gmail.com
+            </span>
           </a>
         </motion.div>
       </div>

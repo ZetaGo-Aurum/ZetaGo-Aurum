@@ -1,7 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  RotateCcw,
+  Play,
+  Pause,
+  Compass,
+  ArrowUpRight,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUp,
+  ArrowDown,
+  Info,
+} from 'lucide-react'
 import { orbitalNodes, type OrbitalNode } from '@/lib/site-data'
 import { useLanguage } from '@/components/language-provider'
 import { cn } from '@/lib/utils'
@@ -10,210 +23,555 @@ interface OrbitalNavigationProps {
   className?: string
 }
 
-const accentClass: Record<NonNullable<OrbitalNode['accent']>, string> = {
+type FilterCategory = 'all' | 'faction' | 'package' | 'security' | 'tool'
+
+const filterKeys: { id: FilterCategory; labelKey: string }[] = [
+  { id: 'all', labelKey: 'orbital.filter.all' },
+  { id: 'faction', labelKey: 'orbital.filter.faction' },
+  { id: 'package', labelKey: 'orbital.filter.packages' },
+  { id: 'security', labelKey: 'orbital.filter.security' },
+  { id: 'tool', labelKey: 'orbital.filter.tools' },
+]
+
+const accentBorder: Record<OrbitalNode['accent'], string> = {
+  gold: 'border-[oklch(0.72_0.13_80_/_0.5)] dark:border-[oklch(0.82_0.14_85_/_0.6)] shadow-[oklch(0.72_0.13_80_/_0.2)]',
+  soft: 'border-border/80 shadow-black/5',
+  bright: 'border-[oklch(0.85_0.14_90_/_0.6)] dark:border-[oklch(0.88_0.13_88_/_0.6)] shadow-[oklch(0.85_0.14_90_/_0.25)]',
+}
+
+const accentGlow: Record<OrbitalNode['accent'], string> = {
+  gold: 'from-[oklch(0.72_0.13_80_/_0.25)] to-transparent',
+  soft: 'from-muted/20 to-transparent',
+  bright: 'from-[oklch(0.85_0.14_90_/_0.3)] to-transparent',
+}
+
+const accentIconColor: Record<OrbitalNode['accent'], string> = {
   gold: 'text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.82_0.14_85)]',
   soft: 'text-muted-foreground',
   bright: 'text-[oklch(0.85_0.14_90)] dark:text-[oklch(0.9_0.12_90)]',
 }
 
-const accentBg: Record<NonNullable<OrbitalNode['accent']>, string> = {
-  gold:
-    'bg-[oklch(0.92_0.05_85)] dark:bg-[oklch(0.3_0.06_80)] border-[oklch(0.72_0.13_80_/_0.4)] dark:border-[oklch(0.82_0.14_85_/_0.4)]',
-  soft:
-    'bg-card border-border hover:border-[oklch(0.72_0.13_80_/_0.5)] dark:hover:border-[oklch(0.82_0.14_85_/_0.5)]',
-  bright:
-    'bg-[oklch(0.95_0.06_88)] dark:bg-[oklch(0.32_0.07_82)] border-[oklch(0.82_0.14_85_/_0.5)] dark:border-[oklch(0.85_0.14_85_/_0.5)]',
-}
-
-function OrbitalNodeButton({ node, index }: { node: OrbitalNode; index: number }) {
-  const { t } = useLanguage()
-  const reduce = useReducedMotion()
-
-  const label = node.id === 'orbital.center.label' ? t('orbital.center.label') : t(node.labelId)
-
-  return (
-    <motion.a
-      href={node.href}
-      target={node.external ? '_blank' : undefined}
-      rel={node.external ? 'noopener noreferrer' : undefined}
-      aria-label={node.label}
-      title={node.label}
-      className={cn(
-        'group absolute left-1/2 top-1/2 flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium shadow-sm backdrop-blur-md transition-all duration-300',
-        'hover:shadow-lg hover:shadow-[oklch(0.72_0.13_80_/_0.15)] hover:-translate-y-0.5',
-        accentBg[node.accent ?? 'soft']
-      )}
-      initial={reduce ? false : { opacity: 0, scale: 0.6 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.4 + index * 0.06, duration: 0.5, ease: 'easeOut' }}
-    >
-      <node.icon
-        className={cn('h-3.5 w-3.5 shrink-0', accentClass[node.accent ?? 'soft'])}
-        strokeWidth={1.75}
-      />
-      <span className="hidden whitespace-nowrap text-foreground/80 sm:inline">{label}</span>
-    </motion.a>
-  )
-}
-
 export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
-  const { t } = useLanguage()
-  const reduce = useReducedMotion()
+  const { t, lang } = useLanguage()
 
-  // Desktop: 2 rings with calculated positions
-  const innerR = 130 // radius for ring 1 (px)
-  const outerR = 215 // radius for ring 2 (px)
+  // 3D Orbital Rotation & Camera State
+  const [rotX, setRotX] = React.useState<number>(18) // Pitch in degrees
+  const [rotY, setRotY] = React.useState<number>(0) // Yaw in degrees
+  const [autoOrbit, setAutoOrbit] = React.useState<boolean>(true)
+  const [activeCategory, setActiveCategory] = React.useState<FilterCategory>('all')
+  const [hoveredNode, setHoveredNode] = React.useState<OrbitalNode | null>(null)
+  const [selectedNode, setSelectedNode] = React.useState<OrbitalNode | null>(null)
+  const [isDragging, setIsDragging] = React.useState<boolean>(false)
 
-  // Mobile: smaller single ring with all nodes
-  const mobileR = 130
+  // Interaction refs for gesture physics
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const dragStartRef = React.useRef<{ x: number; y: number; rotX: number; rotY: number }>({
+    x: 0,
+    y: 0,
+    rotX: 18,
+    rotY: 0,
+  })
+  const velocityRef = React.useRef<{ vx: number; vy: number }>({ vx: 0, vy: 0 })
+  const lastPointerRef = React.useRef<{ x: number; y: number; time: number }>({
+    x: 0,
+    y: 0,
+    time: 0,
+  })
+  const reqAnimRef = React.useRef<number | null>(null)
+
+  // Animation Loop for Auto Orbit and Inertia Damping
+  React.useEffect(() => {
+    let lastTime = performance.now()
+
+    const loop = (time: number) => {
+      const dt = Math.min((time - lastTime) / 1000, 0.1)
+      lastTime = time
+
+      if (!isDragging) {
+        // Apply inertia velocity
+        if (Math.abs(velocityRef.current.vx) > 0.001 || Math.abs(velocityRef.current.vy) > 0.001) {
+          setRotY((y) => (y + velocityRef.current.vx * dt * 60) % 360)
+          setRotX((x) => Math.max(-65, Math.min(65, x + velocityRef.current.vy * dt * 60)))
+
+          // Damping
+          velocityRef.current.vx *= 0.94
+          velocityRef.current.vy *= 0.94
+        } else if (autoOrbit) {
+          // Slow continuous ambient orbit
+          setRotY((y) => (y + 12 * dt) % 360)
+        }
+      }
+
+      reqAnimRef.current = requestAnimationFrame(loop)
+    }
+
+    reqAnimRef.current = requestAnimationFrame(loop)
+    return () => {
+      if (reqAnimRef.current) cancelAnimationFrame(reqAnimRef.current)
+    }
+  }, [isDragging, autoOrbit])
+
+  // Mouse wheel interaction on PC (scroll to rotate 3D constellation)
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    // Smooth rotation with wheel delta
+    e.preventDefault()
+    setAutoOrbit(false)
+    const delta = e.deltaY || e.deltaX
+    setRotY((prev) => (prev + delta * 0.08) % 360)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      setRotX((prev) => Math.max(-65, Math.min(65, prev + e.deltaX * 0.04)))
+    }
+  }
+
+  // Pointer & Touch Events (works on both PC mouse and Android touch)
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Only drag with primary pointer
+    if (e.button !== 0 && e.pointerType === 'mouse') return
+    setIsDragging(true)
+    setAutoOrbit(false)
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      rotX,
+      rotY,
+    }
+    lastPointerRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: performance.now(),
+    }
+    velocityRef.current = { vx: 0, vy: 0 }
+    if (containerRef.current) {
+      containerRef.current.setPointerCapture(e.pointerId)
+    }
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return
+    const dx = e.clientX - dragStartRef.current.x
+    const dy = e.clientY - dragStartRef.current.y
+
+    const now = performance.now()
+    const dt = Math.max(now - lastPointerRef.current.time, 1)
+    const instVx = (e.clientX - lastPointerRef.current.x) / dt
+    const instVy = (e.clientY - lastPointerRef.current.y) / dt
+
+    velocityRef.current = {
+      vx: instVx * 18,
+      vy: -instVy * 14,
+    }
+
+    lastPointerRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: now,
+    }
+
+    setRotY((dragStartRef.current.rotY + dx * 0.45) % 360)
+    setRotX(Math.max(-65, Math.min(65, dragStartRef.current.rotX - dy * 0.35)))
+  }
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return
+    setIsDragging(false)
+    if (containerRef.current && containerRef.current.hasPointerCapture(e.pointerId)) {
+      containerRef.current.releasePointerCapture(e.pointerId)
+    }
+  }
+
+  // Manual Step Controls
+  const rotateStep = (dir: 'left' | 'right' | 'up' | 'down') => {
+    setAutoOrbit(false)
+    if (dir === 'left') setRotY((y) => (y - 30) % 360)
+    if (dir === 'right') setRotY((y) => (y + 30) % 360)
+    if (dir === 'up') setRotX((x) => Math.min(60, x + 15))
+    if (dir === 'down') setRotX((x) => Math.max(-60, x - 15))
+  }
+
+  const resetConstellation = () => {
+    setRotX(18)
+    setRotY(0)
+    velocityRef.current = { vx: 0, vy: 0 }
+    setAutoOrbit(true)
+    setActiveCategory('all')
+    setSelectedNode(null)
+  }
+
+  // 3D Math Projection Engine
+  // Converts spherical orbital angles to real-time 3D coordinates and camera projection
+  const projectedNodes = React.useMemo(() => {
+    const radX = (rotX * Math.PI) / 180
+    const radY = (rotY * Math.PI) / 180
+    const cameraDist = 800
+
+    return orbitalNodes.map((node) => {
+      // Ring radii & inclination tilt in 3D
+      let radius = 140
+      let ringTilt = 0
+      if (node.ring === 1) {
+        radius = 145
+        ringTilt = 12
+      } else if (node.ring === 2) {
+        radius = 225
+        ringTilt = -18
+      } else {
+        radius = 305
+        ringTilt = 28
+      }
+
+      const nodeAngleRad = (node.angle * Math.PI) / 180
+      const tiltRad = (ringTilt * Math.PI) / 180
+
+      // Coordinate on tilted orbital plane
+      const rawX = radius * Math.cos(nodeAngleRad)
+      const rawY = radius * Math.sin(nodeAngleRad) * Math.sin(tiltRad)
+      const rawZ = radius * Math.sin(nodeAngleRad) * Math.cos(tiltRad)
+
+      // Apply Yaw (Y-axis rotation)
+      const x1 = rawX * Math.cos(radY) + rawZ * Math.sin(radY)
+      const y1 = rawY
+      const z1 = -rawX * Math.sin(radY) + rawZ * Math.cos(radY)
+
+      // Apply Pitch (X-axis rotation)
+      const x2 = x1
+      const y2 = y1 * Math.cos(radX) - z1 * Math.sin(radX)
+      const z2 = y1 * Math.sin(radX) + z1 * Math.cos(radX)
+
+      // Perspective Projection
+      const perspectiveScale = cameraDist / (cameraDist - z2)
+      const screenX = x2 * perspectiveScale
+      const screenY = y2 * perspectiveScale
+
+      // Depth calculations
+      const depthFactor = (z2 + 320) / 640 // normalized 0..1
+      const scale = Math.max(0.68, Math.min(1.22, perspectiveScale * (0.75 + depthFactor * 0.4)))
+      const opacity = Math.max(0.32, Math.min(1.0, 0.4 + depthFactor * 0.6))
+      const zIndex = Math.round(z2 + 500)
+      const isFront = z2 > 0
+      const blur = isFront ? 0 : Math.max(0, Math.min(2.5, (-z2 / 300) * 2.5))
+
+      const matchesCategory =
+        activeCategory === 'all' ||
+        (activeCategory === 'faction' && node.category === 'faction') ||
+        (activeCategory === 'package' && node.category === 'package') ||
+        (activeCategory === 'security' && node.category === 'security') ||
+        (activeCategory === 'tool' && (node.category === 'tool' || node.category === 'core'))
+
+      return {
+        node,
+        screenX,
+        screenY,
+        z: z2,
+        scale,
+        opacity: matchesCategory ? opacity : opacity * 0.22,
+        zIndex: matchesCategory ? zIndex : zIndex - 100,
+        blur,
+        isFront,
+        matchesCategory,
+      }
+    })
+  }, [rotX, rotY, activeCategory])
 
   return (
-    <div
-      className={cn(
-        'relative mx-auto flex flex-col items-center justify-center',
-        className
-      )}
-    >
-      {/* === DESKTOP / TABLET orbital === */}
-      <div className="relative hidden h-[520px] w-[520px] sm:block">
-        {/* Faint orbit rings */}
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[oklch(0.72_0.13_80_/_0.18)] dark:border-[oklch(0.82_0.14_85_/_0.18)]"
-          style={{ width: innerR * 2, height: innerR * 2 }}
-        />
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[oklch(0.72_0.13_80_/_0.12)] dark:border-[oklch(0.82_0.14_85_/_0.12)]"
-          style={{ width: outerR * 2, height: outerR * 2 }}
-        />
+    <div className={cn('relative mx-auto flex w-full max-w-6xl flex-col items-center', className)}>
+      {/* Top Filter Bar */}
+      <div className="mb-6 flex flex-wrap items-center justify-center gap-2 px-4">
+        {filterKeys.map((item) => {
+          const isActive = activeCategory === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveCategory(item.id)}
+              className={cn(
+                'rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200',
+                isActive
+                  ? 'bg-[oklch(0.72_0.13_80)] text-white shadow-md shadow-[oklch(0.72_0.13_80_/_0.35)] dark:bg-[oklch(0.82_0.14_85)] dark:text-neutral-950'
+                  : 'border border-border/70 bg-card/60 text-muted-foreground hover:border-[oklch(0.72_0.13_80_/_0.5)] hover:text-foreground'
+              )}
+            >
+              {t(item.labelKey as any)}
+            </button>
+          )
+        })}
+      </div>
 
-        {/* Slow rotating ring decorations */}
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ width: innerR * 2, height: innerR * 2 }}
-          animate={reduce ? undefined : { rotate: 360 }}
-          transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
+      {/* 3D Interactive Viewport Container */}
+      <div
+        ref={containerRef}
+        onWheel={handleWheel}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        style={{ touchAction: 'none' }}
+        className={cn(
+          'relative flex h-[520px] w-full max-w-[760px] select-none items-center justify-center overflow-hidden rounded-3xl border border-border/70 bg-card/40 backdrop-blur-xl',
+          'cursor-grab active:cursor-grabbing shadow-2xl shadow-black/5 dark:shadow-[oklch(0.72_0.13_80_/_0.06)]'
+        )}
+      >
+        {/* Ambient Radial Lighting */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
         >
-          <div className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[oklch(0.72_0.13_80)] dark:bg-[oklch(0.85_0.14_85)] opacity-60" />
-          <div className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[oklch(0.72_0.13_80_/_0.5)]" />
-        </motion.div>
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ width: outerR * 2, height: outerR * 2 }}
-          animate={reduce ? undefined : { rotate: -360 }}
-          transition={{ duration: 140, repeat: Infinity, ease: 'linear' }}
-        >
-          <div className="absolute left-1/2 top-0 h-1 w-1 -translate-x-1/2 rounded-full bg-[oklch(0.85_0.14_90)] opacity-50" />
-          <div className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[oklch(0.72_0.13_80_/_0.6)]" />
-        </motion.div>
+          <div className="h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.12)] via-[oklch(0.85_0.14_90_/_0.08)] to-transparent blur-3xl dark:from-[oklch(0.82_0.14_85_/_0.18)]" />
+        </div>
 
-        {/* Inner ring nodes */}
-        {orbitalNodes
-          .filter((n) => n.ring === 1)
-          .map((node, i) => {
-            const rad = (node.angle * Math.PI) / 180
-            const x = Math.cos(rad) * innerR
-            const y = Math.sin(rad) * innerR
+        {/* 3D Coordinate Plane Grid / Orbit Rings */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          style={{
+            perspective: 800,
+            perspectiveOrigin: '50% 50%',
+          }}
+        >
+          {/* Ring 1 (Inner) */}
+          <div
+            className="absolute rounded-full border border-dashed border-[oklch(0.72_0.13_80_/_0.3)] dark:border-[oklch(0.82_0.14_85_/_0.35)] transition-transform duration-75"
+            style={{
+              width: 290,
+              height: 290,
+              transform: `rotateX(${rotX + 12}deg) rotateY(${rotY}deg) translateZ(0px)`,
+            }}
+          />
+
+          {/* Ring 2 (Mid) */}
+          <div
+            className="absolute rounded-full border border-dashed border-[oklch(0.85_0.14_90_/_0.25)] dark:border-[oklch(0.82_0.14_85_/_0.25)] transition-transform duration-75"
+            style={{
+              width: 450,
+              height: 450,
+              transform: `rotateX(${rotX - 18}deg) rotateY(${rotY}deg) translateZ(0px)`,
+            }}
+          />
+
+          {/* Ring 3 (Outer) */}
+          <div
+            className="absolute rounded-full border border-dotted border-[oklch(0.72_0.13_80_/_0.18)] dark:border-[oklch(0.82_0.14_85_/_0.2)] transition-transform duration-75"
+            style={{
+              width: 610,
+              height: 610,
+              transform: `rotateX(${rotX + 28}deg) rotateY(${rotY}deg) translateZ(0px)`,
+            }}
+          />
+        </div>
+
+        {/* Central Luminous Core (ZetaGo Aurum Sun) */}
+        <div
+          className="relative z-20 flex flex-col items-center justify-center transition-transform duration-75"
+          style={{
+            transform: `scale(${0.9 + (rotX / 180) * 0.1})`,
+          }}
+        >
+          <div className="group relative flex h-24 w-24 items-center justify-center">
+            {/* Pulsing Energy Waves */}
+            <div className="absolute inset-0 animate-ping rounded-full bg-[oklch(0.72_0.13_80_/_0.15)] opacity-40 duration-1000" />
+            <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.3)] to-[oklch(0.85_0.14_90_/_0.1)] blur-md animate-gold-pulse" />
+
+            {/* Gyroscope Rings */}
+            <div
+              className="absolute inset-[-12px] rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] dark:border-[oklch(0.82_0.14_85_/_0.5)]"
+              style={{
+                transform: `rotateX(${rotX * 1.5}deg) rotateY(${rotY * 1.5}deg)`,
+              }}
+            />
+            <div
+              className="absolute inset-[-20px] rounded-full border border-dashed border-[oklch(0.85_0.14_90_/_0.3)]"
+              style={{
+                transform: `rotateX(${-rotX * 1.2}deg) rotateY(${-rotY * 1.2}deg)`,
+              }}
+            />
+
+            {/* Core Golden Sphere */}
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[oklch(0.9_0.14_92)] via-[oklch(0.75_0.14_82)] to-[oklch(0.6_0.12_70)] shadow-lg shadow-[oklch(0.72_0.13_80_/_0.45)]">
+              <span className="font-serif text-2xl font-bold text-white drop-shadow-md">Z</span>
+            </div>
+          </div>
+          <span className="mt-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]">
+            {t('orbital.center.label')}
+          </span>
+        </div>
+
+        {/* 3D Projected Celestial Nodes */}
+        {projectedNodes.map(
+          ({ node, screenX, screenY, scale, opacity, zIndex, blur, matchesCategory }) => {
+            const isHovered = hoveredNode?.id === node.id
+            const isSelected = selectedNode?.id === node.id
+
             return (
               <div
                 key={node.id}
-                className="absolute left-1/2 top-1/2"
-                style={{ transform: `translate(calc(${x}px - 50%), calc(${y}px - 50%))` }}
+                className="absolute left-1/2 top-1/2 will-change-transform"
+                style={{
+                  transform: `translate3d(calc(${screenX}px - 50%), calc(${screenY}px - 50%), 0) scale(${
+                    isHovered ? scale * 1.18 : scale
+                  })`,
+                  opacity,
+                  zIndex: isHovered || isSelected ? 999 : zIndex,
+                  filter: blur > 0 && !isHovered ? `blur(${blur}px)` : 'none',
+                  transition: isDragging
+                    ? 'none'
+                    : 'transform 0.15s ease-out, opacity 0.15s ease-out',
+                }}
+                onPointerEnter={() => setHoveredNode(node)}
+                onPointerLeave={() => setHoveredNode(null)}
               >
-                <OrbitalNodeButton node={node} index={i} />
+                <a
+                  href={node.href}
+                  target={node.external ? '_blank' : undefined}
+                  rel={node.external ? 'noopener noreferrer' : undefined}
+                  onClick={(e) => {
+                    if (isDragging) {
+                      e.preventDefault()
+                    } else {
+                      setSelectedNode(node)
+                    }
+                  }}
+                  className={cn(
+                    'group relative flex items-center gap-2 rounded-full border bg-card/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-md transition-all duration-200',
+                    accentBorder[node.accent],
+                    isHovered &&
+                      'ring-2 ring-[oklch(0.72_0.13_80)] shadow-xl shadow-[oklch(0.72_0.13_80_/_0.3)] scale-105',
+                    !matchesCategory && 'pointer-events-none'
+                  )}
+                >
+                  {/* Subtle Accent Radial Glow */}
+                  <div
+                    className={cn(
+                      'pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r opacity-50',
+                      accentGlow[node.accent]
+                    )}
+                  />
+
+                  {/* Node Icon */}
+                  <node.icon
+                    className={cn('relative z-10 h-4 w-4 shrink-0', accentIconColor[node.accent])}
+                    strokeWidth={2}
+                  />
+
+                  {/* Node Label */}
+                  <span className="relative z-10 whitespace-nowrap font-medium text-foreground">
+                    {node.label}
+                  </span>
+
+                  {/* External Indicator */}
+                  {node.external && (
+                    <ArrowUpRight
+                      className="relative z-10 h-3 w-3 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      strokeWidth={2}
+                    />
+                  )}
+                </a>
+
+                {/* Floating Tooltip Card on Hover */}
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      transition={{ duration: 0.18 }}
+                      className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 rounded-xl border border-border/80 bg-popover/95 p-3 text-left shadow-2xl backdrop-blur-xl"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase tracking-wider text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]">
+                          {node.category}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground">
+                          Ring {node.ring} · {node.angle}°
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-medium text-foreground">
+                        {node.tagline[lang]}
+                      </p>
+                      <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <ArrowUpRight className="h-3 w-3" />
+                        <span>{node.href.replace('https://', '')}</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )
-          })}
+          }
+        )}
 
-        {/* Outer ring nodes */}
-        {orbitalNodes
-          .filter((n) => n.ring === 2)
-          .map((node, i) => {
-            const rad = (node.angle * Math.PI) / 180
-            const x = Math.cos(rad) * outerR
-            const y = Math.sin(rad) * outerR
-            return (
-              <div
-                key={`outer-${node.id}`}
-                className="absolute left-1/2 top-1/2"
-                style={{ transform: `translate(calc(${x}px - 50%), calc(${y}px - 50%))` }}
-              >
-                <OrbitalNodeButton node={node} index={i + 6} />
-              </div>
-            )
-          })}
+        {/* Onboarding Guidance Badge */}
+        <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-1.5 rounded-full border border-border/60 bg-background/80 px-3 py-1 backdrop-blur-md">
+            <Compass className="h-3.5 w-3.5 text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]" />
+            <span className="hidden sm:inline">{t('orbital.hint.pc')}</span>
+            <span className="sm:hidden">{t('orbital.hint.mobile')}</span>
+          </div>
 
-        {/* Center core */}
-        <motion.div
-          className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
-          initial={reduce ? false : { opacity: 0, scale: 0.4 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-        >
-          <div className="relative flex h-28 w-28 items-center justify-center">
-            {/* Pulsing halo */}
-            <div className="absolute inset-0 rounded-full bg-[oklch(0.72_0.13_80_/_0.15)] dark:bg-[oklch(0.82_0.14_85_/_0.2)] animate-gold-pulse" />
-            <div className="absolute inset-2 rounded-full bg-[oklch(0.72_0.13_80_/_0.1)] dark:bg-[oklch(0.82_0.14_85_/_0.12)]" />
-            {/* Solid core */}
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[oklch(0.85_0.14_90)] via-[oklch(0.72_0.13_80)] to-[oklch(0.6_0.12_70)] shadow-xl shadow-[oklch(0.72_0.13_80_/_0.35)]">
-              <span className="font-serif text-2xl font-bold text-white drop-shadow-sm">Z</span>
-            </div>
+          <div className="hidden items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1 text-[10px] tracking-wider uppercase sm:flex backdrop-blur-md">
+            <span>Pitch: {Math.round(rotX)}°</span>
+            <span>·</span>
+            <span>Yaw: {Math.round(rotY)}°</span>
           </div>
-          <div className="mt-3 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-            {t('orbital.center.label')}
-          </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* === MOBILE orbital === */}
-      <div className="relative block h-[340px] w-[340px] sm:hidden">
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[oklch(0.72_0.13_80_/_0.18)] dark:border-[oklch(0.82_0.14_85_/_0.18)]"
-          style={{ width: mobileR * 2, height: mobileR * 2 }}
-        />
+      {/* Manual Control Dock */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <div className="flex items-center rounded-full border border-border/70 bg-card/70 p-1 shadow-sm backdrop-blur-md">
+          <button
+            onClick={() => rotateStep('left')}
+            aria-label="Rotate Left"
+            title="Rotate Left"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-foreground/80 hover:bg-accent hover:text-foreground"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => rotateStep('right')}
+            aria-label="Rotate Right"
+            title="Rotate Right"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-foreground/80 hover:bg-accent hover:text-foreground"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => rotateStep('up')}
+            aria-label="Tilt Up"
+            title="Tilt Up"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-foreground/80 hover:bg-accent hover:text-foreground"
+          >
+            <ArrowUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => rotateStep('down')}
+            aria-label="Tilt Down"
+            title="Tilt Down"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-foreground/80 hover:bg-accent hover:text-foreground"
+          >
+            <ArrowDown className="h-3.5 w-3.5" />
+          </button>
+        </div>
 
-        {/* Slow rotating marker */}
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ width: mobileR * 2, height: mobileR * 2 }}
-          animate={reduce ? undefined : { rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+        <button
+          onClick={() => setAutoOrbit((v) => !v)}
+          className={cn(
+            'flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium backdrop-blur-md transition-all',
+            autoOrbit
+              ? 'border-[oklch(0.72_0.13_80_/_0.5)] bg-[oklch(0.72_0.13_80_/_0.15)] text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]'
+              : 'border-border/70 bg-card/70 text-muted-foreground hover:text-foreground'
+          )}
         >
-          <div className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[oklch(0.72_0.13_80)] dark:bg-[oklch(0.85_0.14_85)] opacity-70" />
-        </motion.div>
+          {autoOrbit ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+          <span>{t('orbital.autoOrbit')}</span>
+        </button>
 
-        {/* Place primary 6 nodes on the mobile ring */}
-        {orbitalNodes
-          .filter((n) => n.ring === 1)
-          .map((node, i) => {
-            const rad = (node.angle * Math.PI) / 180
-            const x = Math.cos(rad) * mobileR
-            const y = Math.sin(rad) * mobileR
-            return (
-              <div
-                key={`mobile-${node.id}`}
-                className="absolute left-1/2 top-1/2"
-                style={{ transform: `translate(calc(${x}px - 50%), calc(${y}px - 50%))` }}
-              >
-                <OrbitalNodeButton node={node} index={i} />
-              </div>
-            )
-          })}
-
-        {/* Center core (smaller on mobile) */}
-        <motion.div
-          className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
-          initial={reduce ? false : { opacity: 0, scale: 0.4 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
+        <button
+          onClick={resetConstellation}
+          className="flex items-center gap-1.5 rounded-full border border-border/70 bg-card/70 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-md hover:border-[oklch(0.72_0.13_80_/_0.5)] hover:text-foreground"
         >
-          <div className="relative flex h-20 w-20 items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-[oklch(0.72_0.13_80_/_0.15)] dark:bg-[oklch(0.82_0.14_85_/_0.2)] animate-gold-pulse" />
-            <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[oklch(0.85_0.14_90)] via-[oklch(0.72_0.13_80)] to-[oklch(0.6_0.12_70)] shadow-xl shadow-[oklch(0.72_0.13_80_/_0.35)]">
-              <span className="font-serif text-xl font-bold text-white drop-shadow-sm">Z</span>
-            </div>
-          </div>
-        </motion.div>
+          <RotateCcw className="h-3 w-3" />
+          <span>{t('orbital.reset')}</span>
+        </button>
       </div>
     </div>
   )
 }
+

@@ -20,17 +20,23 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "ZetAgo Aurum — A Central Atelier of Digital Works",
+  title: "ZetAgo Aurum: A Central Atelier of Digital Works",
   description:
-    "ZetAgo Aurum is a personal hub for designs, domains, code, and ideas — refined with patience, polished to a golden standard. Forward. Endlessly. Like gold.",
+    "ZetAgo Aurum is a personal hub for designs, domains, code, and systems: refined with patience, polished to a golden standard. Forward. Endlessly. Like gold.",
   keywords: [
     "ZetAgo Aurum",
     "zetagoaurum",
     "portfolio",
-    "design",
-    "gold",
-    "atelier",
     "kyoko.biz.id",
+    "kyokonime.kyoko.biz.id",
+    "mod-kita.kyoko.biz.id",
+    "SawitDB",
+    "aurum-baileys",
+    "aleopantest",
+    "diringkes",
+    "decagramton",
+    "straw",
+    "plester",
     "personal hub",
   ],
   authors: [{ name: "ZetAgo Aurum" }],
@@ -38,9 +44,9 @@ export const metadata: Metadata = {
     icon: "/logo.svg",
   },
   openGraph: {
-    title: "ZetAgo Aurum — A Central Atelier of Digital Works",
+    title: "ZetAgo Aurum: A Central Atelier of Digital Works",
     description:
-      "A personal hub for designs, domains, code, and ideas — polished to a golden standard.",
+      "A personal hub for designs, domains, code, and systems: polished to a golden standard.",
     url: "https://zetagoaurum.com",
     siteName: "ZetAgo Aurum",
     type: "website",
@@ -48,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ZetAgo Aurum",
-    description: "A personal hub — polished to a golden standard.",
+    description: "A personal hub: polished to a golden standard.",
   },
 };
 
