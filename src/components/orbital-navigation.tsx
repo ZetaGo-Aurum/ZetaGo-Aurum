@@ -305,8 +305,10 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
         onPointerCancel={handlePointerUp}
         style={{ touchAction: 'none' }}
         className={cn(
-          'relative flex h-[520px] w-full max-w-[760px] select-none items-center justify-center overflow-hidden rounded-3xl border border-border/70 bg-card/40 backdrop-blur-xl',
-          'cursor-grab active:cursor-grabbing shadow-2xl shadow-black/5 dark:shadow-[oklch(0.72_0.13_80_/_0.06)]'
+          'relative flex h-[520px] w-full max-w-[760px] select-none items-center justify-center overflow-hidden rounded-3xl backdrop-blur-xl',
+          'border border-[oklch(0.55_0.1_80_/_0.3)] dark:border-border/70',
+          'bg-[oklch(0.97_0.02_80_/_0.7)] dark:bg-card/40',
+          'cursor-grab active:cursor-grabbing shadow-2xl shadow-black/8 dark:shadow-[oklch(0.72_0.13_80_/_0.06)]'
         )}
       >
         {/* Ambient Radial Lighting */}
@@ -314,8 +316,9 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
           aria-hidden
           className="pointer-events-none absolute inset-0 flex items-center justify-center"
         >
-          <div className="h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.12)] via-[oklch(0.85_0.14_90_/_0.08)] to-transparent blur-3xl dark:from-[oklch(0.82_0.14_85_/_0.18)]" />
+          <div className="h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.2)] via-[oklch(0.85_0.14_90_/_0.12)] to-transparent blur-3xl dark:from-[oklch(0.82_0.14_85_/_0.18)]" />
         </div>
+
 
         {/* 3D Coordinate Plane Grid / Orbit Rings */}
         <div
@@ -328,7 +331,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
         >
           {/* Ring 1 (Inner) */}
           <div
-            className="absolute rounded-full border border-dashed border-[oklch(0.72_0.13_80_/_0.3)] dark:border-[oklch(0.82_0.14_85_/_0.35)] transition-transform duration-75"
+            className="absolute rounded-full border border-dashed border-[oklch(0.55_0.12_80_/_0.65)] dark:border-[oklch(0.82_0.14_85_/_0.45)] transition-transform duration-75"
             style={{
               width: 290,
               height: 290,
@@ -338,7 +341,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
 
           {/* Ring 2 (Mid) */}
           <div
-            className="absolute rounded-full border border-dashed border-[oklch(0.85_0.14_90_/_0.25)] dark:border-[oklch(0.82_0.14_85_/_0.25)] transition-transform duration-75"
+            className="absolute rounded-full border border-dashed border-[oklch(0.5_0.1_75_/_0.5)] dark:border-[oklch(0.82_0.14_85_/_0.35)] transition-transform duration-75"
             style={{
               width: 450,
               height: 450,
@@ -348,7 +351,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
 
           {/* Ring 3 (Outer) */}
           <div
-            className="absolute rounded-full border border-dotted border-[oklch(0.72_0.13_80_/_0.18)] dark:border-[oklch(0.82_0.14_85_/_0.2)] transition-transform duration-75"
+            className="absolute rounded-full border border-dotted border-[oklch(0.55_0.12_80_/_0.4)] dark:border-[oklch(0.82_0.14_85_/_0.28)] transition-transform duration-75"
             style={{
               width: 610,
               height: 610,
@@ -356,6 +359,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
             }}
           />
         </div>
+
 
         {/* Central Luminous Core (ZetaGo Aurum Sun) */}
         <div
