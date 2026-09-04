@@ -134,7 +134,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     // Only drag with primary pointer
     if (e.button !== 0 && e.pointerType === 'mouse') return
-    setIsDragging(true)
+    // Don't set isDragging immediately - wait for movement threshold
     setAutoOrbit(false)
     dragStartRef.current = {
       x: e.clientX,
@@ -154,9 +154,13 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return
     const dx = e.clientX - dragStartRef.current.x
     const dy = e.clientY - dragStartRef.current.y
+    const dist = Math.sqrt(dx * dx + dy * dy)
+
+    // Only start dragging after 5px movement threshold
+    if (!isDragging && dist < 5) return
+    if (!isDragging) setIsDragging(true)
 
     const now = performance.now()
     const dt = Math.max(now - lastPointerRef.current.time, 1)
@@ -179,12 +183,12 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
   }
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return
     setIsDragging(false)
     if (containerRef.current && containerRef.current.hasPointerCapture(e.pointerId)) {
       containerRef.current.releasePointerCapture(e.pointerId)
     }
   }
+
 
   // Manual Step Controls
   const rotateStep = (dir: 'left' | 'right' | 'up' | 'down') => {
