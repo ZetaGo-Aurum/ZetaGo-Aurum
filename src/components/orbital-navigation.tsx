@@ -146,32 +146,73 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
     }
   }
 
-  // Pointer & Touch Events (works on both PC mouse and Android touch)
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 && e.pointerType === 'mouse') return
+  // --- Mouse drag: use window-level listeners so drag works outside container bounds
+  //     WITHOUT setPointerCapture (which blocks tooltip link clicks)
+  const isMouseDraggingRef = React.useRef<boolean>(false)
+
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return
+    isMouseDraggingRef.current = true
     setIsDragging(true)
     didDragRef.current = false
     setAutoOrbit(false)
     dragStartRef.current = { x: e.clientX, y: e.clientY, rotX, rotY }
     lastPointerRef.current = { x: e.clientX, y: e.clientY, time: performance.now() }
     velocityRef.current = { vx: 0, vy: 0 }
-    // Only capture pointer for touch - NOT for mouse.
-    // Mouse capture blocks clicks on child elements (tooltip links).
-    if (e.pointerType !== 'mouse' && containerRef.current) {
+  }
+
+  React.useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isMouseDraggingRef.current) return
+      const dx = e.clientX - dragStartRef.current.x
+      const dy = e.clientY - dragStartRef.current.y
+      if (!didDragRef.current && Math.sqrt(dx * dx + dy * dy) > 4) {
+        didDragRef.current = true
+      }
+      const now = performance.now()
+      const dt = Math.max(now - lastPointerRef.current.time, 1)
+      velocityRef.current = {
+        vx: ((e.clientX - lastPointerRef.current.x) / dt) * 18,
+        vy: -((e.clientY - lastPointerRef.current.y) / dt) * 14,
+      }
+      lastPointerRef.current = { x: e.clientX, y: e.clientY, time: now }
+      setRotY((dragStartRef.current.rotY + dx * 0.45) % 360)
+      setRotX(Math.max(-65, Math.min(65, dragStartRef.current.rotX - dy * 0.35)))
+    }
+    const onMouseUp = () => {
+      if (!isMouseDraggingRef.current) return
+      isMouseDraggingRef.current = false
+      setIsDragging(false)
+    }
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+  }, [])
+
+  // --- Touch drag: keep setPointerCapture for smooth mobile swipe
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') return // mouse handled above
+    setIsDragging(true)
+    didDragRef.current = false
+    setAutoOrbit(false)
+    dragStartRef.current = { x: e.clientX, y: e.clientY, rotX, rotY }
+    lastPointerRef.current = { x: e.clientX, y: e.clientY, time: performance.now() }
+    velocityRef.current = { vx: 0, vy: 0 }
+    if (containerRef.current) {
       containerRef.current.setPointerCapture(e.pointerId)
     }
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return
+    if (e.pointerType === 'mouse' || !isDragging) return
     const dx = e.clientX - dragStartRef.current.x
     const dy = e.clientY - dragStartRef.current.y
-
-    // Mark as actual drag only after 4px movement
     if (!didDragRef.current && Math.sqrt(dx * dx + dy * dy) > 4) {
       didDragRef.current = true
     }
-
     const now = performance.now()
     const dt = Math.max(now - lastPointerRef.current.time, 1)
     velocityRef.current = {
@@ -179,18 +220,17 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
       vy: -((e.clientY - lastPointerRef.current.y) / dt) * 14,
     }
     lastPointerRef.current = { x: e.clientX, y: e.clientY, time: now }
-
     setRotY((dragStartRef.current.rotY + dx * 0.45) % 360)
     setRotX(Math.max(-65, Math.min(65, dragStartRef.current.rotX - dy * 0.35)))
   }
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') return
     setIsDragging(false)
     if (containerRef.current && containerRef.current.hasPointerCapture(e.pointerId)) {
       containerRef.current.releasePointerCapture(e.pointerId)
     }
   }
-
 
 
   // Manual Step Controls
@@ -314,6 +354,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
       <div
         ref={containerRef}
         onWheel={handleWheel}
+        onMouseDown={onMouseDown}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -326,6 +367,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
           'cursor-grab active:cursor-grabbing shadow-2xl shadow-black/8 dark:shadow-[oklch(0.72_0.13_80_/_0.06)]'
         )}
       >
+
         {/* Ambient Radial Lighting */}
         <div
           aria-hidden
