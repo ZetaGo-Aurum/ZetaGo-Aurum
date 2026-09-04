@@ -118,9 +118,25 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
     }
   }, [isDragging, autoOrbit])
 
+  // Refs for drag vs click distinction and hover tooltip bridge
+  const didDragRef = React.useRef<boolean>(false)
+  const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const showTooltip = (node: OrbitalNode) => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+    setHoveredNode(node)
+  }
+
+  const hideTooltipDelayed = () => {
+    hoverTimeoutRef.current = setTimeout(() => setHoveredNode(null), 120)
+  }
+
+  const cancelHideTooltip = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+  }
+
   // Mouse wheel interaction on PC (scroll to rotate 3D constellation)
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    // Smooth rotation with wheel delta
     e.preventDefault()
     setAutoOrbit(false)
     const delta = e.deltaY || e.deltaX
@@ -132,21 +148,12 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
 
   // Pointer & Touch Events (works on both PC mouse and Android touch)
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Only drag with primary pointer
     if (e.button !== 0 && e.pointerType === 'mouse') return
-    // Don't set isDragging immediately - wait for movement threshold
+    setIsDragging(true)
+    didDragRef.current = false
     setAutoOrbit(false)
-    dragStartRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      rotX,
-      rotY,
-    }
-    lastPointerRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      time: performance.now(),
-    }
+    dragStartRef.current = { x: e.clientX, y: e.clientY, rotX, rotY }
+    lastPointerRef.current = { x: e.clientX, y: e.clientY, time: performance.now() }
     velocityRef.current = { vx: 0, vy: 0 }
     if (containerRef.current) {
       containerRef.current.setPointerCapture(e.pointerId)
@@ -154,29 +161,22 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return
     const dx = e.clientX - dragStartRef.current.x
     const dy = e.clientY - dragStartRef.current.y
-    const dist = Math.sqrt(dx * dx + dy * dy)
 
-    // Only start dragging after 5px movement threshold
-    if (!isDragging && dist < 5) return
-    if (!isDragging) setIsDragging(true)
+    // Mark as actual drag only after 4px movement
+    if (!didDragRef.current && Math.sqrt(dx * dx + dy * dy) > 4) {
+      didDragRef.current = true
+    }
 
     const now = performance.now()
     const dt = Math.max(now - lastPointerRef.current.time, 1)
-    const instVx = (e.clientX - lastPointerRef.current.x) / dt
-    const instVy = (e.clientY - lastPointerRef.current.y) / dt
-
     velocityRef.current = {
-      vx: instVx * 18,
-      vy: -instVy * 14,
+      vx: ((e.clientX - lastPointerRef.current.x) / dt) * 18,
+      vy: -((e.clientY - lastPointerRef.current.y) / dt) * 14,
     }
-
-    lastPointerRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      time: now,
-    }
+    lastPointerRef.current = { x: e.clientX, y: e.clientY, time: now }
 
     setRotY((dragStartRef.current.rotY + dx * 0.45) % 360)
     setRotX(Math.max(-65, Math.min(65, dragStartRef.current.rotX - dy * 0.35)))
@@ -431,11 +431,11 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                     ? 'none'
                     : 'transform 0.15s ease-out, opacity 0.15s ease-out',
                 }}
-                onPointerEnter={() => {
-                  if (!isMobile.current) setHoveredNode(node)
+                onMouseEnter={() => {
+                  if (!isMobile.current) showTooltip(node)
                 }}
-                onPointerLeave={() => {
-                  if (!isMobile.current) setHoveredNode(null)
+                onMouseLeave={() => {
+                  if (!isMobile.current) hideTooltipDelayed()
                 }}
               >
                 <a
@@ -443,7 +443,8 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                   target={node.external ? '_blank' : undefined}
                   rel={node.external ? 'noopener noreferrer' : undefined}
                   onClick={(e) => {
-                    if (isDragging) {
+                    // Block navigation if user was actually dragging
+                    if (didDragRef.current) {
                       e.preventDefault()
                       return
                     }
@@ -453,7 +454,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                       setTappedNode(isTapped ? null : node)
                       setAutoOrbit(false)
                     }
-                    // PC: default href behaviour - browser opens the link directly
+                    // PC: href navigates normally in new tab
                   }}
                   className={cn(
                     'group relative flex items-center gap-2 rounded-full border bg-card/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-md transition-all duration-200',
@@ -491,7 +492,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                   )}
                 </a>
 
-                {/* Floating Detail Card - hover on PC, tap-toggle on mobile */}
+                {/* Floating Detail Card */}
                 <AnimatePresence>
                   {showDetail && (
                     <motion.div
@@ -499,8 +500,18 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
                       transition={{ duration: 0.18 }}
+                      // PC: pointer-events auto so mouse can enter and click link
+                      // Mobile (isTapped): pointer-events auto for tap link
+                      style={{ pointerEvents: 'auto' }}
                       className="absolute left-1/2 top-full z-50 mt-2 w-60 -translate-x-1/2 rounded-xl border border-border/80 bg-popover/98 p-3.5 text-left shadow-2xl backdrop-blur-xl"
-                      style={{ pointerEvents: isTapped ? 'auto' : 'none' }}
+                      onMouseEnter={() => {
+                        // Bridge: mouse moved into tooltip, cancel the hide timer
+                        if (!isMobile.current) cancelHideTooltip()
+                      }}
+                      onMouseLeave={() => {
+                        // Mouse left tooltip, hide immediately
+                        if (!isMobile.current) setHoveredNode(null)
+                      }}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] uppercase tracking-wider text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]">
@@ -522,7 +533,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                       <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                         {node.tagline[lang]}
                       </p>
-                      {/* Tappable visit link on mobile */}
+                      {/* Visit link - works on both PC hover tooltip and mobile tap card */}
                       <a
                         href={node.href}
                         target={node.external ? '_blank' : undefined}
@@ -548,6 +559,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
             onClick={() => setTappedNode(null)}
           />
         )}
+
 
 
         {/* Onboarding Guidance Badge */}
