@@ -67,12 +67,12 @@ export function ConnectSection() {
           className="mt-10 flex flex-col items-center justify-center gap-2"
         >
           <a
-            href="mailto:deltaastra24@gmail.com"
+            href="mailto:admin@zetagoaurum.com"
             className="group inline-flex items-center gap-2.5 rounded-full border border-border/80 bg-card/60 px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-[oklch(0.72_0.13_80_/_0.6)] hover:text-[oklch(0.72_0.13_80)] hover:shadow-md dark:hover:border-[oklch(0.82_0.14_85_/_0.6)] dark:hover:text-[oklch(0.85_0.14_85)]"
           >
             <Mail className="h-4 w-4 text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]" strokeWidth={1.75} />
             <span className="border-b border-dashed border-current pb-0.5 font-mono text-xs sm:text-sm">
-              deltaastra24@gmail.com
+              admin@zetagoaurum.com
             </span>
           </a>
         </motion.div>

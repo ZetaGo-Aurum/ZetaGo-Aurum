@@ -46,6 +46,7 @@ export const metadata: Metadata = {
     "Aleocrophic",
     "kyokounerge",
     "deltaastra24",
+    "admin@zetagoaurum.com",
     "OctoDos",
     "aurum-baileys",
     "aleopantest",
@@ -163,7 +164,7 @@ const jsonLd = {
       ],
       url: "https://www.zetagoaurum.com",
       image: "https://www.zetagoaurum.com/og-image-square.jpg",
-      email: "mailto:deltaastra24@gmail.com",
+      email: "mailto:admin@zetagoaurum.com",
       jobTitle: "Systems Architect, Offensive Security Researcher & Creative Producer",
       description:
         "Founder of ZetaGo-Aurum atelier (Est. 2019). Creator of OctoDos, aurum-baileys, and Kyoko Faction sovereign network platforms.",
