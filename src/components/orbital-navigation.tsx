@@ -155,7 +155,9 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
     dragStartRef.current = { x: e.clientX, y: e.clientY, rotX, rotY }
     lastPointerRef.current = { x: e.clientX, y: e.clientY, time: performance.now() }
     velocityRef.current = { vx: 0, vy: 0 }
-    if (containerRef.current) {
+    // Only capture pointer for touch - NOT for mouse.
+    // Mouse capture blocks clicks on child elements (tooltip links).
+    if (e.pointerType !== 'mouse' && containerRef.current) {
       containerRef.current.setPointerCapture(e.pointerId)
     }
   }
@@ -190,7 +192,9 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
   }
 
 
+
   // Manual Step Controls
+
   const rotateStep = (dir: 'left' | 'right' | 'up' | 'down') => {
     setAutoOrbit(false)
     if (dir === 'left') setRotY((y) => (y - 30) % 360)
