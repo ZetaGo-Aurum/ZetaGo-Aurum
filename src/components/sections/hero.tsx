@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowDown, Sparkles } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 
 export function HeroSection() {
@@ -23,15 +23,14 @@ export function HeroSection() {
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 sm:pt-24 sm:pb-16 lg:px-8 lg:pt-32">
         <div className="flex flex-col items-center text-center">
           {/* Eyebrow */}
-          <motion.div
+          <motion.p
             initial={reduce ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="mb-6 flex items-center gap-2 rounded-full border border-[oklch(0.72_0.13_80_/_0.3)] dark:border-[oklch(0.82_0.14_85_/_0.3)] bg-background/60 px-4 py-1.5 text-[11px] uppercase tracking-[0.25em] text-muted-foreground backdrop-blur-sm"
+            className="mb-6 text-[11px] uppercase tracking-[0.3em] text-muted-foreground"
           >
-            <Sparkles className="h-3 w-3 text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)]" strokeWidth={1.75} />
-            <span>{t('hero.eyebrow')}</span>
-          </motion.div>
+            {t('hero.eyebrow')}
+          </motion.p>
 
           {/* Title */}
           <motion.h1
