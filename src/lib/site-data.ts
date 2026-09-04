@@ -545,7 +545,7 @@ export const socialLinks: SocialLink[] = [
     labelId: 'connect.suno',
     href: 'https://suno.com/@zetagoaurum',
     icon: Music,
-    handle: '@ZetaGo-Aurum',
+    handle: '@zetagoaurum',
     external: true,
   },
 ]

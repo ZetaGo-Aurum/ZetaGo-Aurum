@@ -27,8 +27,8 @@ export function SiteFooter() {
             </p>
           </div>
 
-          {/* Social */}
-          <div className="flex items-center gap-3">
+          {/* Social Links - 2 rows of 4 on mobile, single row on desktop */}
+          <div className="grid grid-cols-4 gap-2.5 sm:flex sm:items-center sm:gap-3">
             {socialLinks.map((link) => (
               <a
                 key={link.id}
