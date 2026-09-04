@@ -435,7 +435,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                 }}
               >
                 <a
-                  href={showDetail ? node.href : undefined}
+                  href={node.href}
                   target={node.external ? '_blank' : undefined}
                   rel={node.external ? 'noopener noreferrer' : undefined}
                   onClick={(e) => {
@@ -445,12 +445,11 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                     }
                     if (isMobile.current) {
                       e.preventDefault()
-                      // Toggle tap detail on mobile
+                      // Mobile: tap to toggle detail card
                       setTappedNode(isTapped ? null : node)
                       setAutoOrbit(false)
-                    } else {
-                      setSelectedNode(node)
                     }
+                    // PC: default href behaviour - browser opens the link directly
                   }}
                   className={cn(
                     'group relative flex items-center gap-2 rounded-full border bg-card/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-md transition-all duration-200',
