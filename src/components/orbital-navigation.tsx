@@ -299,11 +299,13 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
 
       // Depth calculations
       const depthFactor = (z2 + 320) / 640 // normalized 0..1
-      const scale = Math.max(0.68, Math.min(1.22, perspectiveScale * (0.75 + depthFactor * 0.4)))
-      const opacity = Math.max(0.32, Math.min(1.0, 0.4 + depthFactor * 0.6))
+      const scale = Math.max(0.72, Math.min(1.22, perspectiveScale * (0.75 + depthFactor * 0.4)))
+      // Opacity stays visible (min 0.55) so distant nodes never wash out or disappear
+      const opacity = Math.max(0.55, Math.min(1.0, 0.55 + depthFactor * 0.45))
       const zIndex = Math.round(z2 + 500)
       const isFront = z2 > 0
-      const blur = isFront ? 0 : Math.max(0, Math.min(2.5, (-z2 / 300) * 2.5))
+      // Depth blur for back elements (max 2.2px)
+      const blur = isFront ? 0 : Math.max(0, Math.min(2.2, (-z2 / 300) * 2.2))
 
       const matchesCategory =
         activeCategory === 'all' ||
@@ -318,7 +320,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
         screenY,
         z: z2,
         scale,
-        opacity: matchesCategory ? opacity : opacity * 0.22,
+        opacity: matchesCategory ? opacity : opacity * 0.25,
         zIndex: matchesCategory ? zIndex : zIndex - 100,
         blur,
         isFront,
@@ -420,8 +422,9 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
 
         {/* Central Luminous Core (ZetaGo Aurum Sun) */}
         <div
-          className="relative z-20 flex flex-col items-center justify-center transition-transform duration-75"
+          className="relative flex flex-col items-center justify-center transition-transform duration-75"
           style={{
+            zIndex: 500,
             transform: `scale(${0.9 + (rotX / 180) * 0.1})`,
           }}
         >
@@ -465,14 +468,15 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
             return (
               <div
                 key={node.id}
-                className="absolute left-1/2 top-1/2 will-change-transform"
+                className="absolute left-1/2 top-1/2"
                 style={{
-                  transform: `translate3d(calc(${screenX}px - 50%), calc(${screenY}px - 50%), 0) scale(${
+                  transform: `translate(-50%, -50%) translate3d(${screenX}px, ${screenY}px, 0) scale(${
                     showDetail ? scale * 1.18 : scale
                   })`,
                   opacity,
                   zIndex: showDetail || isSelected ? 999 : zIndex,
-                  filter: blur > 0 && !showDetail ? `blur(${blur}px)` : 'none',
+                  filter: blur > 0 && !showDetail ? `blur(${blur.toFixed(1)}px)` : undefined,
+                  WebkitFilter: blur > 0 && !showDetail ? `blur(${blur.toFixed(1)}px)` : undefined,
                   transition: isDragging
                     ? 'none'
                     : 'transform 0.15s ease-out, opacity 0.15s ease-out',
@@ -503,7 +507,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                     // PC: href navigates normally in new tab
                   }}
                   className={cn(
-                    'group relative flex items-center gap-2 rounded-full border bg-card/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-md transition-all duration-200',
+                    'group relative flex items-center gap-2 rounded-full border bg-card px-3.5 py-2 text-xs font-medium shadow-lg transition-all duration-200',
                     accentBorder[node.accent],
                     showDetail &&
                       'ring-2 ring-[oklch(0.72_0.13_80)] shadow-xl shadow-[oklch(0.72_0.13_80_/_0.3)] scale-105',
