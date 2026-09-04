@@ -90,7 +90,7 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     'nav.lab': 'Lab',
     'nav.cosmos': 'Cosmos',
     'nav.aurum': 'Aurum',
-    'hero.eyebrow': 'Personal Hub · Est. MMXIX',
+    'hero.eyebrow': 'Personal Hub · Est. 2019',
     'hero.title.line1': 'Moving Forward,',
     'hero.title.line2': 'Innovating Endlessly',
     'hero.philosophy':
@@ -167,7 +167,7 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     'nav.lab': 'Lab',
     'nav.cosmos': 'Kosmos',
     'nav.aurum': 'Aurum',
-    'hero.eyebrow': 'Hub Personal · Est. MMXIX',
+    'hero.eyebrow': 'Hub Personal · Est. 2019',
     'hero.title.line1': 'Melangkah Maju,',
     'hero.title.line2': 'Terus Berinovasi',
     'hero.philosophy':
