@@ -1,959 +1,1289 @@
-'use client'
-
-import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
+import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {
   BookOpen,
-  RotateCcw,
   Maximize2,
   Minimize2,
   ChevronLeft,
   ChevronRight,
-  X,
-  List,
+  RotateCcw,
   Sparkles,
-  Type,
+  Menu,
+  X,
+  Bookmark,
   Sun,
   Moon,
-  Compass,
-  Bookmark,
-  Award,
+  Volume2,
+  VolumeX,
 } from 'lucide-react'
-import { aiBookData, aiBookPages, type BookPage } from '@/data/ai-book'
+import { aiBookData, aiBookPages, BookPage } from '@/data/ai-book'
 import { useLanguage } from '@/components/language-provider'
-import { cn } from '@/lib/utils'
+
+// Helper clamp & lerp
+const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val))
+const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor
 
 export function InteractiveBook() {
   const { t } = useLanguage()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Mode: 'closed' (3D closed book) | 'open' (physical 3D open book spread)
-  const [bookState, setBookState] = React.useState<'closed' | 'open'>('closed')
-  const [currentPage, setCurrentPage] = React.useState<number>(0)
-  const [flipDirection, setFlipDirection] = React.useState<'next' | 'prev' | null>(null)
-  const [paperTheme, setPaperTheme] = React.useState<'ivory' | 'dark'>('ivory')
-  const [fontSize, setFontSize] = React.useState<'normal' | 'large'>('normal')
-  const [tocOpen, setTocOpen] = React.useState<boolean>(false)
-  const [isFullscreen, setIsFullscreen] = React.useState<boolean>(false)
+  // Reading state
+  const [isOpen, setIsOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0) // 0 = title spread, 2, 4, ...
+  const [isFlipping, setIsFlipping] = useState(false)
+  const [paperTheme, setPaperTheme] = useState<'ivory' | 'dark'>('ivory')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isTocOpen, setIsTocOpen] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
 
-  // 3D Angles for Closed Mode inspection
-  const [rotX, setRotX] = React.useState<number>(12)
-  const [rotY, setRotY] = React.useState<number>(-24)
-  const [isDragging, setIsDragging] = React.useState<boolean>(false)
+  // Three.js scene refs
+  const sceneRef = useRef<THREE.Scene | null>(null)
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
+  const controlsRef = useRef<OrbitControls | null>(null)
+  const bookGroupRef = useRef<THREE.Group | null>(null)
+  const frontPivotRef = useRef<THREE.Group | null>(null)
+  const leftPageMeshRef = useRef<THREE.Mesh | null>(null)
+  const rightPageMeshRef = useRef<THREE.Mesh | null>(null)
+  const turningPivotRef = useRef<THREE.Group | null>(null)
+  const frontLeafMeshRef = useRef<THREE.Mesh | null>(null)
+  const backLeafMeshRef = useRef<THREE.Mesh | null>(null)
+  const ribbonMeshRef = useRef<THREE.Mesh | null>(null)
 
-  const containerRef = React.useRef<HTMLDivElement>(null)
-  const dragStartRef = React.useRef<{ x: number; y: number; rotX: number; rotY: number }>({
-    x: 0,
-    y: 0,
-    rotX: 12,
-    rotY: -24,
+  // Animation state refs
+  const animStateRef = useRef({
+    openProgress: 0,
+    targetOpenProgress: 0,
+    flipProgress: 0,
+    flipDirection: null as 'next' | 'prev' | null,
+    flipDuration: 0.72,
+    flipStartTime: 0,
+    isHovered: false,
+    ambientAngle: 0,
   })
-  const velocityRef = React.useRef<{ vx: number; vy: number }>({ vx: 0, vy: 0 })
-  const lastPointerRef = React.useRef<{ x: number; y: number; time: number }>({
-    x: 0,
-    y: 0,
-    time: 0,
-  })
-  const reqAnimRef = React.useRef<number | null>(null)
 
-  const [isMobile, setIsMobile] = React.useState<boolean>(false)
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  // Texture cache map
+  const textureCacheRef = useRef<Map<string, THREE.CanvasTexture>>(new Map())
 
-  React.useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement))
-    }
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
-  }, [])
-
-  const toggleFullscreen = async () => {
+  // Sound generator using Web Audio API
+  const playPageSound = useCallback(() => {
+    if (!soundEnabled) return
     try {
-      if (!document.fullscreenElement) {
-        if (containerRef.current?.requestFullscreen) {
-          await containerRef.current.requestFullscreen()
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      if (!AudioCtx) return
+      const ctx = new AudioCtx()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      const filter = ctx.createBiquadFilter()
+
+      // Soft paper rustle simulation
+      filter.type = 'lowpass'
+      filter.frequency.setValueAtTime(800, ctx.currentTime)
+      filter.frequency.exponentialRampToValueAtTime(2400, ctx.currentTime + 0.15)
+      filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.3)
+
+      gain.gain.setValueAtTime(0.001, ctx.currentTime)
+      gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.32)
+
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(140, ctx.currentTime)
+      osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.3)
+
+      osc.connect(filter)
+      filter.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start()
+      osc.stop(ctx.currentTime + 0.33)
+    } catch {
+      // Audio context failure gracefully ignored
+    }
+  }, [soundEnabled])
+
+  // ==========================================
+  // TEXTURE GENERATORS (CANVAS 2D)
+  // ==========================================
+
+  // Cover Texture
+  const generateCoverTexture = useCallback(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1024
+    canvas.height = 1536
+    const ctx = canvas.getContext('2d')!
+
+    // Base obsidian leather background
+    ctx.fillStyle = '#0a0d14'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Leather grain / noise wash
+    const grad = ctx.createRadialGradient(512, 768, 100, 512, 768, 900)
+    grad.addColorStop(0, 'rgba(24, 28, 40, 0.4)')
+    grad.addColorStop(0.7, 'rgba(10, 13, 20, 0.8)')
+    grad.addColorStop(1, 'rgba(4, 5, 8, 0.98)')
+    ctx.fillStyle = grad
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Outer Gilded Filigree Borders
+    ctx.strokeStyle = '#cba358'
+    ctx.lineWidth = 4
+    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96)
+
+    ctx.strokeStyle = '#99732b'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(62, 62, canvas.width - 124, canvas.height - 124)
+
+    // Ornate Corner Motifs
+    const drawCorner = (x: number, y: number, rot: number) => {
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.rotate(rot)
+      ctx.strokeStyle = '#d4af37'
+      ctx.lineWidth = 2.5
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(44, 0)
+      ctx.lineTo(44, 12)
+      ctx.lineTo(12, 12)
+      ctx.lineTo(12, 44)
+      ctx.lineTo(0, 44)
+      ctx.closePath()
+      ctx.stroke()
+      ctx.fillStyle = '#d4af37'
+      ctx.beginPath()
+      ctx.arc(22, 22, 4.5, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    }
+
+    drawCorner(66, 66, 0)
+    drawCorner(canvas.width - 66, 66, Math.PI / 2)
+    drawCorner(canvas.width - 66, canvas.height - 66, Math.PI)
+    drawCorner(66, canvas.height - 66, -Math.PI / 2)
+
+    // Header Badge
+    ctx.fillStyle = '#d4af37'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = '600 20px Inter, -apple-system, sans-serif'
+    ctx.letterSpacing = '6px'
+    ctx.fillText('ZETAGO-AURUM  ·  EDISI MONOGRAF 2026', 512, 160)
+
+    ctx.fillStyle = '#cba358'
+    ctx.fillRect(380, 185, 264, 1.5)
+
+    // Centerpiece Gyroscope Medallion
+    const cx = 512
+    const cy = 480
+    ctx.save()
+    ctx.strokeStyle = '#d4af37'
+    ctx.lineWidth = 3
+    for (let r = 0; r < 4; r += 1) {
+      ctx.beginPath()
+      ctx.arc(cx, cy, 100 + r * 26, 0, Math.PI * 2)
+      ctx.globalAlpha = 0.35 + r * 0.2
+      ctx.stroke()
+    }
+    ctx.globalAlpha = 1
+
+    // Embossed 'Z' in center
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = 'bold 110px "Cinzel", "Times New Roman", serif'
+    ctx.fillText('Z', cx, cy + 8)
+    ctx.restore()
+
+    // Title
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 54px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('KECERDASAN BUATAN', 512, 780)
+
+    // Subtitle
+    ctx.fillStyle = '#d4af37'
+    ctx.font = '500 24px Inter, sans-serif'
+    ctx.letterSpacing = '4px'
+    ctx.fillText('FUNDAMENTAL, SEJARAH & REKAYASA MODEL GENERATIF', 512, 840)
+
+    // Divider Line
+    ctx.strokeStyle = '#d4af37'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(256, 880)
+    ctx.lineTo(768, 880)
+    ctx.stroke()
+
+    // Description text
+    ctx.fillStyle = '#b3bac7'
+    ctx.font = '400 21px "Times New Roman", serif'
+    ctx.letterSpacing = '1px'
+    ctx.fillText('Buku Pegangan Komprehensif Arsitektur AI, Jaringan Saraf,', 512, 940)
+    ctx.fillText('Transformer, Siklus Pelatihan Frontier, hingga Implementasi Kode', 512, 975)
+
+    // Author & Badge at bottom
+    ctx.fillStyle = '#d4af37'
+    ctx.font = '600 20px Inter, sans-serif'
+    ctx.letterSpacing = '4px'
+    ctx.fillText('KARYA MONOGRAF LENGKAP · 14 BAB · 158 HALAMAN', 512, 1340)
+
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = 8
+    return texture
+  }, [])
+
+  // Spine Texture
+  const generateSpineTexture = useCallback(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 320
+    canvas.height = 1536
+    const ctx = canvas.getContext('2d')!
+
+    ctx.fillStyle = '#080a0f'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Raised Leather Ribs
+    ctx.fillStyle = '#1e2433'
+    for (let i = 1; i <= 5; i += 1) {
+      const y = (canvas.height / 6) * i
+      ctx.fillRect(0, y - 8, canvas.width, 16)
+      ctx.fillStyle = '#d4af37'
+      ctx.fillRect(20, y - 2, canvas.width - 40, 4)
+      ctx.fillStyle = '#1e2433'
+    }
+
+    // Vertical Gold Title
+    ctx.save()
+    ctx.translate(canvas.width / 2, canvas.height / 2)
+    ctx.rotate(Math.PI / 2)
+    ctx.fillStyle = '#f5df8b'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = 'bold 36px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '5px'
+    ctx.fillText('ZETAGO-AURUM  ✦  KECERDASAN BUATAN  ✦  2026', 0, 0)
+    ctx.restore()
+
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    return texture
+  }, [])
+
+  // Back Cover Texture
+  const generateBackCoverTexture = useCallback(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1024
+    canvas.height = 1536
+    const ctx = canvas.getContext('2d')!
+
+    ctx.fillStyle = '#0a0d14'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Gilded border
+    ctx.strokeStyle = '#cba358'
+    ctx.lineWidth = 3
+    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96)
+
+    // Quotation
+    ctx.fillStyle = '#f5df8b'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = 'italic 28px "Times New Roman", serif'
+    ctx.fillText('"Kecerdasan bukanlah sekadar replikasi logika manusia,', 512, 680)
+    ctx.fillText('melainkan jembatan matematis yang memperluas cakrawala', 512, 730)
+    ctx.fillText('pemikiran, rekayasa, dan masa depan peradaban."', 512, 780)
+
+    ctx.fillStyle = '#d4af37'
+    ctx.font = '500 20px Inter, sans-serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText(': ZETAGO-AURUM RESEARCH FOUNDATION :', 512, 870)
+
+    ctx.fillStyle = '#8b949e'
+    ctx.font = '400 18px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('EDISI PERTAMA · DOKUMEN TAHUN 2026 · TERDAFTAR SECARA RESMI', 512, 1380)
+
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    return texture
+  }, [])
+
+  // Patterned Endpaper Texture
+  const generateEndpaperTexture = useCallback(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1024
+    canvas.height = 1536
+    const ctx = canvas.getContext('2d')!
+
+    ctx.fillStyle = '#10141f'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.18)'
+    ctx.lineWidth = 1.2
+
+    // Lattice pattern
+    const step = 48
+    for (let x = 0; x < canvas.width; x += step) {
+      for (let y = 0; y < canvas.height; y += step) {
+        ctx.beginPath()
+        ctx.arc(x, y, 22, 0, Math.PI * 2)
+        ctx.stroke()
+      }
+    }
+
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    return texture
+  }, [])
+
+  // Page Content Texture (High Resolution 768x1152)
+  const generatePageTexture = useCallback((page: BookPage | null, theme: 'ivory' | 'dark') => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 768
+    canvas.height = 1152
+    const ctx = canvas.getContext('2d')!
+
+    const isDark = theme === 'dark'
+    const bgColor = isDark ? '#11141c' : '#fbf9f4'
+    const textColor = isDark ? '#f4eee6' : '#231f1d'
+    const headerColor = isDark ? '#c8a248' : '#8c6b2d'
+    const subColor = isDark ? '#8892b0' : '#736d67'
+    const ruleColor = isDark ? 'rgba(200, 162, 72, 0.3)' : 'rgba(140, 107, 45, 0.25)'
+
+    // Fill background
+    ctx.fillStyle = bgColor
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Paper edge shadow/wash for realism
+    const edgeGrad = ctx.createLinearGradient(0, 0, canvas.width, 0)
+    edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.06)')
+    edgeGrad.addColorStop(0.08, 'transparent')
+    edgeGrad.addColorStop(0.94, 'transparent')
+    edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.05)')
+    ctx.fillStyle = edgeGrad
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    if (!page) {
+      // Empty end page
+      ctx.fillStyle = subColor
+      ctx.font = 'italic 20px "Times New Roman", serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('Akhir Naskah Monograf', 384, 576)
+      const emptyTex = new THREE.CanvasTexture(canvas)
+      emptyTex.colorSpace = THREE.SRGBColorSpace
+      return emptyTex
+    }
+
+    // Top Running Header
+    ctx.fillStyle = headerColor
+    ctx.font = '600 13px Inter, sans-serif'
+    ctx.letterSpacing = '2.5px'
+    ctx.textAlign = 'left'
+    ctx.fillText('KECERDASAN BUATAN', 64, 72)
+
+    ctx.textAlign = 'right'
+    ctx.font = '500 12px Inter, sans-serif'
+    ctx.letterSpacing = '1.5px'
+    ctx.fillText(page.shortTitle.toUpperCase(), 704, 72)
+
+    // Rule under header
+    ctx.strokeStyle = ruleColor
+    ctx.lineWidth = 1.2
+    ctx.beginPath()
+    ctx.moveTo(64, 88)
+    ctx.lineTo(704, 88)
+    ctx.stroke()
+
+    // Page Content Body
+    let curY = 135
+    const maxWidth = 640
+    const startX = 64
+
+    // Helper to wrap and draw text
+    const wrapAndDraw = (text: string, fontSize: number, lineHeight: number, isItalic = false, isBold = false) => {
+      ctx.font = `${isBold ? 'bold ' : ''}${isItalic ? 'italic ' : ''}${fontSize}px "Iowan Old Style", "Baskerville", "Times New Roman", serif`
+      const words = text.split(' ')
+      let line = ''
+      for (const w of words) {
+        const testLine = line ? `${line} ${w}` : w
+        const metrics = ctx.measureText(testLine)
+        if (metrics.width > maxWidth && line) {
+          ctx.fillText(line, startX, curY)
+          line = w
+          curY += lineHeight
+          if (curY > 1050) break
         } else {
-          setIsFullscreen(true)
-        }
-      } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen()
+          line = testLine
         }
       }
-    } catch {
-      setIsFullscreen((prev) => !prev)
+      if (line && curY <= 1050) {
+        ctx.fillText(line, startX, curY)
+        curY += lineHeight
+      }
     }
-  }
 
-  React.useEffect(() => {
-    if (bookState !== 'closed') return
+    page.paragraphs.forEach((p) => {
+      if (curY > 1050) return
 
+      const isSpecial = p.startsWith('Kajian Khusus:')
+      const isChapterTitle = p.startsWith('BAB ') || p.startsWith('Bab ') || p.startsWith('MONOGRAF')
+
+      if (isSpecial) {
+        // Draw callout box
+        const boxStartY = curY
+        const cleanText = p.replace(/^Kajian Khusus:\s*/, '')
+        ctx.font = '16px "Times New Roman", serif'
+
+        // Estimate lines
+        const words = cleanText.split(' ')
+        let countLines = 1
+        let tempLine = ''
+        for (const w of words) {
+          const tLine = tempLine ? `${tempLine} ${w}` : w
+          if (ctx.measureText(tLine).width > maxWidth - 36) {
+            countLines += 1
+            tempLine = w
+          } else {
+            tempLine = tLine
+          }
+        }
+        const boxHeight = Math.max(56, countLines * 24 + 42)
+
+        // Box background
+        ctx.fillStyle = isDark ? 'rgba(200, 162, 72, 0.12)' : 'rgba(200, 162, 72, 0.1)'
+        ctx.fillRect(startX, boxStartY, maxWidth, boxHeight)
+        ctx.strokeStyle = isDark ? '#c8a248' : '#b8860b'
+        ctx.lineWidth = 1.5
+        ctx.strokeRect(startX, boxStartY, maxWidth, boxHeight)
+
+        // Header
+        ctx.fillStyle = headerColor
+        ctx.font = 'bold 11px Inter, sans-serif'
+        ctx.letterSpacing = '2px'
+        ctx.fillText('✦ KAJIAN KHUSUS', startX + 16, boxStartY + 22)
+
+        // Inner text
+        ctx.fillStyle = textColor
+        ctx.font = '400 15.5px "Times New Roman", serif'
+        let innerY = boxStartY + 44
+        tempLine = ''
+        for (const w of words) {
+          const tLine = tempLine ? `${tempLine} ${w}` : w
+          if (ctx.measureText(tLine).width > maxWidth - 36) {
+            ctx.fillText(tempLine, startX + 16, innerY)
+            tempLine = w
+            innerY += 23
+          } else {
+            tempLine = tLine
+          }
+        }
+        if (tempLine) {
+          ctx.fillText(tempLine, startX + 16, innerY)
+        }
+
+        curY = boxStartY + boxHeight + 20
+      } else if (isChapterTitle) {
+        ctx.fillStyle = headerColor
+        wrapAndDraw(p, 23, 32, false, true)
+        curY += 8
+      } else {
+        ctx.fillStyle = textColor
+        wrapAndDraw(p, 19, 29, false, false)
+        curY += 14
+      }
+    })
+
+    // Bottom Footer (Page Number)
+    ctx.fillStyle = subColor
+    ctx.font = '500 12px Inter, monospace'
+    ctx.letterSpacing = '1.5px'
+    ctx.textAlign = 'left'
+    ctx.fillText('ZetaGo-Aurum · 2026', 64, 1105)
+
+    ctx.textAlign = 'right'
+    ctx.fillText(`Hal. ${page.pageNumber}`, 704, 1105)
+
+    // Rule above footer
+    ctx.strokeStyle = ruleColor
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(64, 1085)
+    ctx.lineTo(704, 1085)
+    ctx.stroke()
+
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = 8
+    return texture
+  }, [])
+
+  // Helper to get or create cached texture
+  const getPageTexture = useCallback((page: BookPage | null, theme: 'ivory' | 'dark') => {
+    const key = `${page ? page.pageNumber : 'end'}-${theme}`
+    if (!textureCacheRef.current.has(key)) {
+      const tex = generatePageTexture(page, theme)
+      textureCacheRef.current.set(key, tex)
+    }
+    return textureCacheRef.current.get(key)!
+  }, [generatePageTexture])
+
+  // ==========================================
+  // THREE.JS INITIALIZATION & LIFECYCLE
+  // ==========================================
+
+  useEffect(() => {
+    const container = containerRef.current
+    const canvas = canvasRef.current
+    if (!container || !canvas) return
+
+    const width = container.clientWidth || window.innerWidth
+    const height = container.clientHeight || 700
+
+    // Scene
+    const scene = new THREE.Scene()
+    sceneRef.current = scene
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100)
+    camera.position.set(0, 0.4, 5.8)
+    cameraRef.current = camera
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance',
+    })
+    renderer.setSize(width, height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75))
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.15
+    rendererRef.current = renderer
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.06
+    controls.minDistance = 3.2
+    controls.maxDistance = 8.5
+    controls.maxPolarAngle = Math.PI / 2 + 0.1
+    controls.minPolarAngle = Math.PI / 6
+    controlsRef.current = controls
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xfff8ee, 0.9)
+    scene.add(ambientLight)
+
+    const mainKeyLight = new THREE.DirectionalLight(0xffe8c6, 1.8)
+    mainKeyLight.position.set(3.5, 6.5, 5.5)
+    scene.add(mainKeyLight)
+
+    const fillLight = new THREE.DirectionalLight(0xd4e2f5, 0.85)
+    fillLight.position.set(-4.5, 2.5, 3.8)
+    scene.add(fillLight)
+
+    const rimLight = new THREE.DirectionalLight(0xd4af37, 1.2)
+    rimLight.position.set(0, -3.5, -4.5)
+    scene.add(rimLight)
+
+    // ==========================================
+    // BUILD PHYSICAL 3D BOOK RIG
+    // ==========================================
+    const bookWidth = 1.95
+    const bookHeight = 2.75
+    const pageBlockDepth = 0.28
+    const boardThickness = 0.025
+    const coverOverhang = 0.045
+    const coverWidth = bookWidth + coverOverhang
+    const coverHeight = bookHeight + coverOverhang * 2
+
+    const rootGroup = new THREE.Group()
+    scene.add(rootGroup)
+    bookGroupRef.current = rootGroup
+
+    // Initial closed showcase rotation
+    rootGroup.rotation.set(0.12, -0.32, 0)
+
+    // Textures
+    const coverTex = generateCoverTexture()
+    const spineTex = generateSpineTexture()
+    const backCoverTex = generateBackCoverTexture()
+    const endpaperTex = generateEndpaperTexture()
+
+    // 1. Back Cover
+    const backPivot = new THREE.Group()
+    backPivot.position.set(-bookWidth / 2, 0, -pageBlockDepth / 2 - boardThickness / 2)
+    const backCoverGeom = new RoundedBoxGeometry(coverWidth, coverHeight, boardThickness, 2, 0.008)
+    const leatherMat = new THREE.MeshStandardMaterial({
+      color: 0x0a0d14,
+      roughness: 0.75,
+      metalness: 0.15,
+    })
+    const backCoverMesh = new THREE.Mesh(backCoverGeom, leatherMat)
+    backCoverMesh.position.set(coverWidth / 2, 0, 0)
+    backPivot.add(backCoverMesh)
+
+    // Back cover art plane
+    const backPlaneGeom = new THREE.PlaneGeometry(coverWidth - 0.02, coverHeight - 0.02)
+    const backPlaneMat = new THREE.MeshStandardMaterial({
+      map: backCoverTex,
+      roughness: 0.65,
+      metalness: 0.2,
+    })
+    const backPlane = new THREE.Mesh(backPlaneGeom, backPlaneMat)
+    backPlane.rotation.y = Math.PI
+    backPlane.position.set(coverWidth / 2, 0, -boardThickness / 2 - 0.001)
+    backPivot.add(backPlane)
+    rootGroup.add(backPivot)
+
+    // 2. Spine
+    const spineGeom = new RoundedBoxGeometry(boardThickness, coverHeight, pageBlockDepth + boardThickness * 2, 2, 0.005)
+    const spineMat = new THREE.MeshStandardMaterial({
+      map: spineTex,
+      roughness: 0.7,
+      metalness: 0.25,
+    })
+    const spineMesh = new THREE.Mesh(spineGeom, spineMat)
+    spineMesh.position.set(-bookWidth / 2 - boardThickness / 2, 0, 0)
+    rootGroup.add(spineMesh)
+
+    // 3. Page Block
+    const pageBlockGeom = new RoundedBoxGeometry(bookWidth, bookHeight, pageBlockDepth, 2, 0.004)
+    // Canvas texture for gilded/paper edges
+    const edgeCanvas = document.createElement('canvas')
+    edgeCanvas.width = 128
+    edgeCanvas.height = 512
+    const edgeCtx = edgeCanvas.getContext('2d')!
+    edgeCtx.fillStyle = '#e8dec8'
+    edgeCtx.fillRect(0, 0, 128, 512)
+    for (let l = 0; l < 512; l += 3) {
+      edgeCtx.fillStyle = l % 6 === 0 ? '#d4af37' : '#cfc4ab'
+      edgeCtx.fillRect(0, l, 128, 1.5)
+    }
+    const edgeTex = new THREE.CanvasTexture(edgeCanvas)
+    const pageEdgeMat = new THREE.MeshStandardMaterial({
+      map: edgeTex,
+      roughness: 0.9,
+      metalness: 0.1,
+    })
+    const pageBlock = new THREE.Mesh(pageBlockGeom, pageEdgeMat)
+    pageBlock.position.set(0, 0, 0)
+    rootGroup.add(pageBlock)
+
+    // 4. Front Cover Pivot
+    const frontPivot = new THREE.Group()
+    frontPivot.position.set(-bookWidth / 2, 0, pageBlockDepth / 2 + boardThickness / 2)
+    frontPivotRef.current = frontPivot
+
+    const frontCoverGeom = new RoundedBoxGeometry(coverWidth, coverHeight, boardThickness, 2, 0.008)
+    const frontCoverMesh = new THREE.Mesh(frontCoverGeom, leatherMat)
+    frontCoverMesh.position.set(coverWidth / 2, 0, 0)
+    frontPivot.add(frontCoverMesh)
+
+    // Front Cover Artwork Plane
+    const frontCoverPlaneGeom = new THREE.PlaneGeometry(coverWidth - 0.02, coverHeight - 0.02)
+    const frontCoverPlaneMat = new THREE.MeshStandardMaterial({
+      map: coverTex,
+      roughness: 0.65,
+      metalness: 0.25,
+    })
+    const frontCoverPlane = new THREE.Mesh(frontCoverPlaneGeom, frontCoverPlaneMat)
+    frontCoverPlane.position.set(coverWidth / 2, 0, boardThickness / 2 + 0.001)
+    frontPivot.add(frontCoverPlane)
+
+    // Inside Front Endpaper Plane
+    const frontEndpaperPlaneGeom = new THREE.PlaneGeometry(coverWidth - 0.03, coverHeight - 0.03)
+    const frontEndpaperPlaneMat = new THREE.MeshStandardMaterial({
+      map: endpaperTex,
+      roughness: 0.9,
+      metalness: 0.05,
+    })
+    const frontEndpaperPlane = new THREE.Mesh(frontEndpaperPlaneGeom, frontEndpaperPlaneMat)
+    frontEndpaperPlane.rotation.y = Math.PI
+    frontEndpaperPlane.position.set(coverWidth / 2, 0, -boardThickness / 2 - 0.001)
+    frontPivot.add(frontEndpaperPlane)
+    rootGroup.add(frontPivot)
+
+    // 5. Open Reading Surfaces (Left & Right Pages in 3D Spread)
+    const pageGeom = new THREE.PlaneGeometry(bookWidth - 0.02, bookHeight - 0.02)
+
+    // Left Page Mesh
+    const leftPageMat = new THREE.MeshStandardMaterial({
+      map: endpaperTex,
+      roughness: 0.92,
+      metalness: 0.02,
+      side: THREE.FrontSide,
+    })
+    const leftPageMesh = new THREE.Mesh(pageGeom, leftPageMat)
+    leftPageMesh.position.set(-bookWidth / 2, 0, pageBlockDepth / 2 + 0.002)
+    leftPageMesh.visible = false
+    rootGroup.add(leftPageMesh)
+    leftPageMeshRef.current = leftPageMesh
+
+    // Right Page Mesh
+    const rightPageMat = new THREE.MeshStandardMaterial({
+      map: getPageTexture(aiBookPages[0], 'ivory'),
+      roughness: 0.92,
+      metalness: 0.02,
+      side: THREE.FrontSide,
+    })
+    const rightPageMesh = new THREE.Mesh(pageGeom, rightPageMat)
+    rightPageMesh.position.set(bookWidth / 2, 0, pageBlockDepth / 2 + 0.002)
+    rightPageMesh.visible = false
+    rootGroup.add(rightPageMesh)
+    rightPageMeshRef.current = rightPageMesh
+
+    // 6. Dynamic 3D Turning Page Leaf with Flexible Vertex Curvature
+    const leafPivot = new THREE.Group()
+    leafPivot.position.set(0, 0, pageBlockDepth / 2 + 0.005)
+    turningPivotRef.current = leafPivot
+    leafPivot.visible = false
+
+    const flexGeomFront = new THREE.PlaneGeometry(bookWidth - 0.02, bookHeight - 0.02, 18, 8)
+    const flexGeomBack = new THREE.PlaneGeometry(bookWidth - 0.02, bookHeight - 0.02, 18, 8)
+
+    const frontLeafMat = new THREE.MeshStandardMaterial({
+      map: getPageTexture(aiBookPages[0], 'ivory'),
+      roughness: 0.92,
+      metalness: 0.02,
+      side: THREE.FrontSide,
+    })
+    const frontLeafMesh = new THREE.Mesh(flexGeomFront, frontLeafMat)
+    frontLeafMesh.position.set((bookWidth - 0.02) / 2, 0, 0.0008)
+    leafPivot.add(frontLeafMesh)
+    frontLeafMeshRef.current = frontLeafMesh
+
+    const backLeafMat = new THREE.MeshStandardMaterial({
+      map: getPageTexture(aiBookPages[1], 'ivory'),
+      roughness: 0.92,
+      metalness: 0.02,
+      side: THREE.FrontSide,
+    })
+    const backLeafMesh = new THREE.Mesh(flexGeomBack, backLeafMat)
+    backLeafMesh.rotation.y = Math.PI
+    backLeafMesh.position.set((bookWidth - 0.02) / 2, 0, -0.0008)
+    leafPivot.add(backLeafMesh)
+    backLeafMeshRef.current = backLeafMesh
+
+    rootGroup.add(leafPivot)
+
+    // 7. Silk Ribbon Bookmark
+    const ribbonGeom = new THREE.PlaneGeometry(0.05, bookHeight * 1.08, 12, 1)
+    // Curvature for hanging ribbon
+    const pos = ribbonGeom.attributes.position
+    for (let i = 0; i < pos.count; i += 1) {
+      const y = pos.getY(i)
+      const u = (y + bookHeight * 0.54) / (bookHeight * 1.08)
+      pos.setZ(i, Math.sin(u * Math.PI * 2) * 0.015 + (1 - u) * 0.03)
+    }
+    ribbonGeom.computeVertexNormals()
+
+    const ribbonMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      roughness: 0.45,
+      metalness: 0.4,
+      side: THREE.DoubleSide,
+    })
+    const ribbonMesh = new THREE.Mesh(ribbonGeom, ribbonMat)
+    ribbonMesh.position.set(0, -0.06, pageBlockDepth / 2 + 0.006)
+    ribbonMesh.visible = false
+    rootGroup.add(ribbonMesh)
+    ribbonMeshRef.current = ribbonMesh
+
+    // ==========================================
+    // ANIMATION LOOP
+    // ==========================================
+    let reqId = 0
     let lastTime = performance.now()
-    const loop = (time: number) => {
-      const dt = Math.min((time - lastTime) / 1000, 0.1)
+
+    const animate = (time: number) => {
+      reqId = requestAnimationFrame(animate)
+      const dt = Math.min((time - lastTime) / 1000, 0.05)
       lastTime = time
 
-      if (!isDragging) {
-        if (Math.abs(velocityRef.current.vx) > 0.001 || Math.abs(velocityRef.current.vy) > 0.001) {
-          setRotY((y) => y + velocityRef.current.vx * dt * 60)
-          setRotX((x) => Math.max(-45, Math.min(45, x + velocityRef.current.vy * dt * 60)))
+      const anim = animStateRef.current
+      controls.update()
 
-          velocityRef.current.vx *= 0.92
-          velocityRef.current.vy *= 0.92
+      // Smooth cover opening transition
+      anim.openProgress = lerp(anim.openProgress, anim.targetOpenProgress, dt * 6.5)
+      const openAmount = anim.openProgress
+
+      // Front Cover rotation: 0 (closed) to -Math.PI + 0.05 (fully open)
+      const hoverCrack = !isOpen && anim.isHovered ? -0.15 : 0
+      const targetRotY = openAmount > 0.001
+        ? (-Math.PI + 0.05) * openAmount
+        : hoverCrack
+      frontPivot.rotation.y = lerp(frontPivot.rotation.y, targetRotY, dt * 10)
+
+      // Book position & rotation transition
+      if (openAmount > 0.01) {
+        // Center the 2-page spread when reading
+        rootGroup.position.x = lerp(rootGroup.position.x, 0, dt * 6)
+        rootGroup.position.y = lerp(rootGroup.position.y, 0, dt * 6)
+        rootGroup.rotation.x = lerp(rootGroup.rotation.x, 0, dt * 6)
+        rootGroup.rotation.y = lerp(rootGroup.rotation.y, 0, dt * 6)
+        rootGroup.rotation.z = lerp(rootGroup.rotation.z, 0, dt * 6)
+
+        leftPageMesh.visible = openAmount > 0.4
+        rightPageMesh.visible = openAmount > 0.4
+        ribbonMesh.visible = openAmount > 0.7
+      } else {
+        // Showcase floating in closed mode
+        anim.ambientAngle += dt * 0.4
+        const floatY = Math.sin(anim.ambientAngle * 1.5) * 0.04
+        rootGroup.position.y = floatY
+        leftPageMesh.visible = false
+        rightPageMesh.visible = false
+        ribbonMesh.visible = false
+      }
+
+      // Page flip animation with vertex curvature
+      if (anim.flipDirection !== null) {
+        const elapsed = (time - anim.flipStartTime) / 1000
+        const progress = clamp(elapsed / anim.flipDuration, 0, 1)
+        anim.flipProgress = progress
+
+        // Rotation across 180 degrees
+        let leafRotY = 0
+        if (anim.flipDirection === 'next') {
+          leafRotY = -Math.PI * progress
         } else {
-          const sway = Math.sin(time * 0.001) * 0.08
-          setRotY((y) => y + sway)
+          leafRotY = -Math.PI + Math.PI * progress
+        }
+        leafPivot.rotation.y = leafRotY
+
+        // Flexible Page Curvature: arch up in the middle, lift corner
+        const arch = Math.sin(progress * Math.PI) * 0.22
+        const twist = Math.sin(progress * Math.PI) * 0.08
+
+        // Front geometry flex
+        const pFront = flexGeomFront.attributes.position
+        for (let i = 0; i < pFront.count; i += 1) {
+          const u = (pFront.getX(i) + (bookWidth - 0.02) / 2) / (bookWidth - 0.02)
+          const yNorm = pFront.getY(i) / (bookHeight * 0.5)
+          const zCurve = Math.sin(u * Math.PI) * arch + u * u * twist * yNorm
+          pFront.setZ(i, zCurve)
+        }
+        pFront.needsUpdate = true
+        flexGeomFront.computeVertexNormals()
+
+        // Back geometry flex
+        const pBack = flexGeomBack.attributes.position
+        for (let i = 0; i < pBack.count; i += 1) {
+          const u = (pBack.getX(i) + (bookWidth - 0.02) / 2) / (bookWidth - 0.02)
+          const yNorm = pBack.getY(i) / (bookHeight * 0.5)
+          const zCurve = -(Math.sin(u * Math.PI) * arch + u * u * twist * yNorm)
+          pBack.setZ(i, zCurve)
+        }
+        pBack.needsUpdate = true
+        flexGeomBack.computeVertexNormals()
+
+        // Flip finished
+        if (progress >= 1) {
+          const dir = anim.flipDirection
+          anim.flipDirection = null
+          leafPivot.visible = false
+          setIsFlipping(false)
+
+          if (dir === 'next') {
+            setCurrentPage((prev) => Math.min(prev + 2, aiBookPages.length - 1))
+          } else {
+            setCurrentPage((prev) => Math.max(0, prev - 2))
+          }
         }
       }
 
-      reqAnimRef.current = requestAnimationFrame(loop)
+      renderer.render(scene, camera)
     }
 
-    reqAnimRef.current = requestAnimationFrame(loop)
+    reqId = requestAnimationFrame(animate)
+
+    // Resize handler
+    const handleResize = () => {
+      if (!container || !renderer || !camera) return
+      const w = container.clientWidth || window.innerWidth
+      const h = container.clientHeight || 700
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      renderer.setSize(w, h)
+    }
+    window.addEventListener('resize', handleResize)
+
     return () => {
-      if (reqAnimRef.current) cancelAnimationFrame(reqAnimRef.current)
+      cancelAnimationFrame(reqId)
+      window.removeEventListener('resize', handleResize)
+      controls.dispose()
+      renderer.dispose()
     }
-  }, [bookState, isDragging])
+  }, [generateCoverTexture, generateSpineTexture, generateBackCoverTexture, generateEndpaperTexture, getPageTexture, isOpen])
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (bookState !== 'closed') return
-    setIsDragging(true)
-    dragStartRef.current = { x: e.clientX, y: e.clientY, rotX, rotY }
-    lastPointerRef.current = { x: e.clientX, y: e.clientY, time: performance.now() }
-    velocityRef.current = { vx: 0, vy: 0 }
-    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
-  }
+  // ==========================================
+  // SYNC REACT STATE WITH 3D SCENE
+  // ==========================================
 
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || bookState !== 'closed') return
-    const dx = e.clientX - dragStartRef.current.x
-    const dy = e.clientY - dragStartRef.current.y
-    const now = performance.now()
-    const dt = Math.max(now - lastPointerRef.current.time, 1)
-    velocityRef.current = {
-      vx: ((e.clientX - lastPointerRef.current.x) / dt) * 14,
-      vy: -((e.clientY - lastPointerRef.current.y) / dt) * 12,
-    }
-    lastPointerRef.current = { x: e.clientX, y: e.clientY, time: now }
-    setRotY(dragStartRef.current.rotY + dx * 0.4)
-    setRotX(Math.max(-45, Math.min(45, dragStartRef.current.rotX - dy * 0.3)))
-  }
-
-  const onPointerUp = (e: React.PointerEvent) => {
-    if (!isDragging) return
-    setIsDragging(false)
-    try {
-      if ((e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) {
-        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+  // Open / Close Book
+  useEffect(() => {
+    animStateRef.current.targetOpenProgress = isOpen ? 1 : 0
+    if (controlsRef.current && cameraRef.current) {
+      if (isOpen) {
+        // Glide camera straight to reading position
+        cameraRef.current.position.set(0, 0, 4.4)
+        controlsRef.current.target.set(0, 0, 0)
+        controlsRef.current.enableRotate = false // Lock rotation in reading mode so text is steady
+      } else {
+        // Restore orbit controls in showcase mode
+        cameraRef.current.position.set(0, 0.4, 5.8)
+        controlsRef.current.target.set(0, 0, 0)
+        controlsRef.current.enableRotate = true
       }
-    } catch {}
-  }
+    }
+  }, [isOpen])
 
-  const reset3D = () => {
-    setRotX(12)
-    setRotY(-24)
-    velocityRef.current = { vx: 0, vy: 0 }
-  }
+  // Sync Current Pages onto 3D Meshes
+  useEffect(() => {
+    if (!isOpen) return
+    const leftTex = currentPage === 0
+      ? generateEndpaperTexture()
+      : getPageTexture(aiBookPages[currentPage - 1] || null, paperTheme)
 
-  const pageStep = isMobile ? 1 : 2
-  const totalPages = aiBookPages.length
+    const rightTex = getPageTexture(aiBookPages[currentPage] || null, paperTheme)
 
-  const flipNext = () => {
-    if (flipDirection !== null) return
-    if (currentPage + pageStep < totalPages) {
-      setFlipDirection('next')
-      setTimeout(() => {
-        setCurrentPage((p) => Math.min(totalPages - 1, p + pageStep))
-        setFlipDirection(null)
-      }, 550)
+    if (leftPageMeshRef.current) {
+      (leftPageMeshRef.current.material as THREE.MeshStandardMaterial).map = leftTex
+      ;(leftPageMeshRef.current.material as THREE.MeshStandardMaterial).needsUpdate = true
+    }
+    if (rightPageMeshRef.current) {
+      (rightPageMeshRef.current.material as THREE.MeshStandardMaterial).map = rightTex
+      ;(rightPageMeshRef.current.material as THREE.MeshStandardMaterial).needsUpdate = true
+    }
+  }, [currentPage, isOpen, paperTheme, generateEndpaperTexture, getPageTexture])
+
+  // Flip Next Page in 3D
+  const flipNext = useCallback(() => {
+    if (isFlipping || !isOpen) return
+    if (currentPage >= aiBookPages.length - 1) return
+
+    setIsFlipping(true)
+    playPageSound()
+
+    const turningPivot = turningPivotRef.current
+    const frontLeafMesh = frontLeafMeshRef.current
+    const backLeafMesh = backLeafMeshRef.current
+    const rightPageMesh = rightPageMeshRef.current
+
+    if (!turningPivot || !frontLeafMesh || !backLeafMesh || !rightPageMesh) return
+
+    // Front of turning leaf: current right page
+    const curRightTex = getPageTexture(aiBookPages[currentPage] || null, paperTheme)
+    ;(frontLeafMesh.material as THREE.MeshStandardMaterial).map = curRightTex
+    ;(frontLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
+
+    // Back of turning leaf: next left page
+    const nextLeftTex = getPageTexture(aiBookPages[currentPage + 1] || null, paperTheme)
+    ;(backLeafMesh.material as THREE.MeshStandardMaterial).map = nextLeftTex
+    ;(backLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
+
+    // Underlying right page: next right page
+    const nextRightTex = getPageTexture(aiBookPages[currentPage + 2] || null, paperTheme)
+    ;(rightPageMesh.material as THREE.MeshStandardMaterial).map = nextRightTex
+    ;(rightPageMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
+
+    turningPivot.visible = true
+    turningPivot.rotation.y = 0
+
+    animStateRef.current.flipDirection = 'next'
+    animStateRef.current.flipStartTime = performance.now()
+  }, [isFlipping, isOpen, currentPage, paperTheme, getPageTexture, playPageSound])
+
+  // Flip Previous Page in 3D
+  const flipPrev = useCallback(() => {
+    if (isFlipping || !isOpen) return
+    if (currentPage <= 0) return
+
+    setIsFlipping(true)
+    playPageSound()
+
+    const turningPivot = turningPivotRef.current
+    const frontLeafMesh = frontLeafMeshRef.current
+    const backLeafMesh = backLeafMeshRef.current
+    const leftPageMesh = leftPageMeshRef.current
+
+    if (!turningPivot || !frontLeafMesh || !backLeafMesh || !leftPageMesh) return
+
+    // Underlying left page preview
+    const prevLeftTex = currentPage - 2 === 0
+      ? generateEndpaperTexture()
+      : getPageTexture(aiBookPages[currentPage - 3] || null, paperTheme)
+    ;(leftPageMesh.material as THREE.MeshStandardMaterial).map = prevLeftTex
+    ;(leftPageMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
+
+    // Turning leaf back: current left page
+    const curLeftTex = getPageTexture(aiBookPages[currentPage - 1] || null, paperTheme)
+    ;(backLeafMesh.material as THREE.MeshStandardMaterial).map = curLeftTex
+    ;(backLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
+
+    // Turning leaf front: page before that
+    const prevRightTex = getPageTexture(aiBookPages[currentPage - 2] || null, paperTheme)
+    ;(frontLeafMesh.material as THREE.MeshStandardMaterial).map = prevRightTex
+    ;(frontLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
+
+    turningPivot.visible = true
+    turningPivot.rotation.y = -Math.PI
+
+    animStateRef.current.flipDirection = 'prev'
+    animStateRef.current.flipStartTime = performance.now()
+  }, [isFlipping, isOpen, currentPage, paperTheme, generateEndpaperTexture, getPageTexture, playPageSound])
+
+  // Fullscreen toggle
+  const toggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {})
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {})
+    }
+  }, [])
+
+  // Raycaster click on 3D book canvas
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!cameraRef.current || !canvasRef.current) return
+
+    // If closed: click opens the 3D book
+    if (!isOpen) {
+      setIsOpen(true)
+      playPageSound()
+      return
+    }
+
+    // If open: clicking left side flips prev, right side flips next
+    const rect = canvasRef.current.getBoundingClientRect()
+    const clickX = e.clientX - rect.left
+    const midX = rect.width / 2
+
+    if (clickX > midX + 40) {
+      flipNext()
+    } else if (clickX < midX - 40) {
+      flipPrev()
     }
   }
 
-  const flipPrev = () => {
-    if (flipDirection !== null) return
-    if (currentPage > 0) {
-      setFlipDirection('prev')
-      setTimeout(() => {
-        setCurrentPage((p) => Math.max(0, p - pageStep))
-        setFlipDirection(null)
-      }, 550)
+  // Hover detection for closed book
+  const handlePointerMove = () => {
+    if (!isOpen) {
+      animStateRef.current.isHovered = true
     }
   }
-
-  const jumpToChapter = (chapterIdx: number) => {
-    const targetPage = aiBookPages.findIndex((p) => p.chapterIndex === chapterIdx)
-    if (targetPage !== -1) {
-      const aligned = isMobile ? targetPage : targetPage - (targetPage % 2)
-      setCurrentPage(Math.max(0, aligned))
-      setTocOpen(false)
-    }
+  const handlePointerLeave = () => {
+    animStateRef.current.isHovered = false
   }
 
-  React.useEffect(() => {
+  // Keyboard navigation
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (bookState === 'open') {
-        if (e.key === 'ArrowRight') flipNext()
-        if (e.key === 'ArrowLeft') flipPrev()
-        if (e.key === 'Escape') {
-          if (tocOpen) setTocOpen(false)
-          else setBookState('closed')
-        }
+      if (!isOpen) return
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        e.preventDefault()
+        flipNext()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        flipPrev()
+      } else if (e.key === 'Escape') {
+        if (isTocOpen) setIsTocOpen(false)
+        else setIsOpen(false)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [bookState, currentPage, flipDirection, tocOpen, isMobile])
-
-  const touchStartXRef = React.useRef<number>(0)
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartXRef.current = e.touches[0].clientX
-  }
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current
-    if (Math.abs(deltaX) > 50) {
-      if (deltaX < 0) flipNext()
-      else flipPrev()
-    }
-  }
-
-  const leftPage: BookPage | undefined = aiBookPages[currentPage]
-  const rightPage: BookPage | undefined = !isMobile ? aiBookPages[currentPage + 1] : undefined
+  }, [isOpen, isTocOpen, flipNext, flipPrev])
 
   return (
     <div
       ref={containerRef}
-      className={cn(
-        'relative mx-auto flex w-full flex-col items-center overflow-hidden transition-all duration-300',
-        isFullscreen
-          ? 'fixed inset-0 z-50 h-screen w-screen rounded-none bg-[#050608] p-0'
-          : 'max-w-6xl rounded-3xl'
-      )}
+      className={`relative w-full overflow-hidden transition-colors duration-500 select-none ${
+        isFullscreen ? 'fixed inset-0 z-50 h-screen bg-[#07090e]' : 'min-h-[720px] sm:min-h-[820px] rounded-2xl border border-[oklch(0.72_0.13_80_/_0.25)] bg-[#07090e] shadow-2xl'
+      }`}
     >
-      <AnimatePresence mode="wait">
-        {bookState === 'closed' ? (
-          /* =========================================================================
-             1. CLOSED 3D PHYSICAL BOOK VIEW (SAMPUL EMAS & HITAM)
-             ========================================================================= */
-          <motion.div
-            key="closed-book"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.4 }}
-            className="relative flex min-h-[580px] sm:min-h-[660px] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-[oklch(0.55_0.1_80_/_0.3)] bg-[#090b10] p-4 py-8 shadow-2xl dark:border-border/70 sm:p-8"
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      {/* 3D WebGL Canvas */}
+      <canvas
+        ref={canvasRef}
+        onClick={handleCanvasClick}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+        className="block h-full w-full cursor-pointer touch-none"
+      />
+
+      {/* Luxury Ambient Top Floating Badge */}
+      <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+        <div className="flex items-center gap-2 pointer-events-auto rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] bg-[#0a0d14]/85 px-3 py-1.5 backdrop-blur-md shadow-lg">
+          <div className="h-2 w-2 rounded-full bg-[oklch(0.72_0.13_80)] animate-pulse" />
+          <span className="font-mono text-[11px] font-semibold tracking-wider text-[oklch(0.72_0.13_80)]">
+            {isOpen ? '3D MONOGRAF TERBUKA' : '3D INTERACTIVE SHOWCASE'}
+          </span>
+        </div>
+
+        {/* Top Control Action Buttons */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Table of Contents Button */}
+          {isOpen && (
+            <button
+              onClick={() => setIsTocOpen(true)}
+              className="flex items-center gap-1.5 rounded-full border border-border/70 bg-[#0a0d14]/85 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
             >
-              <div className="h-[420px] w-[420px] rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.18)] via-[#c87046]/10 to-transparent blur-3xl" />
-              <div className="absolute inset-0 bg-[radial-gradient(rgba(200,112,70,0.1)_1px,transparent_1px)] [background-size:24px_24px] opacity-35" />
-            </div>
+              <Menu className="h-3.5 w-3.5 text-[oklch(0.72_0.13_80)]" />
+              <span className="hidden sm:inline">Daftar Isi</span>
+            </button>
+          )}
 
-            <div className="relative z-10 mb-5 flex flex-wrap items-center justify-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.1)] px-3.5 py-1 text-xs font-semibold text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)] backdrop-blur-md">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>BUKU FISIK 3D · MONOGRAF RESMI</span>
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur-md">
-                <Bookmark className="h-3 w-3 text-[oklch(0.72_0.13_80)]" />
-                <span>158 Halaman · Sampul Emas & Hitam</span>
-              </span>
-            </div>
-
-            <div
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={onPointerUp}
-              onPointerCancel={onPointerUp}
-              style={{ touchAction: 'none' }}
-              className="relative flex h-[440px] w-full max-w-[400px] cursor-grab select-none items-center justify-center active:cursor-grabbing sm:h-[480px]"
+          {/* Theme Toggle (Ivory / Dark) */}
+          {isOpen && (
+            <button
+              onClick={() => setPaperTheme((t) => (t === 'ivory' ? 'dark' : 'ivory'))}
+              title="Ganti Tema Kertas"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-[#0a0d14]/85 text-foreground backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
             >
-              <div
-                style={{
-                  perspective: 1200,
-                  perspectiveOrigin: '50% 50%',
-                }}
-                className="relative flex items-center justify-center"
-              >
-                <div
-                  style={{
-                    width: 270,
-                    height: 390,
-                    transformStyle: 'preserve-3d',
-                    transform: `rotateX(${rotX}deg) rotateY(${rotY}deg)`,
-                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                  }}
-                  className="relative will-change-transform"
-                >
-                  {/* FRONT COVER */}
-                  <div
-                    onClick={() => setBookState('open')}
-                    style={{
-                      transform: 'translateZ(22px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                    }}
-                    className="group absolute inset-0 flex flex-col justify-between overflow-hidden rounded-r-xl rounded-l-sm border-2 border-[oklch(0.72_0.13_80_/_0.85)] bg-[#0a0c10] p-5 shadow-2xl cursor-pointer"
-                  >
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1c1f28] via-[#0b0d12] to-[#040507]" />
-                    <div className="pointer-events-none absolute inset-1 rounded-lg border border-[oklch(0.85_0.14_90_/_0.35)]" />
-                    <div className="pointer-events-none absolute inset-2 rounded-md border border-dashed border-[oklch(0.72_0.13_80_/_0.25)]" />
+              {paperTheme === 'ivory' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5 text-[oklch(0.72_0.13_80)]" />}
+            </button>
+          )}
 
-                    <div className="pointer-events-none absolute top-2 left-2 text-[10px] text-[oklch(0.72_0.13_80)]">✦</div>
-                    <div className="pointer-events-none absolute top-2 right-2 text-[10px] text-[oklch(0.72_0.13_80)]">✦</div>
-                    <div className="pointer-events-none absolute bottom-2 left-2 text-[10px] text-[oklch(0.72_0.13_80)]">✦</div>
-                    <div className="pointer-events-none absolute bottom-2 right-2 text-[10px] text-[oklch(0.72_0.13_80)]">✦</div>
-
-                    <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-r from-black/60 to-transparent" />
-
-                    <div className="relative z-10 text-center">
-                      <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-[oklch(0.72_0.13_80)]">
-                        MONOGRAF AKADEMIK
-                      </p>
-                      <p className="mt-0.5 text-[7.5px] tracking-widest text-neutral-400 uppercase">
-                        Buku Referensi Teknis
-                      </p>
-                    </div>
-
-                    <div className="relative z-10 my-auto flex flex-col items-center py-2">
-                      <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-[oklch(0.72_0.13_80)] bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.3)] via-[#151720] to-[#0a0c10] shadow-lg shadow-[oklch(0.72_0.13_80_/_0.2)] group-hover:scale-105 transition-transform duration-300">
-                        <div className="absolute inset-1 rounded-full border border-dashed border-[oklch(0.85_0.14_90_/_0.5)]" />
-                        <span className="font-serif text-2xl font-bold tracking-tight text-[oklch(0.85_0.14_90)] drop-shadow-md">
-                          Z
-                        </span>
-                      </div>
-
-                      <h3 className="mt-3 font-serif text-lg font-bold tracking-tight text-white leading-tight text-center">
-                        <span className="block bg-gradient-to-r from-[#ffd875] via-[#f5d061] to-[#c59228] bg-clip-text text-transparent">
-                          KECERDASAN
-                        </span>
-                        <span className="block bg-gradient-to-r from-[#f5d061] via-[#ffd875] to-[#c59228] bg-clip-text text-transparent">
-                          BUATAN
-                        </span>
-                      </h3>
-
-                      <div className="mt-1.5 h-[1px] w-24 bg-gradient-to-r from-transparent via-[oklch(0.72_0.13_80)] to-transparent" />
-
-                      <p className="mt-2 max-w-[200px] text-center text-[8.5px] font-medium leading-tight text-neutral-300">
-                        Fundamental · Sejarah · Metrik Pertumbuhan · Model Generatif
-                      </p>
-                    </div>
-
-                    <div className="relative z-10 border-t border-[oklch(0.72_0.13_80_/_0.3)] pt-1.5 text-center flex items-center justify-between text-[7.5px]">
-                      <span className="font-mono font-semibold tracking-wider text-[oklch(0.72_0.13_80)]">
-                        ZETAGO-AURUM
-                      </span>
-                      <span className="text-neutral-400 uppercase tracking-wider">
-                        2026 · Edisi I
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* BACK COVER */}
-                  <div
-                    style={{
-                      transform: 'rotateY(180deg) translateZ(22px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                    }}
-                    className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-l-xl rounded-r-sm border-2 border-[oklch(0.72_0.13_80_/_0.85)] bg-[#090b10] p-5 text-left shadow-2xl"
-                  >
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#181a22] via-[#0b0c10] to-[#040507]" />
-                    <div className="pointer-events-none absolute inset-1 rounded-lg border border-[oklch(0.85_0.14_90_/_0.3)]" />
-
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wider text-[oklch(0.72_0.13_80)]">
-                        <Award className="h-3 w-3" />
-                        <span>Monograf Referensi Ilmiah</span>
-                      </div>
-                      <p className="mt-2 font-serif text-[10px] font-semibold text-white leading-snug">
-                        Kajian Komprehensif Arsitektur AI, Jaringan Saraf, Transformer, & PyTorch.
-                      </p>
-                      <p className="mt-1.5 text-[7.5px] text-neutral-400 leading-relaxed">
-                        Menghubungkan fondasi matematika kalkulus & probabilitas hingga siklus pelatihan skala besar (Pre-training, SFT, RLHF, DPO, Reasoning).
-                      </p>
-                    </div>
-
-                    <div className="relative z-10 my-auto rounded-lg border border-[oklch(0.72_0.13_80_/_0.3)] bg-black/40 p-2.5 text-center">
-                      <p className="font-serif text-[8.5px] italic text-[oklch(0.85_0.14_90)]">
-                        "Melangkah maju, terus berinovasi, menghasilkan karya yang indah seperti emas."
-                      </p>
-                      <p className="mt-0.5 text-[7px] uppercase tracking-wider text-neutral-400">
-                        - Falsafah ZetaGo-Aurum
-                      </p>
-                    </div>
-
-                    <div className="relative z-10 flex items-center justify-between border-t border-[oklch(0.72_0.13_80_/_0.3)] pt-1.5 text-[7.5px] text-neutral-400">
-                      <span>ISBN: ZGA-AI-2026-01</span>
-                      <span className="font-mono text-[oklch(0.72_0.13_80)]">ZetaGo-Aurum</span>
-                    </div>
-                  </div>
-
-                  {/* SPINE FACE */}
-                  <div
-                    style={{
-                      width: 44,
-                      height: 390,
-                      left: '50%',
-                      marginLeft: -22,
-                      transform: 'rotateY(-90deg) translateZ(135px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                    }}
-                    className="absolute inset-y-0 flex flex-col items-center justify-between border-y-2 border-l-2 border-[oklch(0.72_0.13_80_/_0.85)] bg-gradient-to-b from-[#181a22] via-[#0b0c10] to-[#181a22] py-4 text-center shadow-lg"
-                  >
-                    <div className="w-full">
-                      <div className="mx-auto h-[2px] w-6 bg-[oklch(0.72_0.13_80)]" />
-                      <div className="mx-auto mt-1 h-[2px] w-6 bg-[oklch(0.72_0.13_80)]" />
-                    </div>
-
-                    <div
-                      style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                      className="my-auto font-serif text-[9px] font-bold tracking-widest text-[oklch(0.85_0.14_90)]"
-                    >
-                      ZETAGO-AURUM · KECERDASAN BUATAN · 2026
-                    </div>
-
-                    <div className="w-full">
-                      <div className="mx-auto h-[2px] w-6 bg-[oklch(0.72_0.13_80)]" />
-                      <div className="mx-auto mt-1 h-[2px] w-6 bg-[oklch(0.72_0.13_80)]" />
-                    </div>
-                  </div>
-
-                  {/* GILDED EDGES */}
-                  <div
-                    style={{
-                      width: 44,
-                      height: 390,
-                      left: '50%',
-                      marginLeft: -22,
-                      transform: 'rotateY(90deg) translateZ(135px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                      backgroundImage:
-                        'repeating-linear-gradient(to bottom, #d4af37 0px, #aa8218 1px, #f5d77f 2px, #8d6f30 3px)',
-                    }}
-                    className="absolute inset-y-0 rounded-r-sm border-y-2 border-r-2 border-[oklch(0.72_0.13_80_/_0.7)] shadow-inner"
-                  />
-                  <div
-                    style={{
-                      width: 270,
-                      height: 44,
-                      top: '50%',
-                      marginTop: -22,
-                      transform: 'rotateX(90deg) translateZ(195px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                      backgroundImage:
-                        'repeating-linear-gradient(to right, #d4af37 0px, #aa8218 1px, #f5d77f 2px, #8d6f30 3px)',
-                    }}
-                    className="absolute inset-x-0 border-x-2 border-t-2 border-[oklch(0.72_0.13_80_/_0.7)] shadow-inner"
-                  />
-                  <div
-                    style={{
-                      width: 270,
-                      height: 44,
-                      top: '50%',
-                      marginTop: -22,
-                      transform: 'rotateX(-90deg) translateZ(195px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                      backgroundImage:
-                        'repeating-linear-gradient(to right, #d4af37 0px, #aa8218 1px, #f5d77f 2px, #8d6f30 3px)',
-                    }}
-                    className="absolute inset-x-0 border-x-2 border-b-2 border-[oklch(0.72_0.13_80_/_0.7)] shadow-inner"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div
-              aria-hidden
-              className="pointer-events-none -mt-4 h-6 w-60 rounded-full bg-[oklch(0.72_0.13_80_/_0.2)] blur-xl"
-            />
-
-            <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3">
-              <button
-                onClick={() => setBookState('open')}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[oklch(0.72_0.13_80)] via-[oklch(0.85_0.14_90)] to-[oklch(0.72_0.13_80)] px-6 py-3 text-sm font-semibold text-neutral-950 shadow-xl shadow-[oklch(0.72_0.13_80_/_0.35)] transition-all hover:scale-105 active:scale-95"
-              >
-                <BookOpen className="h-4 w-4" />
-                <span>{t('shelf.openBook')}</span>
-              </button>
-
-              <button
-                onClick={reset3D}
-                title="Reset Angle"
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/70 px-4 py-3 text-xs font-medium text-foreground backdrop-blur-md transition-all hover:border-[oklch(0.72_0.13_80_/_0.5)] hover:text-[oklch(0.72_0.13_80)]"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{t('shelf.reset3d')}</span>
-              </button>
-
-              <button
-                onClick={toggleFullscreen}
-                title="Fullscreen Mode"
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/70 px-4 py-3 text-xs font-medium text-foreground backdrop-blur-md transition-all hover:border-[oklch(0.72_0.13_80_/_0.5)] hover:text-[oklch(0.72_0.13_80)]"
-              >
-                {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">
-                  {isFullscreen ? t('shelf.exitFullscreen') : t('shelf.fullscreen')}
-                </span>
-              </button>
-            </div>
-
-            <p className="relative z-10 mt-4 text-center text-xs text-muted-foreground">
-              <Compass className="inline-block h-3.5 w-3.5 text-[oklch(0.72_0.13_80)] mr-1 align-sub" />
-              {t('shelf.hint')}
-            </p>
-          </motion.div>
-        ) : (
-          /* =========================================================================
-             2. OPEN PHYSICAL 3D BOOK SPREAD VIEW (MEMBACA LANGSUNG DARI BUKU 3D)
-             ========================================================================= */
-          <motion.div
-            key="open-book"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.4 }}
-            className={cn(
-              'relative flex w-full flex-col overflow-hidden bg-[#07090e] border border-[oklch(0.55_0.1_80_/_0.3)] shadow-2xl dark:border-border/70',
-              isFullscreen
-                ? 'h-screen w-screen rounded-none p-2 sm:p-6'
-                : 'min-h-[720px] sm:min-h-[800px] rounded-3xl p-3 sm:p-8'
-            )}
+          {/* Sound Toggle */}
+          <button
+            onClick={() => setSoundEnabled((s) => !s)}
+            title={soundEnabled ? 'Matikan Suara Kertas' : 'Aktifkan Suara Kertas'}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-[#0a0d14]/85 text-foreground backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
           >
-            {/* Header Control Bar */}
-            <div className="relative z-20 mb-4 flex items-center justify-between border-b border-border/60 pb-3 px-2 sm:px-4">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setTocOpen(!tocOpen)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.1)] px-3 py-1.5 text-xs font-semibold text-[oklch(0.72_0.13_80)] transition-all hover:bg-[oklch(0.72_0.13_80_/_0.2)]"
-                >
-                  <List className="h-3.5 w-3.5" />
-                  <span>{t('shelf.tableOfContents')}</span>
-                </button>
+            {soundEnabled ? <Volume2 className="h-3.5 w-3.5 text-[oklch(0.72_0.13_80)]" /> : <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />}
+          </button>
 
-                <div className="hidden md:flex flex-col text-left ml-2">
-                  <span className="font-serif text-xs font-bold text-foreground line-clamp-1">
-                    Kecerdasan Buatan (AI)
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    ZetaGo-Aurum · Monograf Fisik 3D
-                  </span>
-                </div>
-              </div>
+          {/* Fullscreen Toggle */}
+          <button
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Keluar Fullscreen' : 'Layar Penuh'}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-[#0a0d14]/85 text-foreground backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
+          >
+            {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+          </button>
+        </div>
+      </div>
 
-              <div className="text-center text-xs font-mono text-muted-foreground">
-                {isMobile ? (
-                  <span>Halaman {currentPage + 1} dari {totalPages}</span>
-                ) : (
-                  <span>
-                    Halaman {currentPage + 1} - {Math.min(totalPages, currentPage + 2)} dari {totalPages}
-                  </span>
-                )}
-              </div>
+      {/* CLOSED STATE: Bottom Hero Call-to-Action Bar */}
+      {!isOpen && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 pointer-events-auto">
+          <p className="text-[11px] sm:text-xs font-mono text-muted-foreground text-center bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm border border-white/5">
+            Geser untuk memutar 360° · Klik buku atau tombol untuk membuka langsung dalam 3D
+          </p>
+          <button
+            onClick={() => {
+              setIsOpen(true)
+              playPageSound()
+            }}
+            className="group inline-flex items-center gap-2.5 rounded-full border border-[oklch(0.72_0.13_80)] bg-[oklch(0.72_0.13_80_/_0.2)] px-6 py-3 text-sm font-bold text-[oklch(0.72_0.13_80)] backdrop-blur-xl hover:bg-[oklch(0.72_0.13_80_/_0.35)] active:scale-95 transition-all shadow-[0_0_24px_rgba(212,175,55,0.25)]"
+          >
+            <BookOpen className="h-4 w-4 transition-transform group-hover:scale-110" />
+            <span>Buka Naskah Fisik 3D</span>
+            <Sparkles className="h-3.5 w-3.5 animate-spin text-[oklch(0.72_0.13_80)]" />
+          </button>
+        </div>
+      )}
 
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <button
-                  onClick={() => setPaperTheme((th) => (th === 'ivory' ? 'dark' : 'ivory'))}
-                  title="Ubah Tema Kertas"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border/80 text-muted-foreground hover:text-foreground"
-                >
-                  {paperTheme === 'ivory' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
-                </button>
+      {/* OPEN STATE: Bottom Navigation Bar */}
+      {isOpen && (
+        <div className="absolute bottom-5 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+          <button
+            onClick={flipPrev}
+            disabled={currentPage <= 0 || isFlipping}
+            className="pointer-events-auto flex items-center gap-2 rounded-full border border-border/80 bg-[#0a0d14]/90 px-4 py-2 text-xs font-semibold text-foreground backdrop-blur-md disabled:opacity-30 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
+          >
+            <ChevronLeft className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
+            <span className="hidden sm:inline">Halaman Sebelumnya</span>
+            <span className="sm:hidden">Sebelumnya</span>
+          </button>
 
-                <button
-                  onClick={() => setFontSize((s) => (s === 'normal' ? 'large' : 'normal'))}
-                  title="Ubah Ukuran Huruf"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border/80 text-muted-foreground hover:text-foreground"
-                >
-                  <Type className="h-3.5 w-3.5" />
-                </button>
-
-                <button
-                  onClick={toggleFullscreen}
-                  title="Layar Penuh"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border/80 text-muted-foreground hover:text-foreground"
-                >
-                  {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
-                </button>
-
-                <button
-                  onClick={() => setBookState('closed')}
-                  className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:border-[oklch(0.72_0.13_80)]"
-                >
-                  <X className="h-3.5 w-3.5 text-[oklch(0.72_0.13_80)]" />
-                  <span className="hidden sm:inline">{t('shelf.closeBook')}</span>
-                </button>
-              </div>
+          {/* Page Indicator & Close Button */}
+          <div className="pointer-events-auto flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-border/60 bg-[#0a0d14]/90 px-4 py-1.5 text-xs font-mono text-muted-foreground backdrop-blur-md">
+              <span>Hal. {currentPage === 0 ? '1' : `${currentPage}-${currentPage + 1}`}</span>
+              <span>/</span>
+              <span>158</span>
             </div>
 
-            {/* Table of Contents Drawer */}
-            <AnimatePresence>
-              {tocOpen && (
-                <motion.aside
-                  initial={{ x: -320, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -320, opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="absolute inset-y-0 left-0 z-40 w-72 sm:w-80 border-r border-border/80 bg-[#0b0d13]/98 p-4 shadow-2xl backdrop-blur-2xl flex flex-col"
-                >
-                  <div className="flex items-center justify-between pb-3 border-b border-border/60">
-                    <span className="font-serif text-sm font-bold text-[oklch(0.72_0.13_80)]">
-                      {t('shelf.tableOfContents')}
-                    </span>
-                    <button
-                      onClick={() => setTocOpen(false)}
-                      className="rounded p-1 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  <nav className="mt-3 flex-1 overflow-y-auto space-y-1 pr-1">
-                    {aiBookData.sections.map((sec, sIdx) => {
-                      const firstPageOfSec = aiBookPages.findIndex((p) => p.chapterIndex === sIdx)
-                      const isCurrent =
-                        leftPage?.chapterIndex === sIdx || rightPage?.chapterIndex === sIdx
-                      return (
-                        <button
-                          key={sec.id}
-                          onClick={() => jumpToChapter(sIdx)}
-                          className={cn(
-                            'flex w-full items-start justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors',
-                            isCurrent
-                              ? 'bg-[oklch(0.72_0.13_80_/_0.15)] font-semibold text-[oklch(0.72_0.13_80)] border border-[oklch(0.72_0.13_80_/_0.3)]'
-                              : 'text-neutral-400 hover:bg-card/60 hover:text-foreground'
-                          )}
-                        >
-                          <span className="line-clamp-2 leading-relaxed">{sec.title}</span>
-                          <span className="shrink-0 font-mono text-[10px] text-muted-foreground mt-0.5">
-                            Hal. {firstPageOfSec + 1}
-                          </span>
-                        </button>
-                      )
-                    })}
-                  </nav>
-                </motion.aside>
-              )}
-            </AnimatePresence>
-
-            {/* =========================================================================
-                THE 3D OPEN PHYSICAL BOOK RIG
-               ========================================================================= */}
-            <div
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              className="relative my-auto flex flex-1 items-center justify-center py-2 select-none"
-              style={{
-                perspective: 1600,
-                perspectiveOrigin: '50% 50%',
+            <button
+              onClick={() => {
+                setIsOpen(false)
+                playPageSound()
               }}
+              className="flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.15)] px-4 py-2 text-xs font-semibold text-[oklch(0.72_0.13_80)] backdrop-blur-md hover:bg-[oklch(0.72_0.13_80_/_0.25)] active:scale-95 transition-all"
             >
-              {/* Outer Hardback Leather Cover Backing (Open Flat in 3D) */}
-              <div
-                className="relative flex items-center justify-center rounded-xl p-1.5 sm:p-3 shadow-2xl"
-                style={{
-                  background: 'radial-gradient(ellipse at center, #1b1e28 0%, #0c0e14 70%, #050609 100%)',
-                  border: '2px solid oklch(0.72 0.13 80 / 0.6)',
-                  boxShadow: '0 25px 60px -15px rgba(0,0,0,0.8), 0 0 35px oklch(0.72 0.13 80 / 0.15)',
-                }}
-              >
-                {/* Book Spine Seam & Silk Bookmark Ribbon */}
-                <div className="pointer-events-none absolute inset-y-0 left-1/2 -ml-[2px] z-30 w-[4px] bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Tutup Buku</span>
+            </button>
+          </div>
 
-                {/* Silk Ribbon Bookmark hanging from center seam */}
-                <div
-                  onClick={() => setTocOpen(!tocOpen)}
-                  title="Pita Pembatas Buku (Daftar Isi)"
-                  className="cursor-pointer absolute top-0 left-1/2 -ml-2 z-35 flex flex-col items-center group"
-                >
-                  <div className="h-24 sm:h-32 w-4 bg-gradient-to-b from-[#d4af37] via-[#f5d061] to-[#aa8218] shadow-md group-hover:brightness-110 transition-all rounded-b-sm border-x border-[#aa8218]" />
-                  <div className="w-0 h-0 border-x-[8px] border-x-transparent border-t-[8px] border-t-[#aa8218] -mt-1" />
-                </div>
+          <button
+            onClick={flipNext}
+            disabled={currentPage >= aiBookPages.length - 1 || isFlipping}
+            className="pointer-events-auto flex items-center gap-2 rounded-full border border-[oklch(0.72_0.13_80_/_0.6)] bg-[oklch(0.72_0.13_80_/_0.2)] px-4 py-2 text-xs font-semibold text-[oklch(0.72_0.13_80)] backdrop-blur-md disabled:opacity-30 disabled:pointer-events-none hover:bg-[oklch(0.72_0.13_80_/_0.35)] active:scale-95 transition-all"
+          >
+            <span className="hidden sm:inline">Halaman Selanjutnya</span>
+            <span className="sm:hidden">Selanjutnya</span>
+            <ChevronRight className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
+          </button>
+        </div>
+      )}
 
-                {/* THE PHYSICAL SPREAD CONTAINER */}
-                <div
-                  className="relative flex items-stretch overflow-hidden rounded-lg shadow-inner"
-                  style={{
-                    width: isMobile ? 320 : 760,
-                    maxWidth: '92vw',
-                    height: isMobile ? 480 : 560,
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  {/* --- LEFT PAGE --- */}
-                  <div
-                    onClick={flipPrev}
-                    className={cn(
-                      'relative flex flex-col justify-between overflow-hidden p-4 sm:p-7 text-left transition-colors cursor-pointer',
-                      isMobile ? 'w-full' : 'w-1/2',
-                      paperTheme === 'ivory'
-                        ? 'bg-[#fbf9f4] text-[#1c1f26]'
-                        : 'bg-[#11141c] text-[#e0e3eb]'
-                    )}
-                    style={{
-                      boxShadow: isMobile
-                        ? 'inset 0 0 20px rgba(0,0,0,0.06)'
-                        : 'inset -18px 0 25px -8px rgba(0,0,0,0.18), inset 0 0 10px rgba(0,0,0,0.04)',
-                    }}
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between border-b pb-1.5 text-[9px] sm:text-[10px] font-serif italic text-muted-foreground border-border/40">
-                      <span>ZetaGo-Aurum · Monograf AI</span>
-                      <span className="truncate max-w-[120px]">{leftPage?.shortTitle}</span>
-                    </div>
-
-                    {/* Page Content */}
-                    <div
-                      className={cn(
-                        'flex-1 overflow-y-auto my-2 pr-1 space-y-3 font-serif leading-relaxed text-justify',
-                        fontSize === 'normal' ? 'text-[11px] sm:text-[12.5px]' : 'text-[12.5px] sm:text-[14px]'
-                      )}
-                    >
-                      {leftPage ? (
-                        leftPage.paragraphs.map((p, pIdx) => {
-                          const isKajian = p.startsWith('Kajian Khusus:')
-                          const isHeading =
-                            p.startsWith('BAB ') ||
-                            p.startsWith('Kata Pengantar:') ||
-                            p.startsWith('Ringkasan Eksekutif') ||
-                            p.startsWith('Daftar Isi Lengkap') ||
-                            p.startsWith('LAMPIRAN:')
-
-                          if (isKajian) {
-                            return (
-                              <div
-                                key={pIdx}
-                                className="my-2 rounded-lg border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.08)] p-2.5 text-[10.5px] sm:text-[11.5px] shadow-sm"
-                              >
-                                <div className="font-sans text-[9px] font-bold uppercase tracking-wider text-[oklch(0.72_0.13_80)] mb-1">
-                                  ✦ Kajian Khusus
-                                </div>
-                                <p className="leading-relaxed">{p.replace(/^Kajian Khusus:\s*/, '')}</p>
-                              </div>
-                            )
-                          }
-
-                          if (isHeading) {
-                            return (
-                              <h3
-                                key={pIdx}
-                                className="pt-2 font-serif text-sm sm:text-base font-bold text-[oklch(0.72_0.13_80)] border-b pb-1 border-border/30"
-                              >
-                                {p}
-                              </h3>
-                            )
-                          }
-
-                          return (
-                            <p key={pIdx} className="leading-relaxed indent-3">
-                              {p}
-                            </p>
-                          )
-                        })
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                          Halaman Kosong
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Footer */}
-                    <div className="flex items-center justify-between border-t pt-1.5 text-[9px] sm:text-[10px] font-mono text-muted-foreground border-border/40">
-                      <span>Hal. {leftPage?.pageNumber || currentPage + 1}</span>
-                      <span className="text-[8px] uppercase tracking-wider">ZetaGo-Aurum · 2026</span>
-                    </div>
-
-                    {!isMobile && (
-                      <div
-                        aria-hidden
-                        className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/25 via-black/08 to-transparent"
-                      />
-                    )}
-                  </div>
-
-                  {/* --- RIGHT PAGE (Desktop Only) --- */}
-                  {!isMobile && (
-                    <div
-                      onClick={flipNext}
-                      className={cn(
-                        'relative flex flex-col justify-between overflow-hidden p-4 sm:p-7 text-left transition-colors cursor-pointer w-1/2',
-                        paperTheme === 'ivory'
-                          ? 'bg-[#fbf9f4] text-[#1c1f26]'
-                          : 'bg-[#11141c] text-[#e0e3eb]'
-                      )}
-                      style={{
-                        boxShadow:
-                          'inset 18px 0 25px -8px rgba(0,0,0,0.18), inset 0 0 10px rgba(0,0,0,0.04)',
-                      }}
-                    >
-                      <div
-                        aria-hidden
-                        className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/25 via-black/08 to-transparent"
-                      />
-
-                      {/* Header */}
-                      <div className="flex items-center justify-between border-b pb-1.5 text-[9px] sm:text-[10px] font-serif italic text-muted-foreground border-border/40">
-                        <span className="truncate max-w-[150px]">{rightPage?.chapterTitle || 'Monograf'}</span>
-                        <span>{rightPage?.shortTitle}</span>
-                      </div>
-
-                      {/* Page Content */}
-                      <div
-                        className={cn(
-                          'flex-1 overflow-y-auto my-2 pr-1 space-y-3 font-serif leading-relaxed text-justify',
-                          fontSize === 'normal' ? 'text-[11px] sm:text-[12.5px]' : 'text-[12.5px] sm:text-[14px]'
-                        )}
-                      >
-                        {rightPage ? (
-                          rightPage.paragraphs.map((p, pIdx) => {
-                            const isKajian = p.startsWith('Kajian Khusus:')
-                            const isHeading =
-                              p.startsWith('BAB ') ||
-                              p.startsWith('Kata Pengantar:') ||
-                              p.startsWith('Ringkasan Eksekutif') ||
-                              p.startsWith('Daftar Isi Lengkap') ||
-                              p.startsWith('LAMPIRAN:')
-
-                            if (isKajian) {
-                              return (
-                                <div
-                                  key={pIdx}
-                                  className="my-2 rounded-lg border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.08)] p-2.5 text-[10.5px] sm:text-[11.5px] shadow-sm"
-                                >
-                                  <div className="font-sans text-[9px] font-bold uppercase tracking-wider text-[oklch(0.72_0.13_80)] mb-1">
-                                    ✦ Kajian Khusus
-                                  </div>
-                                  <p className="leading-relaxed">{p.replace(/^Kajian Khusus:\s*/, '')}</p>
-                                </div>
-                              )
-                            }
-
-                            if (isHeading) {
-                              return (
-                                <h3
-                                  key={pIdx}
-                                  className="pt-2 font-serif text-sm sm:text-base font-bold text-[oklch(0.72_0.13_80)] border-b pb-1 border-border/30"
-                                >
-                                  {p}
-                                </h3>
-                              )
-                            }
-
-                            return (
-                              <p key={pIdx} className="leading-relaxed indent-3">
-                                {p}
-                              </p>
-                            )
-                          })
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                            Akhir Naskah Monograf
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between border-t pt-1.5 text-[9px] sm:text-[10px] font-mono text-muted-foreground border-border/40">
-                        <span className="text-[8px] uppercase tracking-wider">Kecerdasan Buatan</span>
-                        <span>Hal. {rightPage?.pageNumber || currentPage + 2}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 3D TURNING PAGE LEAF ANIMATION */}
-                  <AnimatePresence>
-                    {flipDirection === 'next' && (
-                      <motion.div
-                        key="flip-leaf-next"
-                        initial={{ rotateY: 0 }}
-                        animate={{ rotateY: -180 }}
-                        transition={{ duration: 0.55, ease: [0.645, 0.045, 0.355, 1] }}
-                        style={{
-                          transformOrigin: isMobile ? 'left center' : 'left center',
-                          transformStyle: 'preserve-3d',
-                          position: 'absolute',
-                          top: 0,
-                          bottom: 0,
-                          left: isMobile ? 0 : '50%',
-                          width: isMobile ? '100%' : '50%',
-                          zIndex: 30,
-                        }}
-                        className={cn(
-                          'overflow-hidden shadow-2xl',
-                          paperTheme === 'ivory' ? 'bg-[#fbf9f4]' : 'bg-[#11141c]'
-                        )}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
-                      </motion.div>
-                    )}
-
-                    {flipDirection === 'prev' && (
-                      <motion.div
-                        key="flip-leaf-prev"
-                        initial={{ rotateY: -180 }}
-                        animate={{ rotateY: 0 }}
-                        transition={{ duration: 0.55, ease: [0.645, 0.045, 0.355, 1] }}
-                        style={{
-                          transformOrigin: isMobile ? 'left center' : 'right center',
-                          transformStyle: 'preserve-3d',
-                          position: 'absolute',
-                          top: 0,
-                          bottom: 0,
-                          left: isMobile ? 0 : 0,
-                          width: isMobile ? '100%' : '50%',
-                          zIndex: 30,
-                        }}
-                        className={cn(
-                          'overflow-hidden shadow-2xl',
-                          paperTheme === 'ivory' ? 'bg-[#fbf9f4]' : 'bg-[#11141c]'
-                        )}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-black/10 to-transparent" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+      {/* TABLE OF CONTENTS DRAWER */}
+      {isTocOpen && (
+        <div className="absolute inset-0 z-40 flex justify-end bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="h-full w-full max-w-md border-l border-border/80 bg-[#0c0f17] p-6 shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+              <div className="flex items-center gap-2">
+                <Bookmark className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
+                <h3 className="font-serif text-base font-bold text-foreground">
+                  Daftar Bab Monograf (14 Bab)
+                </h3>
               </div>
-            </div>
-
-            {/* Bottom Controls */}
-            <div className="relative z-20 mt-3 flex items-center justify-between border-t border-border/60 pt-3 px-2 sm:px-4">
               <button
-                onClick={flipPrev}
-                disabled={currentPage === 0 || flipDirection !== null}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/70 px-4 py-2 text-xs font-medium text-foreground disabled:opacity-25 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
+                onClick={() => setIsTocOpen(false)}
+                className="rounded-full p-1.5 text-muted-foreground hover:text-foreground"
               >
-                <ChevronLeft className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
-                <span>Buka Lembar Sebelumnya</span>
-              </button>
-
-              <p className="hidden sm:block text-xs text-muted-foreground text-center">
-                Klik lembar halaman atau tombol untuk membalik halaman fisik 3D
-              </p>
-
-              <button
-                onClick={flipNext}
-                disabled={currentPage + pageStep >= totalPages || flipDirection !== null}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.5)] bg-[oklch(0.72_0.13_80_/_0.15)] px-4 py-2 text-xs font-semibold text-[oklch(0.72_0.13_80)] disabled:opacity-25 disabled:pointer-events-none hover:bg-[oklch(0.72_0.13_80_/_0.3)] active:scale-95 transition-all"
-              >
-                <span>Buka Lembar Selanjutnya</span>
-                <ChevronRight className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
+                <X className="h-4 w-4" />
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            <div className="mt-4 flex-1 overflow-y-auto pr-1 space-y-2">
+              {aiBookData.sections.map((sec, idx) => {
+                // Find page for this section
+                const targetPage = aiBookPages.find((p) => p.chapterIndex === idx)?.pageNumber || 1
+                return (
+                  <button
+                    key={sec.id}
+                    onClick={() => {
+                      setCurrentPage(Math.max(0, targetPage - 1))
+                      setIsTocOpen(false)
+                      playPageSound()
+                    }}
+                    className="group flex w-full items-center justify-between rounded-xl border border-border/40 bg-card/40 p-3 text-left transition-all hover:border-[oklch(0.72_0.13_80)] hover:bg-[oklch(0.72_0.13_80_/_0.1)]"
+                  >
+                    <div>
+                      <div className="font-mono text-[10px] font-bold text-[oklch(0.72_0.13_80)]">
+                        Bab {idx + 1}
+                      </div>
+                      <div className="font-serif text-xs font-semibold text-foreground line-clamp-1">
+                        {sec.title}
+                      </div>
+                    </div>
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      Hal. {targetPage}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
