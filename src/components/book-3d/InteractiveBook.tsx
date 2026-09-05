@@ -28,12 +28,18 @@ export function InteractiveBook() {
 
   // Reading state
   const [isOpen, setIsOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0) // 0 = title spread, 2, 4, ...
+  const [currentPage, setCurrentPage] = useState(0) // 0 = title spread, 2, 4, 34, ...
+  const currentPageRef = useRef(0)
   const [isFlipping, setIsFlipping] = useState(false)
   const [paperTheme, setPaperTheme] = useState<'ivory' | 'dark'>('ivory')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isTocOpen, setIsTocOpen] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
+
+  // Synchronize ref with state
+  useEffect(() => {
+    currentPageRef.current = currentPage
+  }, [currentPage])
 
   // Three.js scene refs
   const sceneRef = useRef<THREE.Scene | null>(null)
@@ -54,7 +60,6 @@ export function InteractiveBook() {
   const rightBlockMeshRef = useRef<THREE.Mesh | null>(null)
   const leftPageMeshRef = useRef<THREE.Mesh | null>(null)
   const rightPageMeshRef = useRef<THREE.Mesh | null>(null)
-  const creaseMeshRef = useRef<THREE.Mesh | null>(null)
 
   // Turning leaf refs
   const turningPivotRef = useRef<THREE.Group | null>(null)
@@ -85,12 +90,12 @@ export function InteractiveBook() {
     isHovered: false,
     ambientAngle: 0,
     // Real physical paper thickness
-    totalStackDepth: 0.18,
-    minThickness: 0.006,
-    leftThickness: 0.006,
-    rightThickness: 0.18,
-    targetLeftThickness: 0.006,
-    targetRightThickness: 0.18,
+    totalStackDepth: 0.24,
+    minThickness: 0.008,
+    leftThickness: 0.008,
+    rightThickness: 0.24,
+    targetLeftThickness: 0.008,
+    targetRightThickness: 0.24,
   })
 
   // Texture cache map
@@ -502,27 +507,6 @@ export function InteractiveBook() {
     return texture
   }, [])
 
-  const generateCreaseShadowTexture = useCallback(() => {
-    const canvas = document.createElement('canvas')
-    canvas.width = 64
-    canvas.height = 512
-    const ctx = canvas.getContext('2d')!
-
-    const grad = ctx.createLinearGradient(0, 0, 64, 0)
-    grad.addColorStop(0, 'rgba(0, 0, 0, 0)')
-    grad.addColorStop(0.35, 'rgba(0, 0, 0, 0.22)')
-    grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.42)')
-    grad.addColorStop(0.65, 'rgba(0, 0, 0, 0.22)')
-    grad.addColorStop(1, 'rgba(0, 0, 0, 0)')
-
-    ctx.fillStyle = grad
-    ctx.fillRect(0, 0, 64, 512)
-
-    const texture = new THREE.CanvasTexture(canvas)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-  }, [])
-
   const generatePageTexture = useCallback((page: BookPage | null, theme: 'ivory' | 'dark', side: 'left' | 'right') => {
     const canvas = document.createElement('canvas')
     canvas.width = 768
@@ -786,7 +770,7 @@ export function InteractiveBook() {
     // ==========================================
     const bookWidth = 1.85
     const bookHeight = 2.65
-    const totalStackDepth = 0.18
+    const totalStackDepth = 0.24
     const boardThickness = 0.02
     const coverWidth = bookWidth + 0.04
     const coverHeight = bookHeight + 0.06
@@ -803,7 +787,6 @@ export function InteractiveBook() {
     const spineTex = generateSpineTexture()
     const backCoverTex = generateBackCoverTexture()
     const endpaperTex = generateEndpaperTexture()
-    const creaseTex = generateCreaseShadowTexture()
 
     // Materials
     const leatherMat = new THREE.MeshStandardMaterial({
@@ -854,39 +837,67 @@ export function InteractiveBook() {
 
     // 4. Dynamic Gilded Paper Stack Edge Texture
     const edgeCanvas = document.createElement('canvas')
-    edgeCanvas.width = 128
-    edgeCanvas.height = 512
+    edgeCanvas.width = 256
+    edgeCanvas.height = 1024
     const edgeCtx = edgeCanvas.getContext('2d')!
-    edgeCtx.fillStyle = '#e8dec8'
-    edgeCtx.fillRect(0, 0, 128, 512)
-    for (let l = 0; l < 512; l += 3) {
-      edgeCtx.fillStyle = l % 6 === 0 ? '#d4af37' : '#cfc4ab'
-      edgeCtx.fillRect(0, l, 128, 1.5)
+    edgeCtx.fillStyle = '#f0e8d8'
+    edgeCtx.fillRect(0, 0, 256, 1024)
+    for (let l = 0; l < 1024; l += 2) {
+      if (l % 8 === 0) {
+        edgeCtx.fillStyle = '#d4af37' // gold leaf
+        edgeCtx.fillRect(0, l, 256, 1.8)
+      } else if (l % 4 === 0) {
+        edgeCtx.fillStyle = '#c5a048' // antique gold
+        edgeCtx.fillRect(0, l, 256, 1.2)
+      } else {
+        edgeCtx.fillStyle = '#dfd3be' // individual paper sheets
+        edgeCtx.fillRect(0, l, 256, 1.0)
+      }
     }
     const edgeTex = new THREE.CanvasTexture(edgeCanvas)
+    edgeTex.wrapS = THREE.RepeatWrapping
+    edgeTex.wrapT = THREE.RepeatWrapping
     const pageEdgeMat = new THREE.MeshStandardMaterial({
       map: edgeTex,
-      roughness: 0.88,
-      metalness: 0.12,
+      roughness: 0.75,
+      metalness: 0.25,
     })
 
-    // 5. Right Page Block Mesh (Scaleable depth for physical paper stacking)
-    const blockBaseGeom = new RoundedBoxGeometry(bookWidth, bookHeight, 1, 2, 0.004)
-    const rightBlockMesh = new THREE.Mesh(blockBaseGeom, pageEdgeMat)
+    // Binding Gutter Material (Dark charcoal sewn binding for inner face at X = 0)
+    const gutterMat = new THREE.MeshStandardMaterial({
+      color: 0x12151e,
+      roughness: 0.95,
+      metalness: 0.05,
+    })
+
+    // Paper Base Material (Top face underneath printed texture)
+    const paperBaseMat = new THREE.MeshStandardMaterial({
+      color: 0xfbf9f4,
+      roughness: 0.95,
+    })
+
+    // BoxGeometry for sharp precision-cut paper blocks with 6 materials
+    // Face indices: 0: +X (Right), 1: -X (Left), 2: +Y (Top), 3: -Y (Bottom), 4: +Z (Front), 5: -Z (Back)
+    const blockBaseGeom = new THREE.BoxGeometry(bookWidth, bookHeight, 1)
+
+    // Right block materials: +X is outer (gilded), -X is spine (gutter)
+    const rightBlockMats = [pageEdgeMat, gutterMat, pageEdgeMat, pageEdgeMat, paperBaseMat, leatherMat]
+    const rightBlockMesh = new THREE.Mesh(blockBaseGeom, rightBlockMats)
     rightBlockMesh.position.set(bookWidth / 2, 0, totalStackDepth / 2)
     rightBlockMesh.scale.set(1, 1, totalStackDepth)
     rootGroup.add(rightBlockMesh)
     rightBlockMeshRef.current = rightBlockMesh
 
-    // 6. Left Page Block Mesh (Scaleable depth on opened left side)
-    const leftBlockMesh = new THREE.Mesh(blockBaseGeom, pageEdgeMat)
-    leftBlockMesh.position.set(-bookWidth / 2, 0, 0.003)
-    leftBlockMesh.scale.set(1, 1, 0.006)
+    // Left block materials: +X is spine (gutter), -X is outer (gilded)
+    const leftBlockMats = [gutterMat, pageEdgeMat, pageEdgeMat, pageEdgeMat, paperBaseMat, leatherMat]
+    const leftBlockMesh = new THREE.Mesh(blockBaseGeom, leftBlockMats)
+    leftBlockMesh.position.set(-bookWidth / 2, 0, 0.004)
+    leftBlockMesh.scale.set(1, 1, 0.008)
     leftBlockMesh.visible = false
     rootGroup.add(leftBlockMesh)
     leftBlockMeshRef.current = leftBlockMesh
 
-    // 7. Swinging Front Cover (Used during closed state and opening transition)
+    // 5. Swinging Front Cover (Used during closed state and opening transition)
     const frontPivot = new THREE.Group()
     frontPivot.position.set(0, 0, totalStackDepth + boardThickness / 2)
     frontPivotRef.current = frontPivot
@@ -909,7 +920,7 @@ export function InteractiveBook() {
 
     rootGroup.add(frontPivot)
 
-    // 8. Left Page Mesh (Surface on top of left paper stack)
+    // 6. Left Page Mesh (Surface on top of left paper stack)
     const pageGeom = new THREE.PlaneGeometry(bookWidth, bookHeight)
     const leftPageMat = new THREE.MeshStandardMaterial({
       map: endpaperTex,
@@ -918,12 +929,12 @@ export function InteractiveBook() {
       side: THREE.FrontSide,
     })
     const leftPageMesh = new THREE.Mesh(pageGeom, leftPageMat)
-    leftPageMesh.position.set(-bookWidth / 2, 0, 0.007)
+    leftPageMesh.position.set(-bookWidth / 2, 0, 0.009)
     leftPageMesh.visible = false
     rootGroup.add(leftPageMesh)
     leftPageMeshRef.current = leftPageMesh
 
-    // 9. Right Page Mesh (Surface on top of right paper stack)
+    // 7. Right Page Mesh (Surface on top of right paper stack)
     const rightPageMat = new THREE.MeshStandardMaterial({
       map: getPageTexture(aiBookPages[0], 'ivory', 'right'),
       roughness: 0.92,
@@ -936,21 +947,7 @@ export function InteractiveBook() {
     rootGroup.add(rightPageMesh)
     rightPageMeshRef.current = rightPageMesh
 
-    // 10. Center Spine Crease Shadow (Subtle binding shadow at X = 0)
-    const creaseGeom = new THREE.PlaneGeometry(0.09, bookHeight)
-    const creaseMat = new THREE.MeshBasicMaterial({
-      map: creaseTex,
-      transparent: true,
-      opacity: 0.65,
-      depthWrite: false,
-    })
-    const creaseMesh = new THREE.Mesh(creaseGeom, creaseMat)
-    creaseMesh.position.set(0, 0, totalStackDepth + 0.002)
-    creaseMesh.visible = false
-    rootGroup.add(creaseMesh)
-    creaseMeshRef.current = creaseMesh
-
-    // 11. Dynamic 3D Turning Page Leaf with Flexible Vertex Curvature
+    // 8. Dynamic 3D Turning Page Leaf with Flexible Vertex Curvature
     const leafPivot = new THREE.Group()
     leafPivot.position.set(0, 0, totalStackDepth + 0.004)
     turningPivotRef.current = leafPivot
@@ -1001,9 +998,10 @@ export function InteractiveBook() {
       controls.update()
 
       // Physical Paper Thickness Physics Calculation
-      // As pages are read, right stack shrinks and left stack grows!
+      // Read current page directly from ref to avoid stale closures!
+      const curPg = currentPageRef.current
       const totalPages = aiBookPages.length
-      const progressRatio = clamp(currentPage / (totalPages - 1), 0, 1)
+      const progressRatio = clamp(curPg / (totalPages - 1), 0, 1)
 
       if (isOpen) {
         anim.targetLeftThickness = anim.minThickness + progressRatio * (anim.totalStackDepth - anim.minThickness)
@@ -1014,8 +1012,8 @@ export function InteractiveBook() {
       }
 
       // Smooth physical thickness interpolation
-      anim.leftThickness = lerp(anim.leftThickness, anim.targetLeftThickness, dt * 6)
-      anim.rightThickness = lerp(anim.rightThickness, anim.targetRightThickness, dt * 6)
+      anim.leftThickness = lerp(anim.leftThickness, anim.targetLeftThickness, dt * 7)
+      anim.rightThickness = lerp(anim.rightThickness, anim.targetRightThickness, dt * 7)
 
       // Update Right Page Block depth & surface
       if (rightBlockMeshRef.current && rightPageMeshRef.current) {
@@ -1031,11 +1029,6 @@ export function InteractiveBook() {
         leftPageMeshRef.current.position.z = anim.leftThickness + 0.001
       }
 
-      // Update Center Crease Shadow position
-      if (creaseMeshRef.current) {
-        creaseMeshRef.current.position.z = Math.max(anim.leftThickness, anim.rightThickness) + 0.0015
-      }
-
       // Smooth Open/Close Animation Loop
       if (!dragRef.current.active || dragRef.current.mode !== 'cover-open') {
         anim.openProgress = lerp(anim.openProgress, anim.targetOpenProgress, dt * 7.5)
@@ -1049,7 +1042,6 @@ export function InteractiveBook() {
           leftBlockMesh.visible = true
           leftPageMesh.visible = true
           rightPageMesh.visible = true
-          if (creaseMeshRef.current) creaseMeshRef.current.visible = true
 
           // Spine is flat at base underneath gutter
           spineMesh.position.set(0, 0, -boardThickness / 2)
@@ -1068,7 +1060,6 @@ export function InteractiveBook() {
           leftBlockMesh.visible = false
           leftPageMesh.visible = false
           rightPageMesh.visible = false
-          if (creaseMeshRef.current) creaseMeshRef.current.visible = false
 
           // Spine wraps left edge
           spineMesh.position.set(-boardThickness * 0.75, 0, anim.totalStackDepth / 2)
@@ -1106,11 +1097,10 @@ export function InteractiveBook() {
           rightPageMesh.visible = openAmount > 0.25
           leftBlockMesh.visible = openAmount > 0.65
           leftPageMesh.visible = openAmount > 0.65
-          if (creaseMeshRef.current) creaseMeshRef.current.visible = openAmount > 0.65
         }
       }
 
-      // Page flip animation with vertex curvature and height transition
+      // Page flip animation with vertex curvature and dynamic height transition
       if (anim.flipDirection !== null) {
         const elapsed = (time - anim.flipStartTime) / 1000
         const progress = clamp(elapsed / anim.flipDuration, 0, 1)
@@ -1164,9 +1154,13 @@ export function InteractiveBook() {
           setIsFlipping(false)
 
           if (dir === 'next') {
-            setCurrentPage((prev) => Math.min(prev + 2, aiBookPages.length - 1))
+            const next = Math.min(currentPageRef.current + 2, aiBookPages.length - 1)
+            currentPageRef.current = next
+            setCurrentPage(next)
           } else {
-            setCurrentPage((prev) => Math.max(0, prev - 2))
+            const prev = Math.max(0, currentPageRef.current - 2)
+            currentPageRef.current = prev
+            setCurrentPage(prev)
           }
         }
       }
@@ -1197,7 +1191,7 @@ export function InteractiveBook() {
       controls.dispose()
       renderer.dispose()
     }
-  }, [generateCoverTexture, generateSpineTexture, generateBackCoverTexture, generateEndpaperTexture, generateCreaseShadowTexture, getPageTexture, isOpen])
+  }, [generateCoverTexture, generateSpineTexture, generateBackCoverTexture, generateEndpaperTexture, getPageTexture, isOpen])
 
   // ==========================================
   // SYNC REACT STATE WITH 3D SCENE
@@ -1229,7 +1223,8 @@ export function InteractiveBook() {
   // Flip Next Page in 3D
   const flipNext = useCallback(() => {
     if (isFlipping || !isOpen) return
-    if (currentPage >= aiBookPages.length - 1) return
+    const cur = currentPageRef.current
+    if (cur >= aiBookPages.length - 1) return
 
     setIsFlipping(true)
     playPageSound()
@@ -1241,29 +1236,34 @@ export function InteractiveBook() {
 
     if (!turningPivot || !frontLeafMesh || !backLeafMesh || !rightPageMesh) return
 
-    const curRightTex = getPageTexture(aiBookPages[currentPage] || null, paperTheme, 'right')
+    const curRightTex = getPageTexture(aiBookPages[cur] || null, paperTheme, 'right')
     ;(frontLeafMesh.material as THREE.MeshStandardMaterial).map = curRightTex
     ;(frontLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
 
-    const nextLeftTex = getPageTexture(aiBookPages[currentPage + 1] || null, paperTheme, 'left')
+    const nextLeftTex = getPageTexture(aiBookPages[cur + 1] || null, paperTheme, 'left')
     ;(backLeafMesh.material as THREE.MeshStandardMaterial).map = nextLeftTex
     ;(backLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
 
-    const nextRightTex = getPageTexture(aiBookPages[currentPage + 2] || null, paperTheme, 'right')
+    const nextRightTex = getPageTexture(aiBookPages[cur + 2] || null, paperTheme, 'right')
     ;(rightPageMesh.material as THREE.MeshStandardMaterial).map = nextRightTex
     ;(rightPageMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
 
     turningPivot.visible = true
     turningPivot.rotation.y = 0
 
+    // Set target page immediately to initiate physical stack depth transition
+    const nextTarget = Math.min(cur + 2, aiBookPages.length - 1)
+    currentPageRef.current = nextTarget
+
     animStateRef.current.flipDirection = 'next'
     animStateRef.current.flipStartTime = performance.now()
-  }, [isFlipping, isOpen, currentPage, paperTheme, getPageTexture, playPageSound])
+  }, [isFlipping, isOpen, paperTheme, getPageTexture, playPageSound])
 
   // Flip Previous Page in 3D
   const flipPrev = useCallback(() => {
     if (isFlipping || !isOpen) return
-    if (currentPage <= 0) return
+    const cur = currentPageRef.current
+    if (cur <= 0) return
 
     setIsFlipping(true)
     playPageSound()
@@ -1275,26 +1275,39 @@ export function InteractiveBook() {
 
     if (!turningPivot || !frontLeafMesh || !backLeafMesh || !leftPageMesh) return
 
-    const prevLeftTex = currentPage - 2 === 0
+    const prevLeftTex = cur - 2 === 0
       ? generateEndpaperTexture()
-      : getPageTexture(aiBookPages[currentPage - 3] || null, paperTheme, 'left')
+      : getPageTexture(aiBookPages[cur - 3] || null, paperTheme, 'left')
     ;(leftPageMesh.material as THREE.MeshStandardMaterial).map = prevLeftTex
     ;(leftPageMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
 
-    const curLeftTex = getPageTexture(aiBookPages[currentPage - 1] || null, paperTheme, 'left')
+    const curLeftTex = getPageTexture(aiBookPages[cur - 1] || null, paperTheme, 'left')
     ;(backLeafMesh.material as THREE.MeshStandardMaterial).map = curLeftTex
     ;(backLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
 
-    const prevRightTex = getPageTexture(aiBookPages[currentPage - 2] || null, paperTheme, 'right')
+    const prevRightTex = getPageTexture(aiBookPages[cur - 2] || null, paperTheme, 'right')
     ;(frontLeafMesh.material as THREE.MeshStandardMaterial).map = prevRightTex
     ;(frontLeafMesh.material as THREE.MeshStandardMaterial).needsUpdate = true
 
     turningPivot.visible = true
     turningPivot.rotation.y = -Math.PI
 
+    // Set target page immediately to initiate physical stack depth transition
+    const prevTarget = Math.max(0, cur - 2)
+    currentPageRef.current = prevTarget
+
     animStateRef.current.flipDirection = 'prev'
     animStateRef.current.flipStartTime = performance.now()
-  }, [isFlipping, isOpen, currentPage, paperTheme, generateEndpaperTexture, getPageTexture, playPageSound])
+  }, [isFlipping, isOpen, paperTheme, generateEndpaperTexture, getPageTexture, playPageSound])
+
+  // Direct Jump to Chapter Page
+  const goToPage = useCallback((targetIndex: number) => {
+    const validTarget = clamp(targetIndex, 0, aiBookPages.length - 1)
+    currentPageRef.current = validTarget
+    setCurrentPage(validTarget)
+    setIsTocOpen(false)
+    playPageSound()
+  }, [playPageSound])
 
   // Fullscreen toggle
   const toggleFullscreen = useCallback(() => {
@@ -1596,11 +1609,7 @@ export function InteractiveBook() {
                 return (
                   <button
                     key={sec.id}
-                    onClick={() => {
-                      setCurrentPage(Math.max(0, targetPage - 1))
-                      setIsTocOpen(false)
-                      playPageSound()
-                    }}
+                    onClick={() => goToPage(Math.max(0, targetPage - 1))}
                     className="group flex w-full items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-3 text-left transition-all hover:border-[oklch(0.72_0.13_80)] hover:bg-[oklch(0.72_0.13_80_/_0.08)]"
                   >
                     <div>
