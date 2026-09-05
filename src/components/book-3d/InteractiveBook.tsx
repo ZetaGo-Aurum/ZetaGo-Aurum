@@ -13,34 +13,39 @@ import {
   List,
   Sparkles,
   Type,
+  Sun,
+  Moon,
   Compass,
-  Layers,
+  Bookmark,
   Award,
 } from 'lucide-react'
-import { aiBookData } from '@/data/ai-book'
+import { aiBookData, aiBookPages, type BookPage } from '@/data/ai-book'
 import { useLanguage } from '@/components/language-provider'
 import { cn } from '@/lib/utils'
 
 export function InteractiveBook() {
   const { t } = useLanguage()
 
-  const [viewMode, setViewMode] = React.useState<'3d' | 'reading'>('3d')
-  const [currentSectionIdx, setCurrentSectionIdx] = React.useState<number>(0)
+  // Mode: 'closed' (3D closed book) | 'open' (physical 3D open book spread)
+  const [bookState, setBookState] = React.useState<'closed' | 'open'>('closed')
+  const [currentPage, setCurrentPage] = React.useState<number>(0)
+  const [flipDirection, setFlipDirection] = React.useState<'next' | 'prev' | null>(null)
+  const [paperTheme, setPaperTheme] = React.useState<'ivory' | 'dark'>('ivory')
+  const [fontSize, setFontSize] = React.useState<'normal' | 'large'>('normal')
   const [tocOpen, setTocOpen] = React.useState<boolean>(false)
-  const [fontSize, setFontSize] = React.useState<'normal' | 'large' | 'huge'>('normal')
   const [isFullscreen, setIsFullscreen] = React.useState<boolean>(false)
 
-  const [rotX, setRotX] = React.useState<number>(10)
-  const [rotY, setRotY] = React.useState<number>(-22)
+  // 3D Angles for Closed Mode inspection
+  const [rotX, setRotX] = React.useState<number>(12)
+  const [rotY, setRotY] = React.useState<number>(-24)
   const [isDragging, setIsDragging] = React.useState<boolean>(false)
 
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const readerScrollRef = React.useRef<HTMLDivElement>(null)
   const dragStartRef = React.useRef<{ x: number; y: number; rotX: number; rotY: number }>({
     x: 0,
     y: 0,
-    rotX: 10,
-    rotY: -22,
+    rotX: 12,
+    rotY: -24,
   })
   const velocityRef = React.useRef<{ vx: number; vy: number }>({ vx: 0, vy: 0 })
   const lastPointerRef = React.useRef<{ x: number; y: number; time: number }>({
@@ -49,6 +54,16 @@ export function InteractiveBook() {
     time: 0,
   })
   const reqAnimRef = React.useRef<number | null>(null)
+
+  const [isMobile, setIsMobile] = React.useState<boolean>(false)
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   React.useEffect(() => {
     const handleFullscreenChange = () => {
@@ -77,7 +92,7 @@ export function InteractiveBook() {
   }
 
   React.useEffect(() => {
-    if (viewMode !== '3d') return
+    if (bookState !== 'closed') return
 
     let lastTime = performance.now()
     const loop = (time: number) => {
@@ -104,10 +119,10 @@ export function InteractiveBook() {
     return () => {
       if (reqAnimRef.current) cancelAnimationFrame(reqAnimRef.current)
     }
-  }, [viewMode, isDragging])
+  }, [bookState, isDragging])
 
   const onPointerDown = (e: React.PointerEvent) => {
-    if (viewMode !== '3d') return
+    if (bookState !== 'closed') return
     setIsDragging(true)
     dragStartRef.current = { x: e.clientX, y: e.clientY, rotX, rotY }
     lastPointerRef.current = { x: e.clientX, y: e.clientY, time: performance.now() }
@@ -116,7 +131,7 @@ export function InteractiveBook() {
   }
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || viewMode !== '3d') return
+    if (!isDragging || bookState !== 'closed') return
     const dx = e.clientX - dragStartRef.current.x
     const dy = e.clientY - dragStartRef.current.y
     const now = performance.now()
@@ -141,45 +156,59 @@ export function InteractiveBook() {
   }
 
   const reset3D = () => {
-    setRotX(10)
-    setRotY(-22)
+    setRotX(12)
+    setRotY(-24)
     velocityRef.current = { vx: 0, vy: 0 }
   }
 
-  const nextSection = () => {
-    if (currentSectionIdx < aiBookData.sections.length - 1) {
-      setCurrentSectionIdx((i) => i + 1)
-      readerScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  const pageStep = isMobile ? 1 : 2
+  const totalPages = aiBookPages.length
+
+  const flipNext = () => {
+    if (flipDirection !== null) return
+    if (currentPage + pageStep < totalPages) {
+      setFlipDirection('next')
+      setTimeout(() => {
+        setCurrentPage((p) => Math.min(totalPages - 1, p + pageStep))
+        setFlipDirection(null)
+      }, 550)
     }
   }
 
-  const prevSection = () => {
-    if (currentSectionIdx > 0) {
-      setCurrentSectionIdx((i) => i - 1)
-      readerScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  const flipPrev = () => {
+    if (flipDirection !== null) return
+    if (currentPage > 0) {
+      setFlipDirection('prev')
+      setTimeout(() => {
+        setCurrentPage((p) => Math.max(0, p - pageStep))
+        setFlipDirection(null)
+      }, 550)
     }
   }
 
-  const jumpToSection = (idx: number) => {
-    setCurrentSectionIdx(idx)
-    setTocOpen(false)
-    readerScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  const jumpToChapter = (chapterIdx: number) => {
+    const targetPage = aiBookPages.findIndex((p) => p.chapterIndex === chapterIdx)
+    if (targetPage !== -1) {
+      const aligned = isMobile ? targetPage : targetPage - (targetPage % 2)
+      setCurrentPage(Math.max(0, aligned))
+      setTocOpen(false)
+    }
   }
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (viewMode === 'reading') {
-        if (e.key === 'ArrowRight') nextSection()
-        if (e.key === 'ArrowLeft') prevSection()
+      if (bookState === 'open') {
+        if (e.key === 'ArrowRight') flipNext()
+        if (e.key === 'ArrowLeft') flipPrev()
         if (e.key === 'Escape') {
           if (tocOpen) setTocOpen(false)
-          else setViewMode('3d')
+          else setBookState('closed')
         }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [viewMode, currentSectionIdx, tocOpen])
+  }, [bookState, currentPage, flipDirection, tocOpen, isMobile])
 
   const touchStartXRef = React.useRef<number>(0)
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -187,31 +216,35 @@ export function InteractiveBook() {
   }
   const handleTouchEnd = (e: React.TouchEvent) => {
     const deltaX = e.changedTouches[0].clientX - touchStartXRef.current
-    if (Math.abs(deltaX) > 60) {
-      if (deltaX < 0) nextSection()
-      else prevSection()
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX < 0) flipNext()
+      else flipPrev()
     }
   }
 
-  const currentSection = aiBookData.sections[currentSectionIdx]
+  const leftPage: BookPage | undefined = aiBookPages[currentPage]
+  const rightPage: BookPage | undefined = !isMobile ? aiBookPages[currentPage + 1] : undefined
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        'relative mx-auto flex w-full flex-col items-center overflow-hidden rounded-3xl transition-all duration-300',
+        'relative mx-auto flex w-full flex-col items-center overflow-hidden transition-all duration-300',
         isFullscreen
-          ? 'fixed inset-0 z-50 h-screen w-screen rounded-none bg-[#07080c] p-0'
-          : 'max-w-6xl'
+          ? 'fixed inset-0 z-50 h-screen w-screen rounded-none bg-[#050608] p-0'
+          : 'max-w-6xl rounded-3xl'
       )}
     >
       <AnimatePresence mode="wait">
-        {viewMode === '3d' ? (
+        {bookState === 'closed' ? (
+          /* =========================================================================
+             1. CLOSED 3D PHYSICAL BOOK VIEW (SAMPUL EMAS & HITAM)
+             ========================================================================= */
           <motion.div
-            key="view-3d"
-            initial={{ opacity: 0, scale: 0.96 }}
+            key="closed-book"
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.4 }}
             className="relative flex min-h-[580px] sm:min-h-[660px] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-[oklch(0.55_0.1_80_/_0.3)] bg-[#090b10] p-4 py-8 shadow-2xl dark:border-border/70 sm:p-8"
           >
@@ -219,18 +252,18 @@ export function InteractiveBook() {
               aria-hidden
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
             >
-              <div className="h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.18)] via-[#c87046]/10 to-transparent blur-3xl" />
+              <div className="h-[420px] w-[420px] rounded-full bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.18)] via-[#c87046]/10 to-transparent blur-3xl" />
               <div className="absolute inset-0 bg-[radial-gradient(rgba(200,112,70,0.1)_1px,transparent_1px)] [background-size:24px_24px] opacity-35" />
             </div>
 
             <div className="relative z-10 mb-5 flex flex-wrap items-center justify-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.1)] px-3.5 py-1 text-xs font-semibold text-[oklch(0.72_0.13_80)] dark:text-[oklch(0.85_0.14_85)] backdrop-blur-md">
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>MONOGRAF RESMI 2026</span>
+                <span>BUKU FISIK 3D · MONOGRAF RESMI</span>
               </span>
               <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur-md">
-                <Layers className="h-3 w-3" />
-                <span>14 Bab · 21.500+ Kata</span>
+                <Bookmark className="h-3 w-3 text-[oklch(0.72_0.13_80)]" />
+                <span>158 Halaman · Sampul Emas & Hitam</span>
               </span>
             </div>
 
@@ -259,15 +292,17 @@ export function InteractiveBook() {
                   }}
                   className="relative will-change-transform"
                 >
+                  {/* FRONT COVER */}
                   <div
+                    onClick={() => setBookState('open')}
                     style={{
-                      transform: 'translateZ(20px)',
+                      transform: 'translateZ(22px)',
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
                     }}
-                    className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-r-xl rounded-l-sm border-2 border-[oklch(0.72_0.13_80_/_0.85)] bg-[#0a0c10] p-5 shadow-2xl"
+                    className="group absolute inset-0 flex flex-col justify-between overflow-hidden rounded-r-xl rounded-l-sm border-2 border-[oklch(0.72_0.13_80_/_0.85)] bg-[#0a0c10] p-5 shadow-2xl cursor-pointer"
                   >
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1b1e26] via-[#0b0d12] to-[#040507]" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1c1f28] via-[#0b0d12] to-[#040507]" />
                     <div className="pointer-events-none absolute inset-1 rounded-lg border border-[oklch(0.85_0.14_90_/_0.35)]" />
                     <div className="pointer-events-none absolute inset-2 rounded-md border border-dashed border-[oklch(0.72_0.13_80_/_0.25)]" />
 
@@ -288,7 +323,7 @@ export function InteractiveBook() {
                     </div>
 
                     <div className="relative z-10 my-auto flex flex-col items-center py-2">
-                      <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-[oklch(0.72_0.13_80)] bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.3)] via-[#151720] to-[#0a0c10] shadow-lg shadow-[oklch(0.72_0.13_80_/_0.2)]">
+                      <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-[oklch(0.72_0.13_80)] bg-gradient-to-tr from-[oklch(0.72_0.13_80_/_0.3)] via-[#151720] to-[#0a0c10] shadow-lg shadow-[oklch(0.72_0.13_80_/_0.2)] group-hover:scale-105 transition-transform duration-300">
                         <div className="absolute inset-1 rounded-full border border-dashed border-[oklch(0.85_0.14_90_/_0.5)]" />
                         <span className="font-serif text-2xl font-bold tracking-tight text-[oklch(0.85_0.14_90)] drop-shadow-md">
                           Z
@@ -311,19 +346,20 @@ export function InteractiveBook() {
                       </p>
                     </div>
 
-                    <div className="relative z-10 border-t border-[oklch(0.72_0.13_80_/_0.3)] pt-1.5 text-center">
-                      <p className="font-mono text-[8.5px] font-semibold tracking-wider text-[oklch(0.72_0.13_80)]">
+                    <div className="relative z-10 border-t border-[oklch(0.72_0.13_80_/_0.3)] pt-1.5 text-center flex items-center justify-between text-[7.5px]">
+                      <span className="font-mono font-semibold tracking-wider text-[oklch(0.72_0.13_80)]">
                         ZETAGO-AURUM
-                      </p>
-                      <p className="text-[7px] tracking-widest text-neutral-400 uppercase">
-                        Edisi Pertama · 2026
-                      </p>
+                      </span>
+                      <span className="text-neutral-400 uppercase tracking-wider">
+                        2026 · Edisi I
+                      </span>
                     </div>
                   </div>
 
+                  {/* BACK COVER */}
                   <div
                     style={{
-                      transform: 'rotateY(180deg) translateZ(20px)',
+                      transform: 'rotateY(180deg) translateZ(22px)',
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
                     }}
@@ -360,12 +396,13 @@ export function InteractiveBook() {
                     </div>
                   </div>
 
+                  {/* SPINE FACE */}
                   <div
                     style={{
-                      width: 40,
+                      width: 44,
                       height: 390,
                       left: '50%',
-                      marginLeft: -20,
+                      marginLeft: -22,
                       transform: 'rotateY(-90deg) translateZ(135px)',
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
@@ -390,12 +427,13 @@ export function InteractiveBook() {
                     </div>
                   </div>
 
+                  {/* GILDED EDGES */}
                   <div
                     style={{
-                      width: 40,
+                      width: 44,
                       height: 390,
                       left: '50%',
-                      marginLeft: -20,
+                      marginLeft: -22,
                       transform: 'rotateY(90deg) translateZ(135px)',
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
@@ -404,13 +442,12 @@ export function InteractiveBook() {
                     }}
                     className="absolute inset-y-0 rounded-r-sm border-y-2 border-r-2 border-[oklch(0.72_0.13_80_/_0.7)] shadow-inner"
                   />
-
                   <div
                     style={{
                       width: 270,
-                      height: 40,
+                      height: 44,
                       top: '50%',
-                      marginTop: -20,
+                      marginTop: -22,
                       transform: 'rotateX(90deg) translateZ(195px)',
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
@@ -419,13 +456,12 @@ export function InteractiveBook() {
                     }}
                     className="absolute inset-x-0 border-x-2 border-t-2 border-[oklch(0.72_0.13_80_/_0.7)] shadow-inner"
                   />
-
                   <div
                     style={{
                       width: 270,
-                      height: 40,
+                      height: 44,
                       top: '50%',
-                      marginTop: -20,
+                      marginTop: -22,
                       transform: 'rotateX(-90deg) translateZ(195px)',
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
@@ -445,7 +481,7 @@ export function InteractiveBook() {
 
             <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3">
               <button
-                onClick={() => setViewMode('reading')}
+                onClick={() => setBookState('open')}
                 className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[oklch(0.72_0.13_80)] via-[oklch(0.85_0.14_90)] to-[oklch(0.72_0.13_80)] px-6 py-3 text-sm font-semibold text-neutral-950 shadow-xl shadow-[oklch(0.72_0.13_80_/_0.35)] transition-all hover:scale-105 active:scale-95"
               >
                 <BookOpen className="h-4 w-4" />
@@ -479,20 +515,24 @@ export function InteractiveBook() {
             </p>
           </motion.div>
         ) : (
+          /* =========================================================================
+             2. OPEN PHYSICAL 3D BOOK SPREAD VIEW (MEMBACA LANGSUNG DARI BUKU 3D)
+             ========================================================================= */
           <motion.div
-            key="view-reading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            key="open-book"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.4 }}
             className={cn(
-              'relative flex w-full flex-col overflow-hidden bg-[#090b10] border border-[oklch(0.55_0.1_80_/_0.3)] shadow-2xl dark:border-border/70',
+              'relative flex w-full flex-col overflow-hidden bg-[#07090e] border border-[oklch(0.55_0.1_80_/_0.3)] shadow-2xl dark:border-border/70',
               isFullscreen
-                ? 'h-screen w-screen rounded-none'
-                : 'h-[720px] sm:h-[820px] rounded-3xl'
+                ? 'h-screen w-screen rounded-none p-2 sm:p-6'
+                : 'min-h-[720px] sm:min-h-[800px] rounded-3xl p-3 sm:p-8'
             )}
           >
-            <header className="relative z-20 flex items-center justify-between border-b border-border/80 bg-[#0d1017]/95 px-4 py-3 backdrop-blur-xl sm:px-6">
+            {/* Header Control Bar */}
+            <div className="relative z-20 mb-4 flex items-center justify-between border-b border-border/60 pb-3 px-2 sm:px-4">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setTocOpen(!tocOpen)}
@@ -504,26 +544,36 @@ export function InteractiveBook() {
 
                 <div className="hidden md:flex flex-col text-left ml-2">
                   <span className="font-serif text-xs font-bold text-foreground line-clamp-1">
-                    {aiBookData.title}
+                    Kecerdasan Buatan (AI)
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    ZetaGo-Aurum (2026)
+                    ZetaGo-Aurum · Monograf Fisik 3D
                   </span>
                 </div>
               </div>
 
-              <div className="text-center max-w-[200px] sm:max-w-md truncate px-2">
-                <span className="text-xs font-medium text-foreground">
-                  {currentSection.shortTitle}: {currentSection.title}
-                </span>
+              <div className="text-center text-xs font-mono text-muted-foreground">
+                {isMobile ? (
+                  <span>Halaman {currentPage + 1} dari {totalPages}</span>
+                ) : (
+                  <span>
+                    Halaman {currentPage + 1} - {Math.min(totalPages, currentPage + 2)} dari {totalPages}
+                  </span>
+                )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
-                  onClick={() => {
-                    setFontSize((s) => (s === 'normal' ? 'large' : s === 'large' ? 'huge' : 'normal'))
-                  }}
-                  title="Ubah Ukuran Teks"
+                  onClick={() => setPaperTheme((th) => (th === 'ivory' ? 'dark' : 'ivory'))}
+                  title="Ubah Tema Kertas"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border/80 text-muted-foreground hover:text-foreground"
+                >
+                  {paperTheme === 'ivory' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+                </button>
+
+                <button
+                  onClick={() => setFontSize((s) => (s === 'normal' ? 'large' : 'normal'))}
+                  title="Ubah Ukuran Huruf"
                   className="flex h-8 w-8 items-center justify-center rounded-full border border-border/80 text-muted-foreground hover:text-foreground"
                 >
                   <Type className="h-3.5 w-3.5" />
@@ -538,161 +588,369 @@ export function InteractiveBook() {
                 </button>
 
                 <button
-                  onClick={() => setViewMode('3d')}
+                  onClick={() => setBookState('closed')}
                   className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:border-[oklch(0.72_0.13_80)]"
                 >
                   <X className="h-3.5 w-3.5 text-[oklch(0.72_0.13_80)]" />
                   <span className="hidden sm:inline">{t('shelf.closeBook')}</span>
                 </button>
               </div>
-            </header>
-
-            <div className="relative flex flex-1 overflow-hidden">
-              <AnimatePresence>
-                {tocOpen && (
-                  <motion.aside
-                    initial={{ x: -320, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -320, opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="absolute inset-y-0 left-0 z-30 w-72 sm:w-80 border-r border-border/80 bg-[#0b0d13]/98 p-4 shadow-2xl backdrop-blur-2xl flex flex-col"
-                  >
-                    <div className="flex items-center justify-between pb-3 border-b border-border/60">
-                      <span className="font-serif text-sm font-bold text-[oklch(0.72_0.13_80)]">
-                        {t('shelf.tableOfContents')}
-                      </span>
-                      <button
-                        onClick={() => setTocOpen(false)}
-                        className="rounded p-1 text-muted-foreground hover:text-foreground"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    <nav className="mt-3 flex-1 overflow-y-auto space-y-1 pr-1">
-                      {aiBookData.sections.map((sec, idx) => {
-                        const isCurrent = idx === currentSectionIdx
-                        return (
-                          <button
-                            key={sec.id}
-                            onClick={() => jumpToSection(idx)}
-                            className={cn(
-                              'flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors',
-                              isCurrent
-                                ? 'bg-[oklch(0.72_0.13_80_/_0.15)] font-semibold text-[oklch(0.72_0.13_80)] border border-[oklch(0.72_0.13_80_/_0.3)]'
-                                : 'text-neutral-400 hover:bg-card/60 hover:text-foreground'
-                            )}
-                          >
-                            <span className="shrink-0 font-mono text-[10px] text-muted-foreground mt-0.5">
-                              {idx + 1}.
-                            </span>
-                            <span className="line-clamp-2 leading-relaxed">{sec.title}</span>
-                          </button>
-                        )
-                      })}
-                    </nav>
-                  </motion.aside>
-                )}
-              </AnimatePresence>
-
-              <main
-                ref={readerScrollRef}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-                className="flex-1 overflow-y-auto px-4 py-8 sm:px-12 lg:px-20 text-foreground bg-[#0a0c11]"
-              >
-                <div className="mx-auto max-w-3xl">
-                  <div className="mb-8 border-b border-[oklch(0.72_0.13_80_/_0.3)] pb-6 text-center">
-                    <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-[oklch(0.72_0.13_80)]">
-                      {currentSection.shortTitle}
-                    </span>
-                    <h1 className="mt-2 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl leading-tight">
-                      {currentSection.title}
-                    </h1>
-                    <div className="mx-auto mt-3 h-[1px] w-20 bg-[oklch(0.72_0.13_80)]" />
-                  </div>
-
-                  <div
-                    className={cn(
-                      'space-y-5 leading-relaxed text-neutral-300 font-sans transition-all',
-                      fontSize === 'normal' && 'text-sm sm:text-base',
-                      fontSize === 'large' && 'text-base sm:text-lg',
-                      fontSize === 'huge' && 'text-lg sm:text-xl'
-                    )}
-                  >
-                    {currentSection.paragraphs.map((para, pIdx) => {
-                      const isKajian = para.startsWith('Kajian Khusus:')
-                      const isHeading =
-                        para.startsWith('BAB ') ||
-                        para.startsWith('Kata Pengantar:') ||
-                        para.startsWith('Ringkasan Eksekutif') ||
-                        para.startsWith('Daftar Isi Lengkap') ||
-                        para.startsWith('Definisi Konsensus') ||
-                        para.startsWith('LAMPIRAN:')
-
-                      if (isKajian) {
-                        return (
-                          <div
-                            key={pIdx}
-                            className="my-6 rounded-2xl border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.08)] p-5 text-foreground shadow-md backdrop-blur-sm"
-                          >
-                            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[oklch(0.72_0.13_80)]">
-                              <Sparkles className="h-4 w-4" />
-                              <span>{para.slice(0, 45)}</span>
-                            </div>
-                            <p className="mt-2 text-neutral-200 leading-relaxed">
-                              {para.replace(/^Kajian Khusus:\s*/, '')}
-                            </p>
-                          </div>
-                        )
-                      }
-
-                      if (isHeading) {
-                        return (
-                          <h2
-                            key={pIdx}
-                            className="pt-6 font-serif text-lg font-bold text-white sm:text-xl border-b border-border/50 pb-2"
-                          >
-                            {para}
-                          </h2>
-                        )
-                      }
-
-                      return (
-                        <p key={pIdx} className="text-justify text-neutral-300 leading-relaxed">
-                          {para}
-                        </p>
-                      )
-                    })}
-                  </div>
-                </div>
-              </main>
             </div>
 
-            <footer className="relative z-20 flex items-center justify-between border-t border-border/80 bg-[#0d1017]/95 px-4 py-3 backdrop-blur-xl sm:px-6">
-              <button
-                onClick={prevSection}
-                disabled={currentSectionIdx === 0}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/60 px-4 py-1.5 text-xs font-medium text-foreground disabled:opacity-30 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)]"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span>{t('shelf.prevChapter')}</span>
-              </button>
+            {/* Table of Contents Drawer */}
+            <AnimatePresence>
+              {tocOpen && (
+                <motion.aside
+                  initial={{ x: -320, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -320, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute inset-y-0 left-0 z-40 w-72 sm:w-80 border-r border-border/80 bg-[#0b0d13]/98 p-4 shadow-2xl backdrop-blur-2xl flex flex-col"
+                >
+                  <div className="flex items-center justify-between pb-3 border-b border-border/60">
+                    <span className="font-serif text-sm font-bold text-[oklch(0.72_0.13_80)]">
+                      {t('shelf.tableOfContents')}
+                    </span>
+                    <button
+                      onClick={() => setTocOpen(false)}
+                      className="rounded p-1 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
 
-              <div className="text-center text-xs text-muted-foreground hidden sm:block">
-                Bab {currentSectionIdx + 1} dari {aiBookData.sections.length} ·{' ' }
-                {Math.round(((currentSectionIdx + 1) / aiBookData.sections.length) * 100)}%
+                  <nav className="mt-3 flex-1 overflow-y-auto space-y-1 pr-1">
+                    {aiBookData.sections.map((sec, sIdx) => {
+                      const firstPageOfSec = aiBookPages.findIndex((p) => p.chapterIndex === sIdx)
+                      const isCurrent =
+                        leftPage?.chapterIndex === sIdx || rightPage?.chapterIndex === sIdx
+                      return (
+                        <button
+                          key={sec.id}
+                          onClick={() => jumpToChapter(sIdx)}
+                          className={cn(
+                            'flex w-full items-start justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors',
+                            isCurrent
+                              ? 'bg-[oklch(0.72_0.13_80_/_0.15)] font-semibold text-[oklch(0.72_0.13_80)] border border-[oklch(0.72_0.13_80_/_0.3)]'
+                              : 'text-neutral-400 hover:bg-card/60 hover:text-foreground'
+                          )}
+                        >
+                          <span className="line-clamp-2 leading-relaxed">{sec.title}</span>
+                          <span className="shrink-0 font-mono text-[10px] text-muted-foreground mt-0.5">
+                            Hal. {firstPageOfSec + 1}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </nav>
+                </motion.aside>
+              )}
+            </AnimatePresence>
+
+            {/* =========================================================================
+                THE 3D OPEN PHYSICAL BOOK RIG
+               ========================================================================= */}
+            <div
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              className="relative my-auto flex flex-1 items-center justify-center py-2 select-none"
+              style={{
+                perspective: 1600,
+                perspectiveOrigin: '50% 50%',
+              }}
+            >
+              {/* Outer Hardback Leather Cover Backing (Open Flat in 3D) */}
+              <div
+                className="relative flex items-center justify-center rounded-xl p-1.5 sm:p-3 shadow-2xl"
+                style={{
+                  background: 'radial-gradient(ellipse at center, #1b1e28 0%, #0c0e14 70%, #050609 100%)',
+                  border: '2px solid oklch(0.72 0.13 80 / 0.6)',
+                  boxShadow: '0 25px 60px -15px rgba(0,0,0,0.8), 0 0 35px oklch(0.72 0.13 80 / 0.15)',
+                }}
+              >
+                {/* Book Spine Seam & Silk Bookmark Ribbon */}
+                <div className="pointer-events-none absolute inset-y-0 left-1/2 -ml-[2px] z-30 w-[4px] bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
+
+                {/* Silk Ribbon Bookmark hanging from center seam */}
+                <div
+                  onClick={() => setTocOpen(!tocOpen)}
+                  title="Pita Pembatas Buku (Daftar Isi)"
+                  className="cursor-pointer absolute top-0 left-1/2 -ml-2 z-35 flex flex-col items-center group"
+                >
+                  <div className="h-24 sm:h-32 w-4 bg-gradient-to-b from-[#d4af37] via-[#f5d061] to-[#aa8218] shadow-md group-hover:brightness-110 transition-all rounded-b-sm border-x border-[#aa8218]" />
+                  <div className="w-0 h-0 border-x-[8px] border-x-transparent border-t-[8px] border-t-[#aa8218] -mt-1" />
+                </div>
+
+                {/* THE PHYSICAL SPREAD CONTAINER */}
+                <div
+                  className="relative flex items-stretch overflow-hidden rounded-lg shadow-inner"
+                  style={{
+                    width: isMobile ? 320 : 760,
+                    maxWidth: '92vw',
+                    height: isMobile ? 480 : 560,
+                    transformStyle: 'preserve-3d',
+                  }}
+                >
+                  {/* --- LEFT PAGE --- */}
+                  <div
+                    onClick={flipPrev}
+                    className={cn(
+                      'relative flex flex-col justify-between overflow-hidden p-4 sm:p-7 text-left transition-colors cursor-pointer',
+                      isMobile ? 'w-full' : 'w-1/2',
+                      paperTheme === 'ivory'
+                        ? 'bg-[#fbf9f4] text-[#1c1f26]'
+                        : 'bg-[#11141c] text-[#e0e3eb]'
+                    )}
+                    style={{
+                      boxShadow: isMobile
+                        ? 'inset 0 0 20px rgba(0,0,0,0.06)'
+                        : 'inset -18px 0 25px -8px rgba(0,0,0,0.18), inset 0 0 10px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    {/* Header */}
+                    <div className="flex items-center justify-between border-b pb-1.5 text-[9px] sm:text-[10px] font-serif italic text-muted-foreground border-border/40">
+                      <span>ZetaGo-Aurum · Monograf AI</span>
+                      <span className="truncate max-w-[120px]">{leftPage?.shortTitle}</span>
+                    </div>
+
+                    {/* Page Content */}
+                    <div
+                      className={cn(
+                        'flex-1 overflow-y-auto my-2 pr-1 space-y-3 font-serif leading-relaxed text-justify',
+                        fontSize === 'normal' ? 'text-[11px] sm:text-[12.5px]' : 'text-[12.5px] sm:text-[14px]'
+                      )}
+                    >
+                      {leftPage ? (
+                        leftPage.paragraphs.map((p, pIdx) => {
+                          const isKajian = p.startsWith('Kajian Khusus:')
+                          const isHeading =
+                            p.startsWith('BAB ') ||
+                            p.startsWith('Kata Pengantar:') ||
+                            p.startsWith('Ringkasan Eksekutif') ||
+                            p.startsWith('Daftar Isi Lengkap') ||
+                            p.startsWith('LAMPIRAN:')
+
+                          if (isKajian) {
+                            return (
+                              <div
+                                key={pIdx}
+                                className="my-2 rounded-lg border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.08)] p-2.5 text-[10.5px] sm:text-[11.5px] shadow-sm"
+                              >
+                                <div className="font-sans text-[9px] font-bold uppercase tracking-wider text-[oklch(0.72_0.13_80)] mb-1">
+                                  ✦ Kajian Khusus
+                                </div>
+                                <p className="leading-relaxed">{p.replace(/^Kajian Khusus:\s*/, '')}</p>
+                              </div>
+                            )
+                          }
+
+                          if (isHeading) {
+                            return (
+                              <h3
+                                key={pIdx}
+                                className="pt-2 font-serif text-sm sm:text-base font-bold text-[oklch(0.72_0.13_80)] border-b pb-1 border-border/30"
+                              >
+                                {p}
+                              </h3>
+                            )
+                          }
+
+                          return (
+                            <p key={pIdx} className="leading-relaxed indent-3">
+                              {p}
+                            </p>
+                          )
+                        })
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                          Halaman Kosong
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between border-t pt-1.5 text-[9px] sm:text-[10px] font-mono text-muted-foreground border-border/40">
+                      <span>Hal. {leftPage?.pageNumber || currentPage + 1}</span>
+                      <span className="text-[8px] uppercase tracking-wider">ZetaGo-Aurum · 2026</span>
+                    </div>
+
+                    {!isMobile && (
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/25 via-black/08 to-transparent"
+                      />
+                    )}
+                  </div>
+
+                  {/* --- RIGHT PAGE (Desktop Only) --- */}
+                  {!isMobile && (
+                    <div
+                      onClick={flipNext}
+                      className={cn(
+                        'relative flex flex-col justify-between overflow-hidden p-4 sm:p-7 text-left transition-colors cursor-pointer w-1/2',
+                        paperTheme === 'ivory'
+                          ? 'bg-[#fbf9f4] text-[#1c1f26]'
+                          : 'bg-[#11141c] text-[#e0e3eb]'
+                      )}
+                      style={{
+                        boxShadow:
+                          'inset 18px 0 25px -8px rgba(0,0,0,0.18), inset 0 0 10px rgba(0,0,0,0.04)',
+                      }}
+                    >
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/25 via-black/08 to-transparent"
+                      />
+
+                      {/* Header */}
+                      <div className="flex items-center justify-between border-b pb-1.5 text-[9px] sm:text-[10px] font-serif italic text-muted-foreground border-border/40">
+                        <span className="truncate max-w-[150px]">{rightPage?.chapterTitle || 'Monograf'}</span>
+                        <span>{rightPage?.shortTitle}</span>
+                      </div>
+
+                      {/* Page Content */}
+                      <div
+                        className={cn(
+                          'flex-1 overflow-y-auto my-2 pr-1 space-y-3 font-serif leading-relaxed text-justify',
+                          fontSize === 'normal' ? 'text-[11px] sm:text-[12.5px]' : 'text-[12.5px] sm:text-[14px]'
+                        )}
+                      >
+                        {rightPage ? (
+                          rightPage.paragraphs.map((p, pIdx) => {
+                            const isKajian = p.startsWith('Kajian Khusus:')
+                            const isHeading =
+                              p.startsWith('BAB ') ||
+                              p.startsWith('Kata Pengantar:') ||
+                              p.startsWith('Ringkasan Eksekutif') ||
+                              p.startsWith('Daftar Isi Lengkap') ||
+                              p.startsWith('LAMPIRAN:')
+
+                            if (isKajian) {
+                              return (
+                                <div
+                                  key={pIdx}
+                                  className="my-2 rounded-lg border border-[oklch(0.72_0.13_80_/_0.4)] bg-[oklch(0.72_0.13_80_/_0.08)] p-2.5 text-[10.5px] sm:text-[11.5px] shadow-sm"
+                                >
+                                  <div className="font-sans text-[9px] font-bold uppercase tracking-wider text-[oklch(0.72_0.13_80)] mb-1">
+                                    ✦ Kajian Khusus
+                                  </div>
+                                  <p className="leading-relaxed">{p.replace(/^Kajian Khusus:\s*/, '')}</p>
+                                </div>
+                              )
+                            }
+
+                            if (isHeading) {
+                              return (
+                                <h3
+                                  key={pIdx}
+                                  className="pt-2 font-serif text-sm sm:text-base font-bold text-[oklch(0.72_0.13_80)] border-b pb-1 border-border/30"
+                                >
+                                  {p}
+                                </h3>
+                              )
+                            }
+
+                            return (
+                              <p key={pIdx} className="leading-relaxed indent-3">
+                                {p}
+                              </p>
+                            )
+                          })
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                            Akhir Naskah Monograf
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between border-t pt-1.5 text-[9px] sm:text-[10px] font-mono text-muted-foreground border-border/40">
+                        <span className="text-[8px] uppercase tracking-wider">Kecerdasan Buatan</span>
+                        <span>Hal. {rightPage?.pageNumber || currentPage + 2}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 3D TURNING PAGE LEAF ANIMATION */}
+                  <AnimatePresence>
+                    {flipDirection === 'next' && (
+                      <motion.div
+                        key="flip-leaf-next"
+                        initial={{ rotateY: 0 }}
+                        animate={{ rotateY: -180 }}
+                        transition={{ duration: 0.55, ease: [0.645, 0.045, 0.355, 1] }}
+                        style={{
+                          transformOrigin: isMobile ? 'left center' : 'left center',
+                          transformStyle: 'preserve-3d',
+                          position: 'absolute',
+                          top: 0,
+                          bottom: 0,
+                          left: isMobile ? 0 : '50%',
+                          width: isMobile ? '100%' : '50%',
+                          zIndex: 30,
+                        }}
+                        className={cn(
+                          'overflow-hidden shadow-2xl',
+                          paperTheme === 'ivory' ? 'bg-[#fbf9f4]' : 'bg-[#11141c]'
+                        )}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
+                      </motion.div>
+                    )}
+
+                    {flipDirection === 'prev' && (
+                      <motion.div
+                        key="flip-leaf-prev"
+                        initial={{ rotateY: -180 }}
+                        animate={{ rotateY: 0 }}
+                        transition={{ duration: 0.55, ease: [0.645, 0.045, 0.355, 1] }}
+                        style={{
+                          transformOrigin: isMobile ? 'left center' : 'right center',
+                          transformStyle: 'preserve-3d',
+                          position: 'absolute',
+                          top: 0,
+                          bottom: 0,
+                          left: isMobile ? 0 : 0,
+                          width: isMobile ? '100%' : '50%',
+                          zIndex: 30,
+                        }}
+                        className={cn(
+                          'overflow-hidden shadow-2xl',
+                          paperTheme === 'ivory' ? 'bg-[#fbf9f4]' : 'bg-[#11141c]'
+                        )}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-black/10 to-transparent" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
+            </div>
+
+            {/* Bottom Controls */}
+            <div className="relative z-20 mt-3 flex items-center justify-between border-t border-border/60 pt-3 px-2 sm:px-4">
+              <button
+                onClick={flipPrev}
+                disabled={currentPage === 0 || flipDirection !== null}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/70 px-4 py-2 text-xs font-medium text-foreground disabled:opacity-25 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] active:scale-95 transition-all"
+              >
+                <ChevronLeft className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
+                <span>Buka Lembar Sebelumnya</span>
+              </button>
+
+              <p className="hidden sm:block text-xs text-muted-foreground text-center">
+                Klik lembar halaman atau tombol untuk membalik halaman fisik 3D
+              </p>
 
               <button
-                onClick={nextSection}
-                disabled={currentSectionIdx === aiBookData.sections.length - 1}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.5)] bg-[oklch(0.72_0.13_80_/_0.15)] px-4 py-1.5 text-xs font-semibold text-[oklch(0.72_0.13_80)] disabled:opacity-30 disabled:pointer-events-none hover:bg-[oklch(0.72_0.13_80_/_0.3)]"
+                onClick={flipNext}
+                disabled={currentPage + pageStep >= totalPages || flipDirection !== null}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.72_0.13_80_/_0.5)] bg-[oklch(0.72_0.13_80_/_0.15)] px-4 py-2 text-xs font-semibold text-[oklch(0.72_0.13_80)] disabled:opacity-25 disabled:pointer-events-none hover:bg-[oklch(0.72_0.13_80_/_0.3)] active:scale-95 transition-all"
               >
-                <span>{t('shelf.nextChapter')}</span>
-                <ChevronRight className="h-4 w-4" />
+                <span>Buka Lembar Selanjutnya</span>
+                <ChevronRight className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
               </button>
-            </footer>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

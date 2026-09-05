@@ -1,0 +1,2226 @@
+[
+  {
+    "pageNumber": 1,
+    "chapterIndex": 0,
+    "chapterTitle": "Identitas & Spesifikasi Dokumen",
+    "shortTitle": "Identitas",
+    "paragraphs": [
+      "MONOGRAF AKADEMIK & BUKU REFERENSI TEKNIS",
+      "KECERDASAN BUATAN (ARTIFICIAL INTELLIGENCE)FUNDAMENTAL, SEJARAH, METRIK PERTUMBUHAN, DAN REKAYASA MODEL GENERATIF",
+      "____________________________________________________",
+      "Buku Pegangan Komprehensif untuk Mahasiswa Diploma 3 (D3), Sarjana (S1) Ilmu Komputer / Rekayasa Perangkat Lunak, dan Praktisi Teknologi Informasi:Kajian Mendalam Fondasi Matematika, Arsitektur Jaringan Saraf, Transformer, Model Frontier Global, Siklus Pelatihan Skala Besar (Pre-training, SFT, RLHF, DPO, Reasoning), Kuantisasi, hingga Implementasi Kode Program Berstandar Industri.",
+      "Penyusun Ide Konsep & Penulis:ZetaGo-Aurum"
+    ]
+  },
+  {
+    "pageNumber": 2,
+    "chapterIndex": 0,
+    "chapterTitle": "Identitas & Spesifikasi Dokumen",
+    "shortTitle": "Identitas",
+    "paragraphs": [
+      "Kajian Khusus: SPESIFIKASI DAN KETERANGAN DOKUMEN",
+      "Penyusun Ide Konsep & Penulis: ZetaGo-Aurum",
+      "Klasifikasi: Monograf Referensi Akademik dan Panduan Praktik Rekayasa Perangkat Lunak Cerdas",
+      "Sasaran Pembaca: Mahasiswa D3/S1 Teknik Informatika, Rekayasa Perangkat Lunak, Sains Data, serta Praktisi Rekayasa AI",
+      "Cakupan Bahasan: Konsep Dasar, Historiografi Komputasi Cerdas (1943-2026), Analisis Empiris Metrik Komputasi dan Parameter, Ekosistem Industri Global, Matematika Jaringan Saraf, Pipeline Pelatihan End-to-End, Implementasi PyTorch, Etika dan Tata Kelola Hukum, serta Glosarium Teknis Lengkap",
+      "Tahun Penerbitan: 2026"
+    ]
+  },
+  {
+    "pageNumber": 3,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "KATA PENGANTAR DAN RINGKASAN EKSEKUTIF",
+      "Kata Pengantar: Puji syukur dipanjatkan ke hadirat Tuhan Yang Maha Esa atas terselesaikannya penyusunan Monograf Akademik bertajuk",
+      "\"Kecerdasan Buatan (Artificial Intelligence): Fundamental, Sejarah, Metrik Pertumbuhan, dan Rekayasa Model Generatif\" yang disusun dan dirumuskan oleh ZetaGo-Aurum. Dokumen ini dirancang secara sistematis untuk menjadi literatur rujukan ilmiah yang menghubungkan pemahaman konseptual dasar dengan kedalaman teknis dan rekayasa perangkat lunak tingkat lanjut pada jenjang pendidikan tinggi (Diploma 3 dan Strata-1) dalam bidang Ilmu Komputer, Teknik Informatika, Sistem Informasi, dan Rekayasa Perangkat Lunak."
+    ]
+  },
+  {
+    "pageNumber": 4,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Perkembangan teknologi kecerdasan buatan dalam satu dekade terakhir, terutama pasca revolusi Deep Learning pada tahun 2012 dan penemuan arsitektur Transformer pada tahun 2017, telah mengubah lanskap peradaban komputasi. Kecerdasan buatan telah bertransformasi dari sekadar diskursus teoretis di laboratorium komputer menjadi pilar utama sistem otomasi industri modern, pengolahan data berskala besar, penemuan sains mutakhir, dan rekayasa aplikasi cerdas. Kehadiran model fondasi skala besar (Large Language Models dan Multimodal Systems) seperti keluarga GPT, Gemini, Claude, Llama, hingga DeepSeek menandai babak baru dalam rekayasa perangkat lunak, di mana pemahaman menyeluruh terhadap arsitektur dan siklus hidup pelatihan model menjadi kompetensi esensial."
+    ]
+  },
+  {
+    "pageNumber": 5,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Ringkasan Eksekutif (Executive Summary)",
+      "Sistematika Dokumen: Naskah monograf ini disusun dalam sembilan bab terpadu yang memetakan seluruh dimensi keilmuan kecerdasan buatan:",
+      "Bab 1 (Fondasi Konseptual dan Taksonomi): Membahas latar belakang lahirnya AI dari komputasi deterministik klasik, perumusan definisi formal oleh para pionir dunia, taksonomi kecerdasan (ANI, AGI, ASI), serta perbandingan epistemologis antara paradigma simbolik (rule-based) dan koneksionis (neural networks)."
+    ]
+  },
+  {
+    "pageNumber": 6,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Bab 2 (Historiografi dan Kronologi AI): Menguraikan historiografi komputasi cerdas dari tahun 1943 hingga 2026, mencakup era Turing, Konferensi Dartmouth 1956, periode First AI Winter dan Second AI Winter, kebangkitan sistem pakar dan algoritma Backpropagation (1986), revolusi ImageNet 2012, hingga era Transformer dan model penalaran (Reasoning Models).",
+      "Bab 3 (Metrik Pertumbuhan dan Data Historis): Menyajikan data kuantitatif historis mengenai hukum penskalaan komputasi (Compute Scaling Laws), eksponensialitas parameter model, ukuran dataset token pelatihan, tolok ukur benchmark industri (MMLU, GSM8K, HumanEval, SWE-bench, Chatbot Arena), konsumsi daya listrik, serta pertumbuhan valuasi pasar global."
+    ]
+  },
+  {
+    "pageNumber": 7,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Bab 4 (Lanskap Korporasi dan Model AI Global): Menganalisis lanskap institusi riset dan korporasi teknologi global, meliputi OpenAI, Google DeepMind, Anthropic, Meta AI, DeepSeek, Mistral AI, ekosistem akselerator NVIDIA, serta komparasi model tertutup versus terbuka (open-weight).",
+      "Bab 5 (Fondasi Matematika dan Arsitektur Komputasi): Membahas landasan matematika (Aljabar Linear, Kalkulus Multivariabel, Probabilitas, Teori Informasi) serta membedah arsitektur Transformer decoder-only, Scaled Dot-Product Attention, Grouped-Query Attention (GQA), Rotary Position Embedding (RoPE), RMSNorm, SwiGLU, dan Mixture of Experts (MoE)."
+    ]
+  },
+  {
+    "pageNumber": 8,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Bab 6 (Siklus Hidup Rekayasa dan Pelatihan AI): Mengupas tuntas tahapan siklus hidup rekayasa AI: kurasi data, deduplikasi MinHash, tokenisasi BPE, pre-training terdistribusi (DDP, TP, PP, ZeRO-3), Supervised Fine-Tuning (SFT), PEFT (LoRA dan QLoRA), alignment (RLHF, DPO, reasoning RL), kuantisasi (AWQ, GPTQ, GGUF), serta serving dan monitoring inferensi (vLLM, TensorRT-LLM).",
+      "Bab 7 (Implementasi Praktis dan Panduan Kode): Menyediakan panduan implementasi kode program Python berbasis PyTorch dan pustaka modern, mulai dari perakitan arsitektur Transformer decoder dari nol, fine-tuning QLoRA 4-bit, sistem Retrieval-Augmented Generation (RAG), hingga penyajian REST API FastAPI."
+    ]
+  },
+  {
+    "pageNumber": 9,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Bab 8 (Etika, Tata Kelola, Keamanan Siber, dan Masa Depan): Menganalisis dimensi etika, mitigasi bias data, sengketa hak cipta dan kepemilikan data, kerangka regulasi global (EU AI Act) dan nasional (UU No. 27/2022 tentang PDP), ancaman keamanan siber (prompt injection, jailbreak), alignment problem, serta proyeksi menuju AGI.",
+      "Bab 9 (Kesimpulan dan Roadmap Studi Lanjutan): Menyintesis intisari monograf dan merumuskan kurikulum belajar mandiri 5 fase bagi mahasiswa dan pengembang pemula.",
+      "Bagian Akhir (Daftar Pustaka, Glosarium & Kredit): Memuat daftar pustaka primer standar akademik IEEE/APA, Glosarium Istilah Teknis dari A sampai Z, serta Halaman Kredit Penyusun ZetaGo-Aurum."
+    ]
+  },
+  {
+    "pageNumber": 10,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "Monograf ini diharapkan mampu menjadi panduan komprehensif yang memperkaya wawasan akademik dan memperkuat kecakapan teknis para mahasiswa dan praktisi dalam merekayasa sistem cerdas masa depan.",
+      "Daftar Isi Lengkap",
+      "KATA PENGANTAR DAN RINGKASAN EKSEKUTIF .................................... i",
+      "DAFTAR ISI LENGKAP ....................................................... ii"
+    ]
+  },
+  {
+    "pageNumber": 11,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 1: LATAR BELAKANG, DEFINISI, DAN TAKSONOMI KECERDASAN BUATAN .......... 1",
+      "1.1 Latar Belakang Kemunculan AI di Era Komputasi Modern ................ 1",
+      "1.2 Definisi Kecerdasan Buatan Menurut Para Tokoh Pionir ................ 2",
+      "1.3 Komputasi Deterministik vs Komputasi Probabilistik .................. 3",
+      "1.4 Tingkatan Kecerdasan: ANI, AGI, dan ASI ............................. 4",
+      "1.5 Hierarki AI, Machine Learning, Deep Learning, dan Generative AI ..... 5",
+      "1.6 Paradigma Simbolik vs Koneksionis ................................... 6"
+    ]
+  },
+  {
+    "pageNumber": 12,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 2: KRONOLOGI DAN SEJARAH EVOLUSI AI (1940-AN - 2026+) ................. 7",
+      "2.1 Era Konseptualisasi & Fondasi Awal (1943-1955) ...................... 7",
+      "2.2 Konferensi Dartmouth 1956 & Era Keemasan Pertama (1956-1973) ........ 8",
+      "2.3 AI Winter Pertama (1974-1980) ....................................... 9",
+      "2.4 Era Sistem Pakar & Kebangkitan Koneksionisme (1980-1987) ........... 10",
+      "2.5 AI Winter Kedua (1987-1993) ........................................ 11",
+      "2.6 Era Machine Learning Statistik & Komputasi Modern (1993-2011) ...... 12",
+      "2.7 Revolusi Deep Learning (2012-2017) ................................. 13",
+      "2.8 Era Transformer, LLM, dan Reasoning Models (2017-2026+) ............ 14"
+    ]
+  },
+  {
+    "pageNumber": 13,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 3: METRIK PERTUMBUHAN DAN DATA HISTORIS AI DARI TAHUN KE TAHUN ....... 15",
+      "3.1 Hukum Penskalaan Komputasi (Compute Scaling Laws) & FLOPs .......... 15",
+      "3.2 Evolusi Jumlah Parameter Model Bahasa dan Vision ................... 16",
+      "3.3 Pertumbuhan Volume Token Dataset Pelatihan ......................... 17",
+      "3.4 Tolok Ukur Kinerja Standar (MMLU, GSM8K, HumanEval, Chatbot Arena) ..... 18",
+      "3.5 Biaya Pelatihan, Infrastruktur GPU, dan Konsumsi Energi ............ 19",
+      "3.6 Pertumbuhan Nilai Pasar Global AI (Market Cap & CAGR) .............. 20"
+    ]
+  },
+  {
+    "pageNumber": 14,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 4: LANSKAP KORPORASI DAN MODEL AI PEMIMPIN PASAR GLOBAL .............. 21",
+      "4.1 OpenAI (Seri GPT-4o, o1, o3-mini) .................................. 21",
+      "4.2 Google DeepMind (Keluarga Gemini 1.5/2.0, TPU Trillium, AlphaFold) ..... 22",
+      "4.3 Anthropic (Claude 3.5 Sonnet, Constitutional AI) ................... 23",
+      "4.4 Meta AI (Llama 3.1 405B & Ekosistem Open-Weight) ................... 24",
+      "4.5 DeepSeek (DeepSeek-V3, DeepSeek-R1, Efisiensi Arsitektur MLA/MoE) ..... 25",
+      "4.6 Mistral AI & Raksasa Pendukung (NVIDIA, Microsoft, AWS, Apple, xAI) ..... 26"
+    ]
+  },
+  {
+    "pageNumber": 15,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 5: FONDASE MATEMATIKA DAN ARSITEKTUR KOMPUTASI AI .................... 27",
+      "5.1 Aljabar Linear, Kalkulus Multivariabel, & Teori Informasi .......... 27",
+      "5.2 Jaringan Saraf Dasar (ANN, MLP, Fungsi Aktivasi, Backpropagation) ..... 28",
+      "5.3 Arsitektur Transformer Secara Mendalam (Self-Attention, RoPE, RMSNorm) ..... 29",
+      "5.4 Arsitektur Mixture of Experts (MoE) dan Multi-head Latent Attention (MLA) ..... 30"
+    ]
+  },
+  {
+    "pageNumber": 16,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 6: SIKLUS HIDUP REKAYASA DAN PELATIHAN AI SECARA TERPERINCI .......... 31",
+      "6.1 Tahap 1: Pengadaan, Pembersihan, Deduplikasi & Tokenisasi Data ..... 31",
+      "6.2 Tahap 2: Pre-Training Skala Besar & Pelatihan Terdistribusi (DDP, TP, ZeRO) ..... 32",
+      "6.3 Tahap 3: Post-Training, SFT, PEFT (LoRA/QLoRA), RLHF, DPO, & Reasoning RL ..... 33",
+      "6.4 Tahap 4: Optimasi, Kompresi, dan Kuantisasi Model (AWQ, GPTQ, GGUF) ..... 34",
+      "6.5 Tahap 5: Deployment, Serving (vLLM, TensorRT-LLM) & Monitoring ..... 35",
+      "6.6 Tahap 6: Evaluasi, LLM-as-a-Judge, & Red Teaming Keamanan .......... 36"
+    ]
+  },
+  {
+    "pageNumber": 17,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 7: IMPLEMENTASI PRAKTIS: PANDUAN LANGKAH-DEMI-LANGKAH ................ 37",
+      "7.1 Membangun Mini-Transformer dari Nol dengan PyTorch ................. 37",
+      "7.2 End-to-End Fine-Tuning LLM Menggunakan QLoRA & HuggingFace ......... 38",
+      "7.3 Membangun Sistem Retrieval-Augmented Generation (RAG) .............. 39",
+      "7.4 Serving Model Menggunakan REST API FastAPI ......................... 40"
+    ]
+  },
+  {
+    "pageNumber": 18,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 8: ETIKA, TATA KELOLA, KEAMANAN AI, DAN PROSPEK MASA DEPAN ........... 41",
+      "8.1 Bias Algoritmik, Hak Cipta, & Regulasi Privasi (GDPR & UU PDP) ..... 41",
+      "8.2 Keamanan Siber AI (Prompt Injection, Jailbreak, Alignment Problem) ..... 42",
+      "8.3 Dampak Sosio-Ekonomi & Horizon Masa Depan Menuju AGI ............... 43"
+    ]
+  },
+  {
+    "pageNumber": 19,
+    "chapterIndex": 1,
+    "chapterTitle": "Kata Pengantar & Ringkasan Eksekutif",
+    "shortTitle": "Pengantar",
+    "paragraphs": [
+      "BAB 9: KESIMPULAN DAN ROADMAP STUDI LANJUTAN ............................. 44",
+      "DAFTAR PUSTAKA LENGKAP (STANDAR AKADEMIK IEEE/APA) ....................... 45",
+      "LAMPIRAN: GLOSARIUM ISTILAH TEKNIS AI DARI A SAMPAI Z .................... 47",
+      "HALAMAN KREDIT PENYUSUN DAN HAK CIPTA .................................... 50"
+    ]
+  },
+  {
+    "pageNumber": 20,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "BAB I: LATAR BELAKANG, DEFINISI, DAN TAKSONOMI KECERDASAN BUATAN",
+      "Kecerdasan Buatan (Artificial Intelligence atau AI) telah berkembang dari kajian teoretis dalam ilmu komputer menjadi fondasi teknologi yang mentransformasi industri, sains, dan rekayasa perangkat lunak. Untuk memahami cara kerja AI secara komprehensif, telaah akademik perlu dimulai dari latar belakang historis komputasi, definisi formal dari para perintis, klasifikasi spektrum kecerdasan, serta perbandingan ontologis antar-paradigma komputasi cerdas.",
+      "1.1 Latar Belakang Kemunculan AI di Era Komputasi Modern"
+    ]
+  },
+  {
+    "pageNumber": 21,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Sejak awal perkembangan sistem komputasi digital pada pertengahan abad ke-20, arsitektur komputer konvensional dirancang berdasarkan prinsip deterministik arsitektur Von Neumann. Dalam paradigma ini, mesin hanya mampu mengeksekusi instruksi prosedural yang telah dirumuskan secara eksplisit dan kaku oleh pemrogram manusia melalui logika percabangan bersyarat (if-then-else)."
+    ]
+  },
+  {
+    "pageNumber": 22,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Pendekatan deterministik terbukti sangat efektif untuk kalkulasi numerik presisi tinggi dan pemrosesan basis data terstruktur berskala besar. Kendati demikian, komputasi klasik mengalami keterbatasan mendasar ketika dihadapkan pada permasalahan perseptual dan kognitif dunia nyata yang dicirikan oleh ketidakpastian (uncertainty), ambiguitas, dan struktur data berdimensi tinggi - seperti pemahaman bahasa alami, pengenalan objek visual, diagnosis medis, dan navigasi otonom.",
+      "Keterbatasan inheren komputasi deterministik tersebut melahirkan kebutuhan akan paradigma baru: bagaimana merancang sistem komputasi yang tidak sekadar mengeksekusi rumus statis, melainkan mampu mengekstraksi pola secara induktif, membangun representasi fitur, dan melakukan generalisasi dari data empiris."
+    ]
+  },
+  {
+    "pageNumber": 23,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "1.2 Definisi Kecerdasan Buatan Menurut Para Tokoh Pionir",
+      "Definisi kecerdasan buatan telah dirumuskan melalui berbagai perspektif filosofis, logis, dan rekayasa oleh para pionir ilmu komputer:",
+      "1. Alan Mathison Turing (1912-1954): Dalam makalah klasiknya yang berjudul 'Computing Machinery and Intelligence' (1950), Turing mengusulkan pendekatan operasional yang dikenal sebagai Turing Test (The Imitation Game). Turing merumuskan bahwa sebuah mesin dapat dipandang memiliki kecerdasan apabila interaksi tekstualnya tidak dapat dibedakan dari interaksi manusia oleh seorang penguji independen."
+    ]
+  },
+  {
+    "pageNumber": 24,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "2. John McCarthy (1927-2011): Sebagai pencetus istilah 'Artificial Intelligence' pada Dartmouth Summer Research Project tahun 1956, McCarthy mendefinisikan AI sebagai sains dan rekayasa pembuatan mesin cerdas, khususnya program komputer cerdas. McCarthy menekankan bahwa kecerdasan merupakan kemampuan komputasi untuk mencapai tujuan di dunia nyata melalui manipulasi simbol dan representasi logis formal.",
+      "3. Marvin Lee Minsky (1927-2016): Salah satu pendiri Laboratorium AI MIT ini mendefinisikan AI sebagai ilmu yang membuat mesin mampu melakukan tugas-tugas yang memerlukan kecerdasan apabila dilakukan oleh manusia. Minsky memandang kecerdasan sebagai hasil interaksi struktur kognitif modular yang terkoordinasi (The Society of Mind)."
+    ]
+  },
+  {
+    "pageNumber": 25,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "4. Stuart Russell dan Peter Norvig (2020): Dalam literatur standar 'Artificial Intelligence: A Modern Approach', Russell dan Norvig menyusun taksonomi definisi AI ke dalam empat dimensi: sistem yang berpikir seperti manusia, bertindak seperti manusia, berpikir rasional, dan bertindak rasional. Definisi agen rasional (rational agent) - yaitu entitas komputasi yang memilih tindakan terbaik untuk memaksimalkan capaian kinerja berdasarkan persepsi lingkungan dan pengetahuannya - menjadi acuan standar dalam rekayasa perangkat lunak cerdas modern."
+    ]
+  },
+  {
+    "pageNumber": 26,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Kajian Khusus: Definisi Konsensus Akademik Kecerdasan Buatan",
+      "Kecerdasan Buatan (Artificial Intelligence) didefinisikan sebagai cabang ilmu komputer yang berfokus pada pengembangan algoritma dan sistem perangkat lunak yang memungkinkan mesin melakukan fungsi kognitif tingkat lanjut - mencakup penalaran (reasoning), pembelajaran representasi data (representation learning), pemahaman bahasa alami (natural language processing), persepsi visual (computer vision), serta pengambilan keputusan adaptif di bawah ketidakpastian.",
+      "1.3 Komputasi Deterministik vs Komputasi Probabilistik",
+      "Perbedaan mendasar antara komputasi konvensional dan sistem kecerdasan buatan modern terletak pada paradigma pemrosesan informasinya:"
+    ]
+  },
+  {
+    "pageNumber": 27,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Paradigma Deterministik (Pemrograman Klasik): Pada rekayasa perangkat lunak tradisional, pemrogram menulis aturan logika spesifik (Rules) dan memasukkan data (Data) ke dalam sistem untuk menghasilkan luaran (Answers). Alur eksekusi bersifat pasti dan tertutup; masukan yang tidak terantisipasi dalam aturan akan memicu kesalahan logika atau kegagalan sistem.",
+      "Paradigma Probabilistik (Machine Learning): Pada pembelajaran mesin dan deep learning, algoritma diberikan pasangan masukan (Data) dan contoh luaran (Answers) atau sinyal umpan balik lingkungan. Algoritma kemudian mengoptimasi fungsi matematis untuk mempelajari relasi probabilitas antarvariabel, menghasilkan sebuah model parametrik yang mampu melakukan inferensi akurat terhadap data baru yang belum pernah ditemui sebelumnya."
+    ]
+  },
+  {
+    "pageNumber": 28,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "1.4 Tingkatan dan Spektrum Kecerdasan Buatan",
+      "Berdasarkan cakupan kapabilitas dan derajat fleksibilitas domain tugasnya, kecerdasan buatan diklasifikasikan ke dalam tiga tingkatan evolusioner:",
+      "1. Artificial Narrow Intelligence (ANI / Narrow AI)",
+      "ANI mengacu pada sistem cerdas yang dirancang, dilatih, dan dioptimasi secara spesifik untuk menyelesaikan satu tugas tertentu dalam batasan domain yang terdefinisi secara ketat. Sistem ANI tidak memiliki kesadaran diri, pemahaman kontekstual lintas disiplin, maupun kapasitas transfer belajar di luar distribusi data pelatihannya."
+    ]
+  },
+  {
+    "pageNumber": 29,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Implementasi operasional ANI mencakup sistem mesin catur AlphaZero, sistem pengenalan wajah pada kamera pengawas, filter deteksi anomali transaksi perbankan, sistem rekomendasi e-commerce, hingga model bahasa besar kontemporer. Model bahasa seperti GPT-4o, Claude 3.5, dan DeepSeek-V3 pada hakikatnya tetap tergolong dalam spektrum Narrow AI tingkat tinggi (Broad Narrow AI), karena mekanisme kerjanya bertumpu pada pemodelan statistik distribusi sekuens token tanpa kesadaran otonom independen.",
+      "2. Artificial General Intelligence (AGI / General AI)"
+    ]
+  },
+  {
+    "pageNumber": 30,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "AGI merujuk pada sistem kecerdasan buatan teoretis yang memiliki kapasitas kognitif setara atau melampaui kemampuan intelektual manusia di hampir seluruh ranah pengetahuan dan keahlian yang bernilai ekonomis. Karakteristik utama AGI mencakup kemampuan transfer belajar universal, penalaran sebab-akibat (causal reasoning), perencanaan strategis jangka panjang, metakognisi (refleksi diri terhadap proses berpikir), dan adaptasi mandiri di lingkungan fisik maupun digital yang dinamis.",
+      "3. Artificial Superintelligence (ASI / Super AI)"
+    ]
+  },
+  {
+    "pageNumber": 31,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "ASI merujuk pada entitas kecerdasan buatan hipotetis yang melampaui kapasitas intelektual gabungan seluruh manusia dalam segala domain, termasuk sintesis saintifik orisinal, kreativitas artistik, rekayasa teknologi mandiri (recursive self-improvement), dan kepemimpinan strategis global. Kajian mengenai ASI umumnya dibahas dalam kerangka etika keselamatan sistem (AI Safety and Alignment).",
+      "1.5 Hierarki Konseptual: AI, Machine Learning, Deep Learning, dan Generative AI",
+      "Secara epistemologis, konsep AI, Machine Learning, Deep Learning, dan Generative AI memiliki relasi himpunan bagian konsentris yang terdefinisi secara terstruktur:"
+    ]
+  },
+  {
+    "pageNumber": 32,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Artificial Intelligence (AI): Domain payung terluas yang mencakup seluruh metode dan teknik yang memungkinkan mesin meniru aspek kecerdasan kognitif manusia, baik melalui penalaran simbolik berbasis aturan maupun komputasi statistik.",
+      "Machine Learning (ML): Cabang dari AI yang berfokus pada pengembangan algoritma komputasi yang mampu mengekstraksi pola statistik dari data secara induktif tanpa diprogram aturan spesifiknya secara manual (mencakup regresi, Decision Tree, Support Vector Machines, dan ensemble methods)."
+    ]
+  },
+  {
+    "pageNumber": 33,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Deep Learning (DL): Himpunan bagian dari Machine Learning yang didasarkan pada arsitektur Jaringan Saraf Tiruan Multilapis (Deep Artificial Neural Networks). Deep Learning mampu melakukan pembelajaran representasi hierarkis secara otomatis langsung dari data mentah berdimensi tinggi (piksel citra, gelombang audio, sekuens teks).",
+      "Generative AI (GenAI): Subdomain mutakhir dari Deep Learning yang tidak sekadar mengklasifikasikan atau memprediksi data (AI diskriminatif), melainkan memodelkan distribusi probabilitas gabungan dari korpus data masif untuk menghasilkan artefak konten baru yang koheren, berupa teks naratif, kode program, sintesis citra, audio, dan video beresolusi tinggi.",
+      "1.6 Paradigma Utama: AI Simbolik vs AI Koneksionis"
+    ]
+  },
+  {
+    "pageNumber": 34,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Dalam sejarah sains komputer, terdapat dua mazhab metodologis utama yang mendasari perancangan sistem kecerdasan buatan:",
+      "1. Paradigma Simbolik (Top-Down): Paradigma Simbolik (pendekatan Top-Down atau Good Old-Fashioned AI / GOFAI) memandang kecerdasan sebagai hasil manipulasi simbol-simbol eksplisit yang diatur oleh logika proposisional dan aturan inferensi formal. Keunggulan utamanya terletak pada sifat interpretabilitas yang mutlak (white-box) di mana setiap rantai keputusan dapat diaudit secara runtut. Namun, kelemahan fatalnya adalah kerapuhan sistem (brittleness) saat menghadapi ketidakpastian dan ketidakmampuan melakukan generalisasi pada data non-struktural."
+    ]
+  },
+  {
+    "pageNumber": 35,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "2. Paradigma Koneksionis (Bottom-Up): Paradigma Koneksionis (pendekatan Bottom-Up atau Sub-simbolik) memodelkan kecerdasan berdasarkan arsitektur biologis jaringan neuron di otak. Pengetahuan tidak dikodekan dalam aturan logika manual, melainkan tersebar (distributed representation) pada jutaan hingga miliaran parameter bobot sinaptik yang dioptimasi menggunakan algoritma berbasis turunan gradien. Keunggulannya adalah daya adaptasi dan generalisasi yang sangat tinggi terhadap data kompleks, kendati menghadirkan tantangan dalam hal transparansi model (black-box model).",
+      "Tabel: 1.1 Perbandingan Karakteristik Paradigma Komputasi Kecerdasan Buatan Lintas Generasi",
+      "Dimensi Perbandingan",
+      "AI Simbolik (GOFAI)",
+      "Machine Learning Klasik",
+      "Deep Learning (Koneksionis)",
+      "Foundation / GenAI Models"
+    ]
+  },
+  {
+    "pageNumber": 36,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Representasi Pengetahuan",
+      "Simbol eksplisit & aturan logika",
+      "Fitur terstruktur (rekayasa fitur manual)",
+      "Representasi laten terdistribusi (otomatis)",
+      "Ruang vektor semantik laten skala masif",
+      "Mekanisme Pembelajaran",
+      "Deduktif (Penerapan aturan dari pakar)",
+      "Induktif statistik (SVM, Random Forest, GBDT)",
+      "Optimasi gradien end-to-end (Backpropagation)",
+      "Pre-training skala internet + Alignment (SFT/RLHF)",
+      "Kebutuhan Volume Data",
+      "Nol (memerlukan kurasi aturan dari pakar)",
+      "Sedang (ribuan sampel berlabel)",
+      "Tinggi (ratusan ribu hingga jutaan sampel)",
+      "Sangat Masif (triliunan token data multimodal)",
+      "Kebutuhan Komputasi",
+      "Rendah (Dapat dieksekusi pada CPU standar)",
+      "Sedang (Multi-core CPU / Single GPU)",
+      "Tinggi (Kluster Multi-GPU workstation)",
+      "Sangat Tinggi (Kluster ribuan akselerator GPU/TPU)",
+      "Interpretabilitas Model"
+    ]
+  },
+  {
+    "pageNumber": 37,
+    "chapterIndex": 2,
+    "chapterTitle": "Bab I: Latar Belakang, Definisi, & Taksonomi AI",
+    "shortTitle": "Bab I",
+    "paragraphs": [
+      "Sangat Tinggi (Alur keputusan transparan)",
+      "Sedang hingga Tinggi (Feature importance)",
+      "Rendah (Matriks bobot kompleks non-linear)",
+      "Rendah ke Sedang (Mechanistic Interpretability)",
+      "Kapasitas Generalisasi",
+      "Kaku (Terbatas pada aturan terdefinisi)",
+      "Spesifik pada distribusi data domain latih",
+      "Tinggi pada domain data kontinu (Vision/Audio)",
+      "Sangat Tinggi (Few-shot & Zero-shot reasoning)",
+      "Contoh Implementasi",
+      "Sistem Pakar MYCIN, Logika Fuzzy Mesin Cuci",
+      "Deteksi Penipuan Finansial, Model Credit Scoring",
+      "Pengenalan Wajah CCTV, Klasifikasi Citra Medis",
+      "ChatGPT, Claude, Gemini, DeepSeek, Midjourney"
+    ]
+  },
+  {
+    "pageNumber": 38,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "BAB II: KRONOLOGI DAN HISTORIOGRAFI EVOLUSI KECERDASAN BUATAN",
+      "Perkembangan historis kecerdasan buatan merupakan catatan dinamika keilmuan yang ditandai oleh pergeseran paradigma teoretis, siklus optimisme riset, disusul oleh periode stagnasi pendanaan yang dikenal sebagai 'AI Winter', hingga bermuara pada lompatan komputasi modern berbasis deep learning dan model bahasa skala besar.",
+      "2.1 Era Konseptualisasi dan Fondasi Awal (1943-1955)",
+      "Landasan konseptual kecerdasan buatan berakar pada integrasi antara neurofisiologi, logika matematika, dan teori komputasi pada dekade 1940-an:"
+    ]
+  },
+  {
+    "pageNumber": 39,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Model Neuron McCulloch-Pitts (1943): Warren McCulloch dan Walter Pitts mempublikasikan karya seminal 'A Logical Calculus of the Ideas Immanent in Nervous Activity'. Mereka merumuskan model matematis pertama dari neuron biologis sebagai gerbang biner dengan nilai ambang (threshold) yang mampu mengimplementasikan fungsi logika proposisional dasar (AND, OR, NOT).",
+      "Postulat Pembelajaran Hebbian (1949): Donald Hebb merumuskan teori pembelajaran biologis dalam karyanya 'The Organization of Behavior'. Prinsip Hebbian Learning menyatakan bahwa kekuatan transmisi sinaptik antarneuron meningkat apabila kedua neuron tersebut aktif secara bersamaan ('neurons that fire together, wire together'), yang menjadi landasan algoritma penyesuaian bobot jaringan saraf."
+    ]
+  },
+  {
+    "pageNumber": 40,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Makalah Fundamental Alan Turing (1950): Alan Turing mempublikasikan makalah 'Computing Machinery and Intelligence' yang memperkenalkan kriteria operasional Uji Turing, prinsip mesin pembelajaran (learning machines), dan meletakkan dasar pemikiran mengenai kecerdasan mesin.",
+      "2.2 Konferensi Dartmouth 1956 dan Era Keemasan Pertama (1956-1973)",
+      "Disiplin ilmu kecerdasan buatan secara resmi dideklarasikan pada musim panas tahun 1956 dalam lokakarya ilmiah bertajuk Dartmouth Summer Research Project on Artificial Intelligence di Dartmouth College. Pertemuan yang diorganisasi oleh John McCarthy, Marvin Minsky, Nathaniel Rochester, dan Claude Shannon tersebut berpijak pada hipotesis bahwa seluruh aspek kognisi manusia dapat dijelaskan secara presisi sehingga dapat disimulasikan oleh mesin komputasi."
+    ]
+  },
+  {
+    "pageNumber": 41,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Dekade awal pasca-Konferensi Dartmouth ditandai oleh serangkaian pencapaian penting dalam sistem simbolik dan koneksionis awal:",
+      "Logic Theorist (1956) dan General Problem Solver (1959): Allen Newell, Herbert Simon, dan J.C. Shaw mengembangkan program komputer pertama yang mampu membuktikan teorema matematika secara otomatis dari Principia Mathematica, disusul perancangan GPS sebagai kerangka pencarian heuristik universal.",
+      "Perceptron Frank Rosenblatt (1958): Frank Rosenblatt merancang arsitektur Perceptron pada perangkat keras Custom Mark I di Cornell Aeronautical Laboratory sebagai model jaringan saraf lapis tunggal pertama yang mampu mempelajari klasifikasi pola visual biner secara adaptif."
+    ]
+  },
+  {
+    "pageNumber": 42,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Sistem ELIZA (1966): Joseph Weizenbaum di MIT mengembangkan program pemrosesan bahasa alami berbasis pencocokan pola linguistik yang mensimulasikan psikoterapis.",
+      "Sistem SHRDLU (1971): Terry Winograd merancang lingkungan 'dunia balok' di mana sistem komputer mampu memanipulasi representasi objek dan merespons instruksi bahasa alami melalui inferensi logis terstruktur.",
+      "2.3 Periode First AI Winter (1974-1980)",
+      "Optimisme tinggi yang tidak diimbangi oleh kapasitas komputasi dan keterbatasan teoretis memicu penurunan drastis pendanaan dan minat riset, yang dikenal sebagai First AI Winter. Periode ini dipicu oleh tiga faktor utama:"
+    ]
+  },
+  {
+    "pageNumber": 43,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "1. Analisis Keterbatasan Perceptron (Minsky dan Papert, 1969): Marvin Minsky dan Seymour Papert menerbitkan buku 'Perceptrons' yang membuktikan secara matematis bahwa arsitektur perceptron lapis tunggal tidak mampu menyelesaikan fungsi logika non-linear paling mendasar, yaitu Exclusive-OR (XOR). Analisis ini menghentikan sebagian besar pendanaan riset jaringan saraf tiruan selama lebih dari satu dekade.",
+      "2. Laporan Lighthill (1973): Di Inggris, Profesor James Lighthill merilis laporan evaluasi komprehensif bagi Science Research Council yang menyimpulkan bahwa AI mengalami kegagalan akibat ledakan kombinatorial (combinatorial explosion) pada masalah dunia nyata. Laporan ini berdampak pada penghentian dukungan finansial pemerintah Inggris terhadap riset AI di perguruan tinggi."
+    ]
+  },
+  {
+    "pageNumber": 44,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "3. Restrukturisasi Anggaran DARPA (1974): Di Amerika Serikat, Kongres mengesahkan amendemen Mansfield yang mewajibkan DARPA hanya membiayai proyek riset pertahanan terapan dengan hasil terukur, memotong alokasi dana riset dasar kecerdasan buatan.",
+      "2.4 Era Sistem Pakar dan Kebangkitan Kembali Koneksionisme (1980-1987)",
+      "Awal dekade 1980-an mencatat kebangkitan kembali AI yang didorong oleh komersialisasi Sistem Pakar (Expert Systems) dan formalisasi matematis algoritma pelatihan jaringan saraf:"
+    ]
+  },
+  {
+    "pageNumber": 45,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Komersialisasi Sistem Pakar: Industri mengadopsi sistem berbasis aturan (Rule-based Systems) berskala besar. Sistem seperti R1/XCON di Digital Equipment Corporation (DEC) berhasil menghemat jutaan dolar per tahun dalam konfigurasi pesanan sistem komputer VAX, memicu pertumbuhan industri perangkat keras khusus seperti LISP Machines (Symbolics, LMI).",
+      "Proyek Fifth Generation Computer Systems / FGCS (1982): Kementerian Perdagangan dan Industri Jepang meluncurkan inisiatif bernilai ratusan juta dolar untuk mengembangkan arsitektur komputer pemrosesan paralel masif berbasis logika, memicu persaingan investasi teknologi global."
+    ]
+  },
+  {
+    "pageNumber": 46,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Penemuan Kembali Backpropagation (1986): David Rumelhart, Geoffrey Hinton, dan Ronald Williams mempublikasikan kembali secara sistematis penerapan algoritma Backpropagation untuk jaringan saraf multilapis (Multi-Layer Perceptron) berbasis aturan rantai kalkulus, membuktikan kemampuan jaringan dalam memecahkan masalah non-linearitas seperti XOR.",
+      "2.5 Periode Second AI Winter (1987-1993)",
+      "Kebangkitan sistem pakar menghadapi tantangan struktural pada akhir dekade 1980-an. Munculnya workstation komputer serbaguna berbasis prosesor mikro standar x86 dan RISC (seperti Sun Microsystems dan IBM) dengan rasio performa-harga yang jauh lebih unggul menyebabkan pasar perangkat keras LISP Machine mengalami kebangkrutan."
+    ]
+  },
+  {
+    "pageNumber": 47,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Secara metodologis, sistem pakar mengalami hambatan akuisisi pengetahuan (knowledge acquisition bottleneck). Pemeliharaan ribuan basis aturan yang saling tumpang tindih terbukti sangat mahal, rapuh, dan tidak adaptif terhadap perubahan data baru, sehingga memicu periode Second AI Winter.",
+      "2.6 Era Machine Learning Statistik dan Komputasi Modern (1993-2011)",
+      "Riset AI beralih dari pendekatan simbolik murni menuju metode statistik, probabilitas terapan, dan optimasi numerik ketat:",
+      "Dominasi Algoritma Statistik: Vladimir Vapnik mematangkan Support Vector Machines (SVM) dengan landasan teori statistical learning yang kokoh, disusul oleh pengembangan Random Forests oleh Leo Breiman (2001) dan jaringan Bayesian oleh Judea Pearl."
+    ]
+  },
+  {
+    "pageNumber": 48,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Kemenangan IBM Deep Blue (1997): Superkomputer IBM Deep Blue mengalahkan Juara Dunia Catur Garry Kasparov dalam pertandingan resmi 6 babak, memvalidasi efektivitas pemrosesan paralel akselerasi perangkat keras dan algoritma pencarian alpha-beta pruning.",
+      "DARPA Grand Challenge Otonom (2005): Kendaraan otonom 'Stanley' dari Stanford University berhasil menyelesaikan lintasan gurun sejauh 132 mil tanpa intervensi manusia dalam kompetisi DARPA Grand Challenge.",
+      "Inisiasi Basis Data ImageNet (2009): Profesor Fei-Fei Li di Stanford University merintis penyusunan dataset ImageNet yang memuat lebih dari 14 juta citra berlabel, menyediakan korpus data berskala besar untuk evaluasi model visual.",
+      "2.7 Revolusi Deep Learning (2012-2017)"
+    ]
+  },
+  {
+    "pageNumber": 49,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Tahun 2012 menandai transformasi besar dalam sejarah komputasi cerdas. Konvergensi antara ketersediaan data skala besar (Big Data), algoritma jaringan saraf dalam, dan akselerasi kartu grafis (GPU) melalui arsitektur paralel NVIDIA CUDA membuka era Deep Learning modern:",
+      "AlexNet dan ImageNet Challenge (2012): Alex Krizhevsky, Ilya Sutskever, dan Geoffrey Hinton merancang arsitektur Convolutional Neural Network (CNN) 8 lapis yang dilatih di atas dua GPU NVIDIA GeForce GTX 580. AlexNet memenangkan kompetisi ImageNet ILSVRC dengan memangkas tingkat kesalahan klasifikasi secara dramatis dari 26% menjadi 15,3%."
+    ]
+  },
+  {
+    "pageNumber": 50,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Word2Vec (2013): Tomas Mikolov et al. di Google memperkenalkan representasi vektor kata terdistribusi kontinu (Word Embeddings) yang mampu menangkap relasi semantik dan sintaktik linguistik secara matematis.",
+      "Generative Adversarial Networks / GAN (2014): Ian Goodfellow et al. merumuskan Generative Adversarial Networks (GAN) berbasis teori permainan minimax antara jaringan generator dan diskriminator.",
+      "ResNet (2015): Kaiming He et al. memperkenalkan Residual Networks (ResNet) dengan kedalaman hingga 152 lapisan yang mengatasi degradasi vanishing gradient melalui residual skip-connections.",
+      "AlphaGo (2016): Sistem AlphaGo dari DeepMind mengalahkan Juara Dunia Go Lee Sedol dengan skor 4-1 di Seoul melalui integrasi Deep Reinforcement Learning dan Monte Carlo Tree Search."
+    ]
+  },
+  {
+    "pageNumber": 51,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "2.8 Era Transformer, Model Bahasa Skala Besar, dan Reasoning Systems (2017-2026+)",
+      "Pada tahun 2017, tim peneliti Google (Ashish Vaswani et al.) mempublikasikan makalah seminal bertajuk 'Attention Is All You Need' yang memperkenalkan arsitektur Transformer. Arsitektur ini menggantikan ketergantungan pada mekanisme rekurensi sekuensial (RNN/LSTM) dengan mekanisme Self-Attention murni yang sangat optimal untuk diparalelkan pada perangkat keras kluster GPU/TPU modern.",
+      "Evolusi arsitektur Transformer mendorong kemunculan model fondasi dan Generative AI:",
+      "Evolusi Keluarga Model GPT (2018-2020): Rilis model GPT-1 (2018), GPT-2 (2019), dan GPT-3 (2020) dengan 175 miliar parameter yang membuktikan kapasitas in-context few-shot learning dan hukum penskalaan komputasi."
+    ]
+  },
+  {
+    "pageNumber": 52,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Demokratisasi Generative AI (2022): Peluncuran sistem dialog percakapan ChatGPT berbasis model instruksi pada akhir tahun 2022 memicu adopsi publik dan korporasi berskala global.",
+      "Model Frontier Multimodal dan Open-Weight (2023-2024): Pengembangan model fondasi multimodal frontier (GPT-4o, Gemini 1.5/2.0, Claude 3.5 Sonnet) serta demokratisasi model berbobot terbuka (Open-Weight Models) melalui seri Llama 3.1 dari Meta."
+    ]
+  },
+  {
+    "pageNumber": 53,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Era Reasoning Models dan Agentic Systems (2025-2026+): Transisi menuju arsitektur penalaran reflektif (Reasoning Models seperti OpenAI o1/o3-mini dan DeepSeek-R1) yang memanfaatkan Reinforcement Learning skala besar untuk membangun rantai penalaran terverifikasi, serta optimalisasi efisiensi komputasi melalui arsitektur Multi-head Latent Attention (MLA) dan Mixture of Experts (MoE).",
+      "Tabel: 2.1 Garis Waktu Kronologis Tonggak Perkembangan Kecerdasan Buatan (1943-2026+)",
+      "Periode / Tahun",
+      "Fase Perkembangan",
+      "Tonggak Peristiwa Utama",
+      "Tokoh / Institusi Pengembang",
+      "1943",
+      "Konseptualisasi Awal",
+      "Model matematis neuron artifisial biner pertama",
+      "Warren McCulloch & Walter Pitts",
+      "1950",
+      "Fondasi Teoretis",
+      "Uji Turing & konsep mesin komputasi cerdas",
+      "Alan Turing (Mind Journal)",
+      "1956",
+      "Deklarasi AI",
+      "Dartmouth Summer Research Project on AI"
+    ]
+  },
+  {
+    "pageNumber": 54,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "John McCarthy, Marvin Minsky, Claude Shannon",
+      "1958",
+      "Koneksionisme Awal",
+      "Perancangan Mark I Perceptron visual",
+      "Frank Rosenblatt (Cornell Laboratory)",
+      "1969",
+      "Awal AI Winter I",
+      "Publikasi buku 'Perceptrons' (limitasi XOR)",
+      "Marvin Minsky & Seymour Papert",
+      "1973-1974",
+      "First AI Winter",
+      "Laporan Lighthill & pemotongan anggaran riset",
+      "James Lighthill, Parlemen UK, DARPA",
+      "1980-1985",
+      "Sistem Pakar",
+      "Komersialisasi sistem berbasis aturan (R1/XCON)",
+      "Edward Feigenbaum, DEC, LISP Vendors",
+      "1986",
+      "Kebangkitan Jaringan",
+      "Formalisasi Backpropagation untuk MLP",
+      "David Rumelhart, Geoffrey Hinton, R. Williams",
+      "1987-1993",
+      "Second AI Winter",
+      "Runtuhnya pasar LISP Machine & bottleneck aturan",
+      "Kompetisi mikroprosesor PC x86/RISC",
+      "1997",
+      "Komputasi Simbolik-Catur",
+      "Deep Blue mengalahkan Garry Kasparov",
+      "IBM Supercomputing Team",
+      "2005",
+      "Navigasi Otonom"
+    ]
+  },
+  {
+    "pageNumber": 55,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "Stanley memenangkan DARPA Grand Challenge",
+      "Sebastian Thrun (Stanford University)",
+      "2012",
+      "Revolusi Deep Learning",
+      "AlexNet memenangkan ImageNet via GPU CUDA",
+      "Alex Krizhevsky, Ilya Sutskever, G. Hinton",
+      "2014",
+      "Generative Modeling",
+      "Perumusan Generative Adversarial Networks",
+      "Ian Goodfellow et al.",
+      "2016",
+      "Reinforcement Learning",
+      "AlphaGo mengalahkan Juara Dunia Go 4-1",
+      "Demis Hassabis, David Silver (DeepMind)",
+      "2017",
+      "Revolusi Transformer",
+      "Publikasi 'Attention Is All You Need'",
+      "Vaswani et al. (Google Brain & Research)",
+      "2020",
+      "Scaling Laws & LLM",
+      "GPT-3 (175B) memvalidasi in-context learning",
+      "OpenAI (Tom Brown et al.)",
+      "2022",
+      "Adopsi Publik Global",
+      "Peluncuran ChatGPT berbasis model instruksi",
+      "OpenAI",
+      "2023-2024",
+      "Multimodal Frontier",
+      "GPT-4, Claude 3.5, Gemini 1.5, Llama 3.1 405B",
+      "OpenAI, Anthropic, Google, Meta AI",
+      "2025-2026+",
+      "Reasoning & Agentic AI"
+    ]
+  },
+  {
+    "pageNumber": 56,
+    "chapterIndex": 3,
+    "chapterTitle": "Bab II: Kronologi & Historiografi Evolusi AI (1943-2026)",
+    "shortTitle": "Bab II",
+    "paragraphs": [
+      "OpenAI o1/o3, DeepSeek-V3/R1, Agen Otonom",
+      "DeepSeek, OpenAI, Komunitas Riset Global"
+    ]
+  },
+  {
+    "pageNumber": 57,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "BAB III: METRIK PERTUMBUHAN DAN DATA HISTORIS KECERDASAN BUATAN",
+      "Analisis komparatif terhadap perkembangan kecerdasan buatan menuntut pemahaman terhadap metrik kuantitatif terukur. Bab ini menyajikan data empiris historis yang mencakup pertumbuhan daya komputasi pelatihan (FLOPs), eskalasi parameter model, volume token dataset, dinamika tolok ukur benchmark industri (MMLU, GSM8K, HumanEval, Chatbot Arena), konsumsi energi, serta nilai valuasi pasar kecerdasan buatan global dari era pra-Deep Learning hingga pertengahan 2026.",
+      "3.1 Hukum Penskalaan Komputasi (Compute Scaling Laws) dan FLOPs"
+    ]
+  },
+  {
+    "pageNumber": 58,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Dalam komputasi performa tinggi, beban komputasi pelatihan model diukur dalam satuan FLOPs (Floating Point Operations). Penelitian seminal oleh Jared Kaplan et al. (OpenAI, 2020) mengenai 'Scaling Laws for Neural Language Models' merumuskan bahwa kinerja model bahasa (dinyatakan dalam nilai cross-entropy loss) mengikuti hukum pangkat (power-law) yang teratur terhadap tiga variabel utama: jumlah parameter model (N), volume dataset token (D), dan total komputasi pelatihan (C)."
+    ]
+  },
+  {
+    "pageNumber": 59,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Pada tahun 2022, Jordan Hoffmann et al. di DeepMind memperbarui formula penskalaan tersebut melalui temuan 'Chinchilla Scaling Laws'. Kajian Chinchilla membuktikan bahwa model bahasa generasi awal mengalami kondisi sub-optimal (under-trained) di mana ukuran parameter diperbesar tanpa peningkatan volume token yang proporsional. Untuk mencapai efisiensi komputasi optimal (compute-optimal frontier), parameter model dan token data harus diskalakan secara seimbang dengan rasio mendekati 20 token per 1 parameter bobot.",
+      "Berdasarkan analisis komputasi dari Epoch AI dan Stanford AI Index, laju pertumbuhan komputasi pelatihan AI terbagi dalam tiga era historis:"
+    ]
+  },
+  {
+    "pageNumber": 60,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "1. Era Pra-Deep Learning (1950-2010): Kapasitas komputasi pelatihan bertumbuh selaras dengan Hukum Moore konvensional, dengan waktu penggandaan (doubling time) berkisar antara 18 hingga 24 bulan.",
+      "2. Era Deep Learning Awal (2012-2020): Pertumbuhan komputasi pelatihan melonjak tajam dengan periode penggandaan hanya sekitar 3,4 bulan, didorong oleh akselerasi pemrosesan paralel GPU.",
+      "3. Era Model Fondasi Skala Besar dan Reasoning (2020-2026+): Ditandai oleh model triliunan parameter dan kluster puluhan ribu GPU berkecepatan tinggi (NVIDIA H100/B200), di mana komputasi model frontier melampaui 10^25 hingga 10^26 FLOPs.",
+      "3.2 Evolusi Parameter Model Bahasa dan Vision (2018-2026)"
+    ]
+  },
+  {
+    "pageNumber": 61,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Parameter merupakan variabel bobot terinternalisasi dalam jaringan saraf yang disesuaikan selama proses optimasi numerik. Pertumbuhan jumlah parameter merefleksikan kapasitas representasional model:",
+      "Tahun 2018: Model BERT dirilis dengan varian BERT-Base (110 juta parameter) dan BERT-Large (340 juta parameter), yang pada masanya menjadi standar arsitektur representasi bahasa.",
+      "Tahun 2019: Model GPT-2 diluncurkan dengan skala terbesar 1,5 miliar parameter (1.5B), menunjukkan kemampuan sintesis teks multialinea.",
+      "Tahun 2020: Model GPT-3 menandai lompatan ke skala 175 miliar parameter (175B), membuktikan fenomena emergent abilities pada model padat (dense).",
+      "Tahun 2022: Google meluncurkan PaLM dengan 540 miliar parameter (540B) yang dilatih menggunakan 6.144 chip TPU v4."
+    ]
+  },
+  {
+    "pageNumber": 62,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Tahun 2023: Model GPT-4 mengadopsi arsitektur Mixture of Experts (MoE) dengan estimasi total ~1,8 triliun parameter terdistribusi melintasi 16 sub-jaringan expert.",
+      "Tahun 2024: Meta merilis Llama 3.1 405B sebagai model open-weight padat (dense) terbesar dengan 405 miliar parameter murni.",
+      "Tahun 2025-2026: DeepSeek memperkenalkan DeepSeek-V3 dan DeepSeek-R1 berbasis arsitektur MoE dengan total 671 miliar parameter, di mana hanya 37 miliar parameter yang aktif per token inferensi.",
+      "3.3 Pertumbuhan Volume Token Dataset Pelatihan",
+      "Ukuran korpus data pelatihan yang diukur dalam satuan token (pecahan sub-kata) mengalami peningkatan eksponensial:",
+      "Periode 2018: BERT (2018) dilatih menggunakan kombinasi BookCorpus dan Wikipedia bahasa Inggris dengan total sekitar 3,3 miliar kata (~4,5 miliar token)."
+    ]
+  },
+  {
+    "pageNumber": 63,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Periode 2020: GPT-3 (2020) dilatih menggunakan korpus data terfilter Common Crawl, WebText, Books, dan Wikipedia dengan total 300 miliar token.",
+      "Periode 2023: LLaMA 1 (2023) dilatih pada 1,4 triliun token, dan Llama 2 meningkat menjadi 2 triliun token.",
+      "Periode 2024-2026: Llama 3.1 (2024) dan DeepSeek-V3 (2025) dilatih menggunakan korpus data multibahasa dan kode terkurasi melampaui 14,8 hingga 15,6 triliun token.",
+      "3.4 Tolok Ukur Kinerja Standar Industri (Benchmark Metrics)",
+      "Pengujian kapabilitas penalaran, rekayasa kode, dan pemecahan masalah matematika dilakukan melalui tolok ukur standar:",
+      "1. MMLU (Massive Multitask Language Understanding)"
+    ]
+  },
+  {
+    "pageNumber": 64,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "MMLU mencakup 57 subjek ujian komprehensif mulai dari matematika dasar, sejarah, hukum, kedokteran klinis, hingga etika profesional tingkat tinggi. Skor rata-rata manusia ahli berada pada kisaran 89,8%. Model GPT-3.5 (2022) meraih skor ~70,0%, sementara model frontier kontemporer (GPT-4o, Claude 3.5 Sonnet, DeepSeek-V3) secara konsisten mencapai rentang 88,5% hingga 90,8%.",
+      "2. GSM8K (Grade School Math) dan MATH Benchmark"
+    ]
+  },
+  {
+    "pageNumber": 65,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "GSM8K mengevaluasi penalaran matematika verbal multi-tahap tingkat dasar, sedangkan dataset MATH menguji penyelesaian persoalan matematika tingkat olimpiade internasional. Skor GSM8K melonjak dari 35% (model tahun 2020) menjadi melampaui 96% pada model penalaran modern (OpenAI o1, DeepSeek-R1), sementara skor MATH kompetisi meningkat dari 15% (GPT-4 2023) menjadi >75-90% pada model reasoning kontemporer.",
+      "3. HumanEval dan SWE-bench (Software Engineering)",
+      "HumanEval mengukur kemampuan model menghasilkan fungsi Python yang lolos pengujian unit test (pass@1). SWE-bench mengevaluasi kemampuan model menyelesaikan permasalahan bug nyata dari repositori open-source GitHub. Skor pada SWE-bench Verified meningkat dari 4,8% pada awal 2024 menjadi >45-55% pada model generasi 2025/2026."
+    ]
+  },
+  {
+    "pageNumber": 66,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "4. LMSYS Chatbot Arena (Crowdsourced ELO Rating)",
+      "Platform evaluasi buta (blind A/B testing) yang dikelola oleh LMSYS Organization UC Berkeley. Berdasarkan preferensi ribuan pengguna global yang dinilai menggunakan sistem rating ELO, model-model pemimpin pasar menempati rentang ELO 1.300 hingga 1.380+.",
+      "3.5 Biaya Komputasi Pelatihan dan Konsumsi Energi",
+      "Pelatihan model fondasi skala besar memerlukan alokasi finansial dan konsumsi daya listrik yang signifikan:",
+      "GPT-3 (OpenAI, 2020): Menghabiskan estimasi biaya komputasi sekitar $4,6 juta dengan konsumsi energi sekitar 1.287 MWh.",
+      "GPT-4 (OpenAI, 2023): Diestimasikan memerlukan infrastruktur kluster komputasi di atas $100 juta dengan konsumsi energi puluhan ribu MWh."
+    ]
+  },
+  {
+    "pageNumber": 67,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Llama 3.1 405B (Meta, 2024): Dilatih menggunakan 16.000 GPU NVIDIA H100 selama 54 hari (3,9 x 10^25 FLOPs) dengan investasi infrastruktur bernilai puluhan juta dolar.",
+      "DeepSeek-V3 (DeepSeek, 2024-2025): Mencapai efisiensi komputasi tinggi: pelatihan model 671B MoE pada 14,8 triliun token diselesaikan dalam 2,788 juta GPU-hours (kluster 2.048 GPU NVIDIA H800) dengan total biaya sewa perangkat keras sekitar $5,58 juta.",
+      "3.6 Proyeksi Pertumbuhan Nilai Pasar AI Global (2018-2030)",
+      "Kajian pasar dari Gartner, IDC, dan Statista mencatat pertumbuhan kapitalisasi pasar kecerdasan buatan global dengan laju pertumbuhan majemuk tahunan (CAGR) mencapai 28,46%:",
+      "Tahun 2018: Valuasi pasar global tercatat sebesar $40,17 miliar.",
+      "Tahun 2021: Meningkat menjadi $86,90 miliar seiring adopsi enterprise machine learning."
+    ]
+  },
+  {
+    "pageNumber": 68,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Tahun 2024: Mencapai $184,04 miliar dipicu oleh ekspansi ekosistem Generative AI.",
+      "Proyeksi Tahun 2030: Diproyeksikan melampaui $826,70 miliar dengan penetrasi penuh pada industri manufaktur, kesehatan, perbankan, dan sistem perangkat lunak mandiri.",
+      "Tabel: 3.1 Data Metrik Komparatif Historis Model Kecerdasan Buatan Terkemuka Dunia (2012-2026+)",
+      "Model AI",
+      "Tahun Rilis",
+      "Arsitektur",
+      "Parameter Total (Aktif)",
+      "Volume Token Data",
+      "Estimasi FLOPs",
+      "MMLU (%)",
+      "HumanEval (%)",
+      "AlexNet",
+      "2012",
+      "CNN (8 Lapisan)",
+      "60 Juta",
+      "1.2 Juta Citra",
+      "1.4 x 10^17",
+      "N/A",
+      "N/A",
+      "ResNet-152",
+      "2015",
+      "CNN + Residual",
+      "60 Juta",
+      "1.2 Juta Citra",
+      "1.1 x 10^18",
+      "N/A",
+      "N/A",
+      "BERT-Large",
+      "2018",
+      "Transformer Enc",
+      "340 Juta",
+      "3.3 Miliar Kata",
+      "2.8 x 10^19",
+      "N/A",
+      "N/A",
+      "GPT-2",
+      "2019",
+      "Transformer Dec",
+      "1.5 Miliar",
+      "40 GB WebText",
+      "1.5 x 10^21",
+      "N/A",
+      "N/A",
+      "GPT-3",
+      "2020",
+      "Transformer Dec",
+      "175 Miliar",
+      "300 Miliar",
+      "3.1 x 10^23",
+      "43.9%",
+      "N/A",
+      "Chinchilla",
+      "2022"
+    ]
+  },
+  {
+    "pageNumber": 69,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Transformer Dec",
+      "70 Miliar",
+      "1.4 Triliun",
+      "5.8 x 10^23",
+      "67.5%",
+      "35.5%",
+      "GPT-3.5",
+      "2022",
+      "Transformer Dec",
+      "175 Miliar*",
+      "500 Miliar*",
+      "1.0 x 10^24*",
+      "70.0%",
+      "48.1%",
+      "Llama 1 (65B)",
+      "2023",
+      "Transformer Dec",
+      "65 Miliar",
+      "1.4 Triliun",
+      "5.7 x 10^23",
+      "63.4%",
+      "23.7%",
+      "GPT-4",
+      "2023",
+      "MoE (16 Experts)",
+      "~1.8 Triliun*",
+      "~13 Triliun*",
+      "~2.1 x 10^25*",
+      "86.4%",
+      "67.0%",
+      "Llama 3 (70B)",
+      "2024",
+      "Transformer Dec",
+      "70 Miliar",
+      "15.0 Triliun",
+      "6.3 x 10^24",
+      "82.0%",
+      "81.7%",
+      "Llama 3.1 (405B)",
+      "2024",
+      "Dense Dec",
+      "405 Miliar",
+      "15.6 Triliun",
+      "3.8 x 10^25",
+      "88.6%",
+      "89.0%",
+      "Claude 3.5 Sonnet",
+      "2024",
+      "Transformer MoE*",
+      "Frontier Scale*",
+      "Multimodal*",
+      "Frontier Scale*",
+      "88.7%",
+      "92.0%",
+      "Gemini 1.5 Pro",
+      "2024",
+      "Multimodal Native",
+      "Frontier Scale*",
+      "2M Konteks*",
+      "Frontier Scale*",
+      "85.9%",
+      "84.1%",
+      "DeepSeek-V3",
+      "2024-2025",
+      "MoE + MLA",
+      "671B (37B Aktif)",
+      "14.8 Triliun",
+      "5.2 x 10^24",
+      "88.5%",
+      "89.1%",
+      "DeepSeek-R1",
+      "2025",
+      "Reasoning MoE",
+      "671B (37B Aktif)",
+      "14.8T + RL CoT",
+      "5.5 x 10^24*",
+      "90.8%",
+      "96.1%",
+      "OpenAI o1 / o3",
+      "2024-2025",
+      "Reasoning RL",
+      "Frontier Scale*"
+    ]
+  },
+  {
+    "pageNumber": 70,
+    "chapterIndex": 4,
+    "chapterTitle": "Bab III: Metrik Pertumbuhan & Data Historis AI",
+    "shortTitle": "Bab III",
+    "paragraphs": [
+      "Test-Time RL*",
+      "Frontier Scale*",
+      "91.8%",
+      "96.7%"
+    ]
+  },
+  {
+    "pageNumber": 71,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "BAB IV: LANSKAP KORPORASI DAN MODEL AI BESAR PEMIMPIN PASAR",
+      "Struktur pasar kecerdasan buatan global saat ini didominasi oleh korporasi teknologi skala besar, laboratorium riset khusus, serta startup inovator yang memadukan keunggulan arsitektural dan infrastruktur komputasi. Bab ini menyajikan telaah mendalam terhadap karakteristik teknis, filosofi arsitektur, lini model unggulan, dan strategi ekosistem para pengembang utama AI dunia.",
+      "4.1 OpenAI: Pelopor Model Tertutup dan Penalaran Formal"
+    ]
+  },
+  {
+    "pageNumber": 72,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Didirikan pada tahun 2015 dan bermitra strategis dengan Microsoft, OpenAI merupakan institusi perintis yang memicu adopsi Generative AI global melalui rilis ChatGPT pada akhir tahun 2022. OpenAI menerapkan model bisnis berbasis closed-source proprietary API, di mana arsitektur internal dan bobot parameter dirahasiakan.",
+      "Lini model utama OpenAI meliputi:",
+      "GPT-4o dan GPT-4o mini: Model multimodal terpadu yang memproses teks, visual, dan audio secara simultan dengan latensi pemrosesan rendah.",
+      "OpenAI o1 dan o3-mini: Model penalaran (Reasoning Models) yang dilatih menggunakan algoritma Reinforcement Learning untuk memproduksi rantai penalaran internal (Chain-of-Thought) sebelum memberikan respons akhir pada tugas matematika dan pemrograman kompetitif."
+    ]
+  },
+  {
+    "pageNumber": 73,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Sora: Model difusi ruang laten (Diffusion Transformer) untuk sintesis video resolusi tinggi dengan konsistensi fisik temporal.",
+      "4.2 Google DeepMind: Riset Saintifik dan Arsitektur Multimodal Native",
+      "Google menggabungkan divisi Google Brain dan DeepMind untuk memperkuat kepemimpinan teknologi AI vertikal terpadu - mencakup infrastruktur chip akselerator kustom (Tensor Processing Unit / TPU), platform komputasi awan, dan data multimodal global.",
+      "Fokus teknologi dan portofolio unggulan Google meliputi:",
+      "Keluarga Gemini (Gemini 1.5 Pro dan 2.0 Flash): Model fondasi yang dirancang sejak awal sebagai Native Multimodal. Gemini 1.5 Pro memperkenalkan jendela konteks hingga 2 juta token, memungkinkan pemrosesan korpus video, audio, dan repositori basis kode program dalam satu jendela inferensi."
+    ]
+  },
+  {
+    "pageNumber": 74,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "AlphaFold 3: Model prediksi struktur 3D seluruh molekul biologis (protein, DNA, RNA), yang dianugerahi Hadiah Nobel Kimia pada tahun 2024.",
+      "Google TPU v5e dan TPU v6 (Trillium): Akselerator ASIC generasi terbaru yang dioptimasi untuk pelatihan dan inferensi model berskala triliunan parameter di Google Cloud.",
+      "4.3 Anthropic: Pelopor Constitutional AI dan Keamanan Model",
+      "Didirikan oleh para peneliti keselamatan AI (Dario Amodei et al.), Anthropic mengembangkan model bahasa dengan prinsip interpretabilitas dan keselamatan intrinsik melalui dukungan kemitraan komputasi awan Amazon AWS dan Google Cloud."
+    ]
+  },
+  {
+    "pageNumber": 75,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Metodologi Constitutional AI: Pendekatan pelatihan di mana model diselaraskan menggunakan prinsip etika tertulis melalui Reinforcement Learning from AI Feedback (RLAIF) untuk meminimalkan halusinasi dan keluaran berbahaya.",
+      "Keluarga Claude 3.5: Claude 3.5 Sonnet diakui secara luas sebagai standar industri dalam penalaran rekayasa perangkat lunak, penyelesaian tugas pemrograman kompleks, dan analisis teknis bernuansa.",
+      "Fitur Artifacts dan API Computer Use: Fitur antarmuka kerja interaktif dan API yang memungkinkan model berinteraksi langsung dengan antarmuka grafis sistem operasi desktop.",
+      "4.4 Meta AI: Pengembang Ekosistem Berbobot Terbuka (Open-Weight)"
+    ]
+  },
+  {
+    "pageNumber": 76,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Meta Platforms mengadopsi pendekatan terbuka dengan merilis bobot parameter model fondasi ke komunitas riset global melalui seri Llama (Large Language Model Meta AI):",
+      "Seri Llama 3 dan Llama 3.1: Llama 3.1 405B menjadi model open-weight padat (dense) terbesar di dunia, memberikan akses bagi institusi akademik dan enterprise untuk melakukan self-hosting, audit transparansi, dan adaptasi data privat.",
+      "Dampak Ekosistem Riset: Ketersediaan model Llama mendorong pembentukan ekosistem riset terdesentralisasi, mempercepat inovasi teknik kuantisasi dan fine-tuning di seluruh dunia.",
+      "4.5 DeepSeek: Inovasi Efisiensi Arsitektur dan Penalaran Terbuka"
+    ]
+  },
+  {
+    "pageNumber": 77,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "DeepSeek menghadirkan terobosan besar dalam rekayasa kecerdasan buatan melalui optimalisasi struktur komputasi yang menekan biaya pelatihan dan inferensi secara radikal:",
+      "Multi-head Latent Attention (MLA): Mekanisme atensi yang memproyeksikan representasi Key-Value cache ke dalam ruang laten berdimensi rendah, memangkas kebutuhan memori VRAM GPU hingga 93% selama proses inferensi konteks panjang.",
+      "DeepSeekMoE Architecture: Arsitektur Mixture of Experts dengan perutean halus (256 routed experts + 1 shared expert), mengaktifkan hanya 37 miliar dari total 671 miliar parameter per token.",
+      "DeepSeek-R1: Model penalaran yang dilatih menggunakan Large-Scale Reinforcement Learning murni tanpa ketergantungan pada dataset demonstrasi beranotasi mahal, dirilis secara terbuka di bawah lisensi MIT."
+    ]
+  },
+  {
+    "pageNumber": 78,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "4.6 Mistral AI dan Infrastruktur Komputasi Penopang",
+      "Mistral AI (Prancis) memelopori pengembangan model Sparse MoE berbobot ringan di Eropa (Mistral 7B, Mixtral 8x7B, Mixtral 8x22B, Codestral) dengan throughput inferensi tinggi.",
+      "Keberlangsungan ekosistem model di atas ditopang oleh rantai pasok perangkat keras dan platform komputasi awan:",
+      "NVIDIA: Memegang monopoli akselerator perangkat keras data center (>80% pangsa pasar). GPU mikroarsitektur Hopper (H100/H200) dan Blackwell (B200, GB200), didukung oleh platform CUDA dan pustaka TensorRT-LLM, menjadi fondasi utama pelatihan model fondasi global.",
+      "Microsoft Azure: Penyedia kluster superkomputer AI untuk model komersial dan integrasi layanan GitHub Copilot."
+    ]
+  },
+  {
+    "pageNumber": 79,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Amazon AWS: Penyedia platform Amazon Bedrock serta perancang chip akselerator kustom Trainium 2 dan Inferentia 2.",
+      "xAI (Elon Musk): Membangun superkluster komputasi Colossus berbasis 100.000+ GPU NVIDIA H100/H200 untuk melatih model seri Grok.",
+      "Apple Intelligence: Mengembangkan model on-device 3B parameter dengan sistem perlindungan komputasi awan privat (Private Cloud Compute).",
+      "Tabel: 4.1 Matriks Komparatif Ekosistem Model Kecerdasan Buatan Terkemuka Global (2024-2026+)",
+      "Pengembang",
+      "Keluarga Model",
+      "Arsitektur Dasar",
+      "Parameter Total (Aktif)",
+      "Lisensi / Akses",
+      "Keunggulan Utama",
+      "OpenAI",
+      "GPT-4o / o1 / o3",
+      "MoE / Reasoning RL",
+      "Frontier Scale (~1.8T MoE*)",
+      "Proprietary Closed API",
+      "Penalaran System 2, multimodal audio/vision native",
+      "Google DeepMind",
+      "Gemini 1.5 / 2.0",
+      "Multimodal MoE",
+      "Frontier Scale (TPU v5/v6)",
+      "Proprietary Closed API"
+    ]
+  },
+  {
+    "pageNumber": 80,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Konteks 2M token, integrasi infrastruktur TPU",
+      "Anthropic",
+      "Claude 3.5 Sonnet",
+      "Transformer MoE*",
+      "Frontier Scale*",
+      "Proprietary Closed API",
+      "Standar coding/SWE-bench, Constitutional AI safety",
+      "Meta AI",
+      "Llama 3.1 (8B-405B)",
+      "Dense Transformer Dec",
+      "405B (405B Aktif)",
+      "Open-Weight (Llama License)",
+      "Model open terbesar, dapat di-self-host & fine-tune",
+      "DeepSeek",
+      "DeepSeek-V3 / R1",
+      "DeepSeekMoE + MLA",
+      "671B (37B Aktif)",
+      "Open-Weight (MIT License)",
+      "Efisiensi komputasi tinggi, MLA KV compression, RL reasoning",
+      "Mistral AI",
+      "Mixtral 8x22B",
+      "Sparse MoE",
+      "141B (39B Aktif)",
+      "Open-Weight (Apache 2.0)",
+      "Throughput inferensi cepat, efisiensi arsitektur MoE",
+      "xAI",
+      "Grok-2 / Grok-3",
+      "Dense / MoE*",
+      "Frontier Scale*",
+      "Proprietary / Semi-Open",
+      "Integrasi data platform X, supercluster Colossus",
+      "NVIDIA",
+      "Nemo / Megatron-LM",
+      "Distributed Framework",
+      "Tools & SDK Acceleration",
+      "Open Source & Commercial"
+    ]
+  },
+  {
+    "pageNumber": 81,
+    "chapterIndex": 5,
+    "chapterTitle": "Bab IV: Lanskap Korporasi & Model AI Global",
+    "shortTitle": "Bab IV",
+    "paragraphs": [
+      "Infrastruktur CUDA, TensorRT-LLM, hardware H100/Blackwell"
+    ]
+  },
+  {
+    "pageNumber": 82,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "BAB V: FONDASE MATEMATIKA DAN ARSITEKTUR KOMPUTASI AI",
+      "Sistem kecerdasan buatan dan model bahasa besar dibangun atas dasar konstruksi matematika formal yang diimplementasikan pada perangkat keras komputasi performa tinggi. Bab ini membedah pilar-pilar matematika pendukung - Aljabar Linear, Kalkulus Multivariabel, Probabilitas, dan Teori Informasi - serta menganalisis secara terperinci arsitektur jaringan saraf tiruan, mekanisme Scaled Dot-Product Attention, Grouped-Query Attention (GQA), Rotary Position Embedding (RoPE), RMSNorm, dan arsitektur Mixture of Experts (MoE).",
+      "5.1 Pilar Fondasi Matematika Kecerdasan Buatan",
+      "1. Aljabar Linear"
+    ]
+  },
+  {
+    "pageNumber": 83,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Aljabar linear merupakan representasi data dan transformasi matematis utama dalam pembelajaran mesin. Seluruh informasi masukan dan parameter model dinyatakan dalam struktur aljabar:",
+      "Vektor (x in R^d): Setiap token kata atau fitur direpresentasikan sebagai larik numerik 1-dimensi dalam ruang vektor berdimensi d (misalnya d = 4.096 pada Llama 3 8B).",
+      "Matriks Bobot (W in R^(m x n)): Lapisan jaringan saraf menggunakan matriks bobot W berdimensi (d_in x d_out) untuk memetakan representasi antarruang fitur melalui perkalian matriks: y = W · x.",
+      "Tensor Multidimensi: Array multidimensi yang merepresentasikan kumpulan batch teks, panjang sekuens token, dan dimensi embedding: Tensor berukuran (Batch_Size, Sequence_Length, Hidden_Dimension)."
+    ]
+  },
+  {
+    "pageNumber": 84,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Kosinus Similaritas: Metrik untuk mengukur derajat kesamaan semantik antara dua vektor representasi: CosSim(u, v) = (u · v) / (||u|| ||v||).",
+      "2. Kalkulus Multivariabel dan Optimasi Gradien",
+      "Proses optimasi model bertujuan meminimalkan nilai fungsi kerugian (Loss Function, L). Untuk menentukan arah pembaruan parameter bobot, digunakan turunan parsial dan kalkulus diferensial:",
+      "Vektor Gradien (∇L): Vektor yang memuat kumpulan seluruh turunan parsial fungsi loss terhadap setiap parameter bobot: ∇L = [∂L/∂w_1, ∂L/∂w_2, ..., ∂L/∂w_n]. Bobot diperbarui berlawanan dengan arah gradien (Gradient Descent).",
+      "Aturan Rantai (Chain Rule): Aturan turunan fungsi komposisi yang mendasari perambatan mundur galat dari lapisan luaran ke lapisan masukan: ∂L/∂x = (∂L/∂y) · (∂y/∂x).",
+      "3. Teori Probabilitas dan Informasi"
+    ]
+  },
+  {
+    "pageNumber": 85,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Pemodelan bahasa kausal dirumuskan sebagai estimasi distribusi probabilitas bersyarat kemunculan token berikutnya: P(w_t | w_1, w_2, ..., w_(t-1)). Konsep-konsep esensial meliputi:",
+      "Fungsi Softmax: Transformasi vektor logits numerik riil (z) menjadi distribusi probabilitas dengan rentang nilai [0, 1] dan jumlah total sama dengan 1: Softmax(z_i) = exp(z_i) / Σ exp(z_j).",
+      "Cross-Entropy Loss: Fungsi kerugian untuk mengukur selisih antara distribusi probabilitas prediksi model dengan distribusi data target aktual: L_CE = - Σ y_i · log(p_hat_i).",
+      "Kullback-Leibler (KL) Divergence: Metrik teori informasi untuk mengukur divergensi relatif antara distribusi probabilitas P terhadap distribusi referensi Q: D_KL(P || Q) = Σ P(x) · log(P(x) / Q(x)).",
+      "5.2 Jaringan Saraf Tiruan Dasar dan Algoritma Optimasi"
+    ]
+  },
+  {
+    "pageNumber": 86,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Neuron artifisial menerima sinyal masukan x, mengalikannya dengan matriks bobot W, menambahkan bias b, kemudian melewatkannya ke fungsi aktivasi non-linear f:",
+      "Persamaan Pemetaan Neuron: y = f( W · x + b ) = f( Σ w_i x_i + b )",
+      "Fungsi aktivasi non-linear diperlukan agar tumpukan lapisan jaringan saraf mampu memodelkan hubungan data yang kompleks dan non-linear. Perkembangan fungsi aktivasi modern meliputi:",
+      "ReLU (Rectified Linear Unit): f(x) = max(0, x). Fungsi standar deep learning klasik dengan efisiensi komputasi tinggi.",
+      "GELU (Gaussian Error Linear Unit): f(x) = x · Φ(x), di mana Φ(x) merupakan fungsi distribusi kumulatif normal standar. Diadopsi secara luas pada BERT dan GPT-2."
+    ]
+  },
+  {
+    "pageNumber": 87,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "SwiGLU (Swish Gated Linear Unit): SwiGLU(x) = Swish_β(x W_gate) ⊙ (x W_up). Menggunakan mekanisme gating perkalian elemen (Hadamard product), diadopsi oleh Llama 3 dan DeepSeek-V3.",
+      "Algoritma Optimasi Pembelajaran Mesin",
+      "Untuk memperbarui bobot parameter W pada setiap langkah iterasi t, industri mengadopsi algoritma turunan gradien berbasis momen adaptif:",
+      "Adam (Adaptive Moment Estimation): Menghitung rata-rata bergerak eksponensial dari gradien (momen pertama, m_t) dan kuadrat gradien (momen kedua, v_t) untuk menyesuaikan learning rate tiap parameter secara individual.",
+      "AdamW (Decoupled Weight Decay): Memperbaiki penalti regulasi L2 dengan memisahkan peluruhan bobot (Weight Decay) dari perhitungan momen gradien. AdamW merupakan optimizer standar dalam pelatihan model fondasi."
+    ]
+  },
+  {
+    "pageNumber": 88,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "5.3 Arsitektur Transformer Secara Mendalam",
+      "Arsitektur Transformer (Vaswani et al., 2017) memproses seluruh sekuens token secara paralel menggunakan mekanisme Atensi Mandiri (Self-Attention).",
+      "1. Mekanisme Scaled Dot-Product Attention",
+      "Representasi masukan X diproyeksikan secara linear menjadi tiga matriks: Query (Q = X · W_Q), Key (K = X · W_K), dan Value (V = X · W_V). Query merepresentasikan target pencarian token, Key merepresentasikan profil identitas token lain, dan Value memuat kandungan informasi aktual token tersebut."
+    ]
+  },
+  {
+    "pageNumber": 89,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Kajian Khusus: Formulasi Matematis Scaled Dot-Product Attention",
+      "Attention(Q, K, V) = Softmax( (Q · K^T) / sqrt(d_k) ) · V",
+      "Keterangan Variabel:",
+      "- Q (Query): Matriks berukuran (Sequence_Length, d_k)",
+      "- K (Key): Matriks berukuran (Sequence_Length, d_k)",
+      "- V (Value): Matriks berukuran (Sequence_Length, d_v)",
+      "- d_k: Dimensi proyeksi per attention head",
+      "- sqrt(d_k): Faktor penskalaan untuk mencegah saturasi gradien pada fungsi Softmax akibat magnitudo perkalian matriks berdimensi tinggi.",
+      "2. Multi-Head dan Grouped-Query Attention (GQA)"
+    ]
+  },
+  {
+    "pageNumber": 90,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Multi-Head Attention (MHA) membagi proyeksi Q, K, dan V ke dalam h kepala atensi paralel untuk menangkap relasi sintaktik dan semantik yang beragam secara simultan. Namun, pada MHA, kebutuhan memori KV Cache selama fase inferensi bertumbuh secara linear terhadap panjang konteks. Untuk mengefisiensikan konsumsi VRAM, arsitektur modern menerapkan Grouped-Query Attention (GQA):",
+      "Grouped-Query Attention (GQA): Query heads dikelompokkan ke dalam G grup, di mana setiap grup berbagi 1 Key head dan 1 Value head bersama (misalnya pada Llama 3: 32 Query heads dikelompokkan ke 8 KV heads), mempertahankan akurasi MHA dengan pengurangan memori KV cache hingga 4x-8x.",
+      "3. Rotary Position Embedding (RoPE)"
+    ]
+  },
+  {
+    "pageNumber": 91,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Karena operasi Self-Attention bersifat invarian terhadap urutan posisi token, informasi urutan posisi disematkan secara matematis. Rotary Position Embedding (RoPE, Su et al., 2021) menyematkan posisi relatif dengan merotasi vektor Query dan Key dalam bidang koordinat kompleks 2D: q_m = R_Θ,m · q. Perkalian dot product antara Q_m dan K_n secara inheren hanya bergantung pada jarak relatif (m - n), memungkinkan ekstrapolasi panjang konteks hingga ratusan ribu token.",
+      "4. Normalisasi RMSNorm",
+      "Arsitektur modern menempatkan normalisasi sebelum sub-layer (Pre-RMSNorm). Fungsi RMSNorm menyederhanakan LayerNorm dengan mengeliminasi kalkulasi pergeseran rata-rata (mean):",
+      "Formula RMSNorm: RMSNorm(x) = ( x / RMS(x) ) ⊙ γ, di mana RMS(x) = sqrt( (1/d) · Σ x_i^2 + ε )"
+    ]
+  },
+  {
+    "pageNumber": 92,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "RMSNorm menghemat 15% hingga 20% komputasi normalisasi pada GPU dengan stabilitas konvergensi yang setara.",
+      "5.4 Inovasi Arsitektur Mutakhir: Mixture of Experts (MoE) dan MLA",
+      "Pada arsitektur Mixture of Experts (MoE), lapisan FFN digantikan oleh sekumpulan E sub-jaringan expert yang diatur oleh jaringan perutean (Router Network):",
+      "Sparse Top-k Routing: Jaringan router menghitung skor kecocokan token x terhadap seluruh expert dan hanya mengaktifkan k expert teratas (Top-k Routing), memungkinkan peningkatan kapasitas parameter tanpa peningkatan beban komputasi FLOPs per token secara linear."
+    ]
+  },
+  {
+    "pageNumber": 93,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "Multi-head Latent Attention (MLA): Mekanisme atensi dari DeepSeek yang memproyeksikan Key dan Value ke dalam ruang laten berdimensi rendah sebelum disimpan di KV Cache, memangkas konsumsi memori inferensi hingga 93,3%.",
+      "Listing Program: 5.1 Diagram Komputasi Arsitektur Transformer Decoder-Only Standar Industri"
+    ]
+  },
+  {
+    "pageNumber": 94,
+    "chapterIndex": 6,
+    "chapterTitle": "Bab V: Fondasi Matematika & Arsitektur Komputasi",
+    "shortTitle": "Bab V",
+    "paragraphs": [
+      "===============================================================      DIAGRAM ALUR ARSITEKTUR TRANSFORMER DECODER-ONLY===============================================================                           ▲               [ Output Logits (Vocab Size) ]                           ▲                  [ RMSNorm Final ]                           ▲       +-------------------┴-------------------+       |  BLOK TRANSFORMER LAYER (x N Layers)  |       |                                       |       |   Input x --->[ RMSNorm ]             |       |                   |                   |       |           [ GQA / MLA Attn ]          |       |           (RoPE Pos Embed)            |       |                   |                   |       |                   v                   |       |   Residual (+) <----------------------+ (Skip Connection 1)       |         |                             |       |         v                             |       |     [ RMSNorm ]                       |       |         |                             |       |     [ SwiGLU FFN / MoE ]              |       |     (Sparse Expert Routing)           |       |         |                             |       |         v                             |       |   Residual (+) <----------------------+ (Skip Connection 2)       +-------------------┬-------------------+                           ▲              [ Token Embeddings Matrix ]                           ▲              [ Input Token IDs (x_1..x_T) ]"
+    ]
+  },
+  {
+    "pageNumber": 95,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "BAB VI: SIKLUS HIDUP REKAYASA DAN PELATIHAN AI SECARA TERPERINCI",
+      "Rekayasa model kecerdasan buatan skala industri merupakan disiplin rekayasa perangkat lunak terintegrasi (End-to-End AI Engineering Lifecycle) yang mencakup kurasi triliunan token data, pelatihan terdistribusi berskala besar (Pre-Training), penyelarasan instruksi dan nilai (Supervised Fine-Tuning, PEFT, RLHF, DPO, Reasoning RL), kompresi kuantisasi, hingga arsitektur penyajian inferensi (Serving).",
+      "6.1 Tahap 1: Rekayasa Data dan Tokenisasi (Data Engineering)",
+      "Kapasitas penalaran model fondasi sangat ditentukan oleh kualitas dan keragaman korpus data pelatihannya. Pipeline rekayasa data modern mencakup tahapan terstruktur:",
+      "1. Ingesti dan Pengumpulan Data Multidomain"
+    ]
+  },
+  {
+    "pageNumber": 96,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "Dataset pre-training dikumpulkan dari ekstraksi web terbuka (Common Crawl), artikel ensiklopedia Wikipedia, repositori kode sumber (GitHub), publikasi saintifik (arXiv), buku berlisensi publik, dan korpus data sintetis terkurasi.",
+      "2. Pembersihan Teks dan Ekstraksi Konten",
+      "Data web mentah dibersihkan dari tag markup HTML, skrip kode, dan teks navigasi yang tidak relevan, dilanjutkan dengan standardisasi encoding dokumen ke format UTF-8 bersih.",
+      "3. Deduplikasi Data Skala Besar"
+    ]
+  },
+  {
+    "pageNumber": 97,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "Keberadaan data duplikat dapat memicu overfitting dan memorisasi verbatim. Diterapkan dua level deduplikasi: Exact Match (hashing SHA-256) untuk teks identik, serta Fuzzy Deduplication menggunakan algoritma MinHash dan Locality-Sensitive Hashing (LSH) untuk menyaring dokumen dengan kemiripan semantik tinggi (>80% Jaccard index), yang umumnya mereduksi 20% hingga 35% volume data mentah.",
+      "4. Penyaringan Kualitas dan Redaksi Data Sensitif (PII)",
+      "Data disaring menggunakan model klasifikasi kualitas (FastText/KenLM) untuk menghapus dokumen dengan nilai perplexity abnormal serta melakukan sensor otomatis terhadap data identitas pribadi (Personally Identifiable Information / PII).",
+      "5. Tokenisasi Byte-Pair Encoding (BPE)"
+    ]
+  },
+  {
+    "pageNumber": 98,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "Algoritma tokenisasi BPE atau SentencePiece memecah teks menjadi unit sub-kata berdasarkan frekuensi kemunculan byte karakter dalam korpus. Kosakata token yang lebih besar (seperti 128.256 token pada Llama 3) meningkatkan rasio kompresi karakter-per-token untuk bahasa multibahasa dan kode pemrograman.",
+      "6.2 Tahap 2: Pre-Training Skala Besar (Base Model Pre-Training)",
+      "Fase Pre-Training melatih model Transformer dari bobot acak untuk memprediksi token berikutnya (Causal Language Modeling) pada korpus belasan triliun token:",
+      "Fungsi Objektif Causal LM: L(θ) = - (1/T) · Σ log P_θ( x_t | x_1, x_2, ..., x_(t-1) )",
+      "Strategi Paralelisasi Pelatihan Terdistribusi",
+      "Model dengan ratusan miliar parameter dilatih melintasi ribuan akselerator GPU menggunakan kombinasi teknik paralelisasi:"
+    ]
+  },
+  {
+    "pageNumber": 99,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "1. Data Parallelism (DDP): Mereplikasi model ke beberapa GPU, memproses batch data berbeda secara paralel, dan mensinkronkan gradien via operasi All-Reduce.",
+      "2. Tensor Parallelism (TP): Mempartisi matriks bobot layer Transformer intra-node melintasi beberapa GPU berkecepatan interkoneksi NVLink (Megatron-LM).",
+      "3. Pipeline Parallelism (PP): Membagi tumpukan layer Transformer secara sekuensial antar server node yang berbeda (1F1B schedule).",
+      "4. ZeRO Optimizer / FSDP: Mempartisi status optimizer, gradien, dan parameter model melintasi seluruh kluster GPU guna mengeliminasi redundansi memori VRAM (ZeRO-3 / PyTorch FSDP).",
+      "6.3 Tahap 3: Post-Training dan Penyelarasan (Alignment)",
+      "Model hasil pre-training (Base Model) diselaraskan agar mampu merespons instruksi secara terstruktur dan aman:"
+    ]
+  },
+  {
+    "pageNumber": 100,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "1. Supervised Fine-Tuning (SFT)",
+      "Model dilatih pada puluhan ribu sampel instruksi dialog terkurasi (format ChatML: System, User, Assistant). Kajian LIMA (Zhou et al., 2023) menunjukkan bahwa 1.000 data instruksi berkualitas tinggi sudah memadai untuk menyelaraskan format luaran model.",
+      "2. Parameter-Efficient Fine-Tuning (PEFT): LoRA dan QLoRA",
+      "Low-Rank Adaptation (LoRA, Hu et al., 2021) membekukan bobot asli W_0 dan menyisipkan matriks dekomposisi rank rendah: W = W_0 + (α / r) · (B · A), mereduksi parameter teroptimasi hingga >99%. QLoRA (Dettmers et al., 2023) menguantisasi model dasar ke presisi 4-bit NormalFloat (NF4), memungkinkan fine-tuning model 70B pada satu GPU 24GB.",
+      "3. Penyelarasan Preferensi: RLHF dan Direct Preference Optimization (DPO)"
+    ]
+  },
+  {
+    "pageNumber": 101,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "Penyelarasan nilai kemanusiaan dilakukan melalui RLHF (melatih Reward Model dengan optimasi PPO) atau Direct Preference Optimization (DPO, Rafailov et al., 2023) yang mengoptimasi kebijakan secara langsung menggunakan formula matematis tertutup pada data preferensi biner.",
+      "4. Reinforcement Learning untuk Model Penalaran (Reasoning RL)",
+      "Diterapkan pada OpenAI o1 dan DeepSeek-R1 melalui Large-Scale Reinforcement Learning dengan verifikasi berbasis aturan (Rule-based Verifiers), memungkinkan model secara mandiri mengembangkan kemampuan verifikasi dan koreksi diri dalam rantai pemikiran internal.",
+      "6.4 Tahap 4: Optimasi, Kompresi, dan Kuantisasi Model",
+      "Untuk efisiensi deployment, diterapkan teknik kuantisasi bobot dari presisi 16-bit (FP16/BF16) ke bilangan bulat 8-bit (INT8) atau 4-bit (INT4):"
+    ]
+  },
+  {
+    "pageNumber": 102,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "GPTQ (Generalized Post-Training Quantization): Kuantisasi berbasis inversi matriks Hessian per kolom untuk meminimalkan degradasi akurasi.",
+      "AWQ (Activation-aware Weight Quantization): Melindungi 1% bobot dengan magnitudo aktivasi tertinggi agar tidak terdistorsi.",
+      "Format GGUF: Format biner universal proyek llama.cpp untuk eksekusi inferensi pada CPU dan GPU konsumen.",
+      "6.5 Tahap 5: Deployment, Serving, dan Monitoring Inferensi",
+      "Penyajian model di lingkungan produksi bertumpu pada mesin inferensi teroptimasi:",
+      "vLLM: Menerapkan algoritma PagedAttention (alokasi blok memori KV cache non-kontigu) dan Continuous Batching untuk memaksimalkan throughput permintaan konkuren.",
+      "TensorRT-LLM: Kompilasi graf Transformer teroptimasi untuk kartu grafis NVIDIA Hopper dan Blackwell."
+    ]
+  },
+  {
+    "pageNumber": 103,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "Metrik Pemantauan: Pemantauan operasional berfokus pada metrik Time to First Token (TTFT), Inter-Token Latency (ITL), dan Serving Throughput.",
+      "6.6 Tahap 6: Evaluasi dan Pengujian Keamanan (Red Teaming)",
+      "Model diuji secara komprehensif menggunakan automated benchmarks (LM-Eval-Harness), evaluasi LLM-as-a-Judge, serta pengujian adversarial (Red Teaming) untuk memverifikasi ketahanan terhadap prompt injection dan manipulasi keamanan.",
+      "Tabel: 6.1 Rangkuman Tahapan Siklus Hidup Rekayasa Model Kecerdasan Buatan End-to-End",
+      "Fase Rekayasa",
+      "Masukan Data / Artefak",
+      "Metode & Algoritma Utama",
+      "Tolok Ukur Evaluasi",
+      "Infrastruktur Komputasi",
+      "1. Data Engineering",
+      "Korpus Web, Kode, Publikasi",
+      "MinHash LSH, FastText, Tokenizer BPE",
+      "Rasio deduplikasi & diversitas",
+      "Kluster CPU Paralel",
+      "2. Pre-Training",
+      "15+ Triliun Token Bersih"
+    ]
+  },
+  {
+    "pageNumber": 104,
+    "chapterIndex": 7,
+    "chapterTitle": "Bab VI: Siklus Hidup Rekayasa & Pelatihan AI",
+    "shortTitle": "Bab VI",
+    "paragraphs": [
+      "Causal LM, AdamW, DDP, TP, ZeRO-3",
+      "Training loss curve, FLOPs/W",
+      "Kluster Ribuan GPU H100/B200",
+      "3. Supervised Fine-Tuning",
+      "10K-100K Pasang Dialog",
+      "ChatML SFT, LoRA, QLoRA (NF4)",
+      "Instruction following rate",
+      "Single / Multi-GPU Server",
+      "4. Alignment & Reasoning",
+      "Data Preferensi, Verifier Rules",
+      "DPO, RLHF (PPO), Rule-Based RL",
+      "Win-rate preferensi, skor MATH",
+      "Kluster GPU Skala Menengah",
+      "5. Kuantisasi & Kompresi",
+      "Bobot Model 16-bit (FP16)",
+      "AWQ, GPTQ, GGUF, FlashAttention",
+      "Penurunan ukuran VRAM (<0.1 PPL)",
+      "Workstation / Edge Device",
+      "6. Deployment & Serving",
+      "Model Kuantisasi / FP8",
+      "vLLM, PagedAttention, TensorRT",
+      "TTFT (<50ms), Throughput tinggi",
+      "Inference Cloud / Kubernetes",
+      "7. Evaluasi & Red Team",
+      "Test Prompts, Adversarial Probes",
+      "LM-Eval-Harness, LLM-as-a-Judge",
+      "Jailbreak resistance pass rate",
+      "Automated Testing Pipeline"
+    ]
+  },
+  {
+    "pageNumber": 105,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "BAB VII: IMPLEMENTASI PRAKTIS: PANDUAN REKAYASA MODEL KECERDASAN BUATAN",
+      "Untuk melengkapi pemahaman konseptual dan arsitektural, bab ini menyajikan panduan implementasi teknis tingkat program dalam bahasa Python. Pembahasan mencakup empat domain rekayasa utama: (1) Konstruksi arsitektur Transformer decoder dari nol menggunakan PyTorch, (2) Prosedur fine-tuning model LLM menggunakan teknik QLoRA 4-bit, (3) Pembangunan arsitektur Retrieval-Augmented Generation (RAG), dan (4) Penyajian model sebagai REST API produksi menggunakan FastAPI.",
+      "7.1 Persiapan Lingkungan Pengembangan",
+      "Pengembangan model dilakukan pada lingkungan Python 3.10+ dengan dukungan akselerasi GPU CUDA. Dependensi pustaka diinstal melalui pengelola paket standar:",
+      "Listing Program: 7.1 Instalasi Pustaka Utama Python"
+    ]
+  },
+  {
+    "pageNumber": 106,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "# Instalasi dependensi komputasi PyTorch dan ekosistem Hugging Facepip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121pip install transformers datasets accelerate peft bitsandbytes trl sentence-transformers fastapi uvicorn pydantic",
+      "7.2 Panduan 1: Konstruksi Arsitektur Transformer Decoder dengan PyTorch",
+      "Berikut adalah implementasi modular arsitektur Transformer Decoder-Only yang mencakup Causal Self-Attention, RMSNorm, dan SwiGLU Feed-Forward Network:",
+      "Listing Program: 7.2 Implementasi Lengkap Transformer Decoder dengan PyTorch"
+    ]
+  },
+  {
+    "pageNumber": 107,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "import mathimport torchimport torch.nn as nnimport torch.nn.functional as Fclass RMSNorm(nn.Module):    \"\"\"Root Mean Square Layer Normalization.\"\"\"    def __init__(self, dim: int, eps: float = 1e-6):        super().__init__()        self.eps = eps        self.weight = nn.Parameter(torch.ones(dim))    def forward(self, x: torch.Tensor) -> torch.Tensor:        variance = x.pow(2).mean(-1, keepdim=True)        return x * torch.rsqrt(variance + self.eps) * self.weightclass CausalSelfAttention(nn.Module):    \"\"\"Multi-Head Self-Attention dengan Causal Masking.\"\"\"    def __init__(self, d_model: int, n_heads: int):        super().__init__()        assert d_model % n_heads == 0, \"d_model harus habis dibagi n_heads\"        self.d_model = d_model        self.n_heads = n_heads        self.head_dim = d_model // n_heads        self.q_proj = nn.Linear(d_model, d_model, bias=False)        self.k_proj = nn.Linear(d_model, d_model, bias=False)        self.v_proj = nn.Linear(d_model, d_model, bias=False)        self.out_proj = nn.Linear(d_model, d_model, bias=False)    def forward(self, x: torch.Tensor) -> torch.Tensor:        B, T, C = x.shape        q = self.q_proj(x).view(B, T, self.n_heads, self.head_dim).transpose(1, 2)        k = self.k_proj(x).view(B, T, self.n_heads, self.head_dim).transpose(1, 2)        v = self.v_proj(x).view(B, T, self.n_heads, self.head_dim).transpose(1, 2)        # Scaled Dot-Product: Scores = (Q @ K.T) / sqrt(d_k)        scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)        # Causal Mask (Lower Triangular)        mask = torch.tril(torch.ones(T, T, device=x.device)).view(1, 1, T, T)        scores = scores.masked_fill(mask == 0, float('-inf'))        attn_weights = F.softmax(scores, dim=-1)        context = torch.matmul(attn_weights, v)        context = context.transpose(1, 2).contiguous().view(B, T, C)        return self.out_proj(context)class SwiGLUFFN(nn.Module):    \"\"\"Feed-Forward Network berbasis SwiGLU Gating.\"\"\"    def __init__(self, d_model: int, hidden_dim: int):        super().__init__()        self.w_gate = nn.Linear(d_model, hidden_dim, bias=False)        self.w_up = nn.Linear(d_model, hidden_dim, bias=False)        self.w_down = nn.Linear(hidden_dim, d_model, bias=False)    def forward(self, x: torch.Tensor) -> torch.Tensor:        return self.w_down(F.silu(self.w_gate(x)) * self.w_up(x))class TransformerBlock(nn.Module):    \"\"\"Blok Transformer tunggal dengan Pre-RMSNorm & Residual Connections.\"\"\"    def __init__(self, d_model: int, n_heads: int, ffn_dim: int):        super().__init__()        self.norm1 = RMSNorm(d_model)        self.attn = CausalSelfAttention(d_model, n_heads)        self.norm2 = RMSNorm(d_model)        self.ffn = SwiGLUFFN(d_model, ffn_dim)    def forward(self, x: torch.Tensor) -> torch.Tensor:        x = x + self.attn(self.norm1(x))        x = x + self.ffn(self.norm2(x))        return xclass MiniTransformerLM(nn.Module):    \"\"\"Model Bahasa Transformer Decoder Utuh.\"\"\"    def __init__(self, vocab_size: int, d_model: int, n_heads: int, n_layers: int, max_seq_len: int):        super().__init__()        self.token_emb = nn.Embedding(vocab_size, d_model)        self.pos_emb = nn.Embedding(max_seq_len, d_model)        self.layers = nn.ModuleList([            TransformerBlock(d_model, n_heads, int(d_model * 8 / 3))            for _ in range(n_layers)        ])        self.norm_final = RMSNorm(d_model)        self.lm_head = nn.Linear(d_model, vocab_size, bias=False)        self.lm_head.weight = self.token_emb.weight  # Weight tying    def forward(self, input_ids: torch.Tensor, targets: torch.Tensor = None):        B, T = input_ids.shape        pos = torch.arange(0, T, device=input_ids.device).unsqueeze(0)        x = self.token_emb(input_ids) + self.pos_emb(pos)        for layer in self.layers:            x = layer(x)        x = self.norm_final(x)        logits = self.lm_head(x)        loss = None        if targets is not None:            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))        return logits, loss"
+    ]
+  },
+  {
+    "pageNumber": 108,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "Prosedur eksekusi loop pelatihan (training loop) dengan optimizer AdamW dan peredaman gradien (gradient clipping) diimplementasikan sebagai berikut:",
+      "Listing Program: 7.3 Eksekusi Training Loop dengan AdamW dan Gradient Clipping"
+    ]
+  },
+  {
+    "pageNumber": 109,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "# Inisialisasi Model, Data Sintetis, dan Optimizerdevice = \"cuda\" if torch.cuda.is_available() else \"cpu\"model = MiniTransformerLM(vocab_size=1000, d_model=256, n_heads=4, n_layers=4, max_seq_len=64).to(device)optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.01)# Loop Pelatihan 100 Langkahmodel.train()for step in range(100):    dummy_tokens = torch.randint(0, 1000, (8, 32), device=device)    inputs, targets = dummy_tokens[:, :-1], dummy_tokens[:, 1:]    optimizer.zero_grad()    logits, loss = model(inputs, targets)    loss.backward()    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)    optimizer.step()    if step % 20 == 0:        print(f\"Langkah {step:03d} | Training Cross-Entropy Loss: {loss.item():.4f}\")"
+    ]
+  },
+  {
+    "pageNumber": 110,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "7.3 Panduan 2: Fine-Tuning LLM Menggunakan QLoRA dan HuggingFace",
+      "Fine-tuning model berbobot terbuka skala besar pada domain spesifik dilakukan secara efisien menggunakan kuantisasi 4-bit dan pustaka TRL `SFTTrainer`:",
+      "Listing Program: 7.4 Script Fine-Tuning QLoRA 4-bit Menggunakan Hugging Face TRL"
+    ]
+  },
+  {
+    "pageNumber": 111,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "import torchfrom datasets import Datasetfrom transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArgumentsfrom peft import LoraConfig, get_peft_model, prepare_model_for_kbit_trainingfrom trl import SFTTrainer# 1. Konfigurasi Kuantisasi 4-bit (NF4)bnb_config = BitsAndBytesConfig(    load_in_4bit=True,    bnb_4bit_quant_type=\"nf4\",    bnb_4bit_compute_dtype=torch.bfloat16,    bnb_4bit_use_double_quant=True,)model_id = \"meta-llama/Meta-Llama-3-8B-Instruct\"tokenizer = AutoTokenizer.from_pretrained(model_id)tokenizer.pad_token = tokenizer.eos_token# 2. Pemuatan Model Terkuantisasimodel = AutoModelForCausalLM.from_pretrained(    model_id,    quantization_config=bnb_config,    device_map=\"auto\",    torch_dtype=torch.bfloat16)model = prepare_model_for_kbit_training(model)# 3. Konfigurasi Adaptor LoRApeft_config = LoraConfig(    r=16,    lora_alpha=32,    target_modules=[\"q_proj\", \"k_proj\", \"v_proj\", \"o_proj\", \"gate_proj\", \"up_proj\", \"down_proj\"],    lora_dropout=0.05,    bias=\"none\",    task_type=\"CAUSAL_LM\")model = get_peft_model(model, peft_config)# 4. Dataset Instruksi (Format ChatML)train_data = {    \"text\": [        \"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\\nJelaskan definisi Overfitting pada model AI?<|eot_id|><|start_header_id|>assistant<|end_header_id|>\\nOverfitting terjadi saat model menghafal derau data latih sehingga gagal melakukan generalisasi pada data pengujian baru.<|eot_id|>\",        \"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\\nBagaimana cara mencegah terjadinya Overfitting?<|eot_id|><|start_header_id|>assistant<|end_header_id|>\\nDapat dicegah melalui teknik regularisasi L2 (Weight Decay), Dropout, augmentasi data, dan penghentian dini (Early Stopping).<|eot_id|>\"    ]}dataset = Dataset.from_dict(train_data)# 5. Eksekusi Pelatihan SFTtraining_args = TrainingArguments(    output_dir=\"./llama3-qlora-adapter\",    per_device_train_batch_size=2,    gradient_accumulation_steps=4,    learning_rate=2e-4,    lr_scheduler_type=\"cosine\",    warmup_ratio=0.05,    max_steps=50,    fp16=False,    bf16=True,    optim=\"paged_adamw_8bit\",    report_to=\"none\")trainer = SFTTrainer(    model=model,    train_dataset=dataset,    peft_config=peft_config,    dataset_text_field=\"text\",    max_seq_length=512,    tokenizer=tokenizer,    args=training_args)trainer.train()trainer.model.save_pretrained(\"./final_lora_adapter\")"
+    ]
+  },
+  {
+    "pageNumber": 112,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "7.4 Panduan 3: Pembangunan Sistem Retrieval-Augmented Generation (RAG)",
+      "Sistem RAG mengintegrasikan model bahasa dengan basis pengetahuan eksternal melalui pencarian kemiripan vektor semantik:",
+      "Listing Program: 7.5 Implementasi Pipeline Retrieval-Augmented Generation (RAG)"
+    ]
+  },
+  {
+    "pageNumber": 113,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "import torchfrom sentence_transformers import SentenceTransformer, utilclass VectorRAGPipeline:    \"\"\"Pipeline RAG Berbasis Representasi Vektor dan Kosinus Similaritas.\"\"\"    def __init__(self, model_name: str = \"sentence-transformers/all-MiniLM-L6-v2\"):        self.embedder = SentenceTransformer(model_name)        self.corpus = []        self.corpus_embeddings = None    def build_index(self, documents: list[str]):        \"\"\"Mengonversi dokumen teks menjadi matriks embedding.\"\"\"        self.corpus = documents        self.corpus_embeddings = self.embedder.encode(documents, convert_to_tensor=True)    def retrieve_context(self, query: str, top_k: int = 2) -> list[str]:        \"\"\"Pencarian dokumen paling relevan berdasarkan skor kosinus similaritas.\"\"\"        query_embedding = self.embedder.encode(query, convert_to_tensor=True)        scores = util.cos_sim(query_embedding, self.corpus_embeddings)[0]        top_indices = torch.topk(scores, k=top_k).indices        return [self.corpus[idx] for idx in top_indices]    def generate_prompt(self, query: str, retrieved_docs: list[str]) -> str:        \"\"\"Penyusunan prompt teraugmentasi dengan konteks referensi.\"\"\"        context_str = \"\\n---\\n\".join(retrieved_docs)        return (            f\"Konteks Referensi:\\n{context_str}\\n\\n\"            f\"Pertanyaan: {query}\\n\\n\"            f\"Jawaban Berdasarkan Konteks:\"        )# Uji Coba Pipeline RAGdocuments = [    \"Ketentuan cuti tahunan akademik adalah 12 hari kerja per tahun kalender.\",    \"Batas maksimal registrasi mata kuliah semester ganjil adalah tanggal 31 Agustus.\",    \"Server laboratorium komputasi beroperasi pada alamat jaringan lokal 192.168.10.50.\"]rag = VectorRAGPipeline()rag.build_index(documents)query = \"Kapan batas akhir registrasi mata kuliah ganjil?\"docs = rag.retrieve_context(query, top_k=1)prompt = rag.generate_prompt(query, docs)print(prompt)"
+    ]
+  },
+  {
+    "pageNumber": 114,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "7.5 Panduan 4: Penyajian Model Inferensi Menggunakan REST API FastAPI",
+      "Untuk integrasi sistem perangkat lunak skala produksi, inferensi model disajikan melalui microservice API asinkron berkinerja tinggi:",
+      "Listing Program: 7.6 REST API Microservice untuk Serving Inferensi dengan FastAPI"
+    ]
+  },
+  {
+    "pageNumber": 115,
+    "chapterIndex": 8,
+    "chapterTitle": "Bab VII: Implementasi Praktis & Panduan Kode PyTorch",
+    "shortTitle": "Bab VII",
+    "paragraphs": [
+      "from fastapi import FastAPI, HTTPExceptionfrom pydantic import BaseModel, Fieldimport uvicornapp = FastAPI(title=\"AI Model Serving API\", version=\"1.0.0\")class InferenceRequest(BaseModel):    prompt: str = Field(..., description=\"Teks masukan prompt pengguna\")    max_tokens: int = Field(default=256, ge=1, le=2048)    temperature: float = Field(default=0.7, ge=0.0, le=1.0)class InferenceResponse(BaseModel):    response: str    tokens_processed: int    status: str@app.post(\"/v1/models/generate\", response_model=InferenceResponse)async def generate_text(request: InferenceRequest):    try:        # Pemanggilan backend inferensi (vLLM / TensorRT-LLM)        output_text = f\"Respon terkomputasi untuk permintaan: '{request.prompt}'\"        return InferenceResponse(            response=output_text,            tokens_processed=len(output_text.split()),            status=\"success\"        )    except Exception as e:        raise HTTPException(status_code=500, detail=str(e))if __name__ == \"__main__\":    uvicorn.run(app, host=\"0.0.0.0\", port=8000)"
+    ]
+  },
+  {
+    "pageNumber": 116,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "BAB VIII: ETIKA, TATA KELOLA, KEAMANAN SIBER AI, DAN PROSPEK MASA DEPAN",
+      "Kemajuan pesat teknologi kecerdasan buatan tidak hanya menghadirkan terobosan komputasi, melainkan juga memicu implikasi etis, tantangan tata kelola hukum, kerentanan keamanan siber baru, serta diskursus keselamatan penyelarasan model (AI Alignment). Bab ini mengkaji kerangka etika, lanskap regulasi internasional dan nasional, analisis vektor serangan siber pada arsitektur LLM, serta prospek evolusi AI menuju sistem agen otonom dan AGI.",
+      "8.1 Tantangan Etika: Bias Algoritmik dan Representasi Data"
+    ]
+  },
+  {
+    "pageNumber": 117,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "Model pembelajaran mesin belajar dari data historis yang secara inheren memuat prasangka sosial, ketimpangan representasi demografis, dan stereotip kultural. Tanpa prosedur audit dan mitigasi yang ketat, sistem AI berisiko mereproduksi dan mengamplifikasi ketidakadilan sistemik:",
+      "Bias Seleksi Ketenagakerjaan: Studi kasus sistem seleksi lamaran kerja otomatis yang memprioritaskan kandidat pria akibat ketimpangan rasio gender dalam data pelatihan historis.",
+      "Bias Alokasi Finansial: Algoritma penilaian kredit perbankan yang memberikan skor risiko lebih tinggi secara tidak proporsional terhadap kelompok demografis atau wilayah geografis tertentu."
+    ]
+  },
+  {
+    "pageNumber": 118,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "Bias Pengenalan Visual: Penelitian Joy Buolamwini dan Timnit Gebru (Gender Shades, 2018) membuktikan bahwa sistem visi komputer komersial memiliki tingkat kesalahan klasifikasi hingga 34,7% pada subjek wanita berkulit gelap dibandingkan <0,8% pada pria berkulit terang.",
+      "8.2 Hak Cipta, Kepemilikan Data, dan Regulasi Privasi",
+      "Pelatihan model fondasi di atas triliunan token data publik menghadirkan kompleksitas hukum mengenai hak kekayaan intelektual dan privasi data individu:",
+      "1. Sengketa Hak Cipta dan Doktrin Fair Use"
+    ]
+  },
+  {
+    "pageNumber": 119,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "Litigasi hukum global (seperti The New York Times vs. OpenAI dan Getty Images vs. Stability AI) memperdebatkan apakah pemanfaatan karya cipta tanpa kompensasi langsung untuk pelatihan model AI komersial terlindungi oleh doktrin Penggunaan Wajar (Fair Use) atau merupakan pelanggaran hak kekayaan intelektual. Isu ini mendorong industri mengadopsi perjanjian lisensi data formal.",
+      "2. Regulasi Internasional: European Union AI Act"
+    ]
+  },
+  {
+    "pageNumber": 120,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "Uni Eropa menetapkan European Union Artificial Intelligence Act (EU AI Act) sebagai kerangka hukum komprehensif pertama yang mengklasifikasikan sistem AI berdasarkan empat tingkat risiko: Risiko Tidak Dapat Diterima (dilarang mutlak, seperti social scoring), Risiko Tinggi (kewajiban audit transparansi dan manajemen risiko), Risiko Terbatas (kewajiban pelabelan konten sintetis), dan Risiko Minimal.",
+      "3. Kerangka Regulasi Nasional Indonesia",
+      "Di Indonesia, tata kelola pemrosesan data dan etika kecerdasan buatan dipayungi oleh:",
+      "Undang-Undang No. 27 Tahun 2022 tentang Perlindungan Data Pribadi (UU PDP): Menetapkan dasar hukum pemrosesan data pribadi, hak subjek data, kewajiban pengendali data, serta sanksi administratif dan pidana bagi kegagalan pelindungan data pada sistem berbasis AI."
+    ]
+  },
+  {
+    "pageNumber": 121,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "Surat Edaran Menkominfo No. 9 Tahun 2023 tentang Etika Kecerdasan Artifisial: Menguraikan 9 nilai etika pengembangan AI: Inklusivitas, Kemanusiaan, Keamanan, Aksesibilitas, Transparansi, Kredibilitas, Akuntabilitas, Keberlanjutan Lingkungan, dan Pelindungan Data Pribadi.",
+      "8.3 Keamanan Siber AI (AI Cybersecurity & Adversarial Attacks)",
+      "Arsitektur model bahasa memperkenalkan vektor kerentanan siber baru:",
+      "1. Prompt Injection: Penyisipan instruksi manipulatif secara langsung atau tersembunyi di dalam dokumen eksternal (Indirect Injection) untuk membajak alur eksekusi logika model.",
+      "2. Jailbreak Adversarial Probing: Eksploitasi celah filter keselamatan melalui penyandian teks (Base64), manipulasi peran (roleplaying), atau probing bertingkat guna memaksa model menghasilkan konten terlarang."
+    ]
+  },
+  {
+    "pageNumber": 122,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "3. Data Poisoning: Penyuntikan data beracun pada korpus pre-training atau fine-tuning yang menanamkan backdoor tersembunyi yang dapat dipicu oleh kata kunci tertentu.",
+      "4. Model Inversion Attacks: Metode rekonstruksi data sensitif privat dari probabilitas distribusi keluaran parameter model.",
+      "8.4 Masalah Penyelarasan (The AI Alignment Problem)",
+      "AI Alignment berfokus pada penjaminan bahwa sistem kecerdasan buatan bertindak selaras dengan tujuan dan nilai-nilai sejati kemanusiaan:",
+      "Outer Alignment: Menjamin fungsi kerugian atau reward yang dirancang secara akurat merepresentasikan intensi manusia tanpa celah eksploitasi (Reward Hacking / Goodhart's Law)."
+    ]
+  },
+  {
+    "pageNumber": 123,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "Inner Alignment: Menjamin bahwa representasi laten internal jaringan saraf benar-benar mengadopsi tujuan tersebut tanpa mengembangkan motivasi instrumental tersembunyi (Deceptive Alignment).",
+      "8.5 Dampak Sosio-Ekonomi dan Transformasi Ketenagakerjaan",
+      "Generative AI mentransformasi sifat pekerjaan kognitif. Otomasi tugas rutin dalam pemrograman, analisis data, dan penulisan dokumen menggeser kebutuhan keterampilan tenaga kerja menuju pemikiran kritis, verifikasi kebenaran logis, dan perancangan arsitektur sistem tingkat tinggi.",
+      "8.6 Horizon Masa Depan: Menuju Agentic AI dan Diskursus AGI",
+      "Evolusi kecerdasan buatan bergerak dari sistem dialog pasif menuju sistem otonom terintegrasi:"
+    ]
+  },
+  {
+    "pageNumber": 124,
+    "chapterIndex": 9,
+    "chapterTitle": "Bab VIII: Etika, Tata Kelola, Keamanan Siber, & Masa Depan",
+    "shortTitle": "Bab VIII",
+    "paragraphs": [
+      "1. Agentic AI Systems: Sistem cerdas yang mampu merencanakan alur kerja, menggunakan perkakas komputasi (browsing, eksekusi kode, pemanggilan API), dan berkolaborasi dalam jaringan multi-agen untuk menyelesaikan tugas rekayasa kompleks.",
+      "2. Physical AI: Integrasi persepsi visual, representasi spasial, dan kendali motorik secara terpadu pada robotika cerdas.",
+      "3. Konvergensi Menuju AGI: Riset frontier berfokus pada pencapaian AGI melalui peningkatan keandalan penalaran mendalam (deep verifiable reasoning), efisiensi energi komputasi, dan kepatuhan keselamatan absolut."
+    ]
+  },
+  {
+    "pageNumber": 125,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "BAB IX: KESIMPULAN DAN ROADMAP STUDI LANJUTAN",
+      "Sebagai penutup dari monograf komprehensif ini, bab kesembilan menyintesis intisari pembahasan dari Bab I hingga Bab VIII, serta merumuskan panduan kurikulum belajar mandiri terstruktur dalam lima fase bagi mahasiswa dan praktisi yang mendalami disiplin rekayasa kecerdasan buatan.",
+      "9.1 Rangkuman Intisari Monograf",
+      "Kajian komprehensif dalam monograf ini merangkum beberapa kesimpulan fundamental:",
+      "1. Hakikat Komputasi Probabilistik: Kecerdasan buatan merupakan sistem komputasi probabilistik yang memodelkan pola terdistribusi dalam ruang data berdimensi tinggi melalui optimasi aljabar linear dan kalkulus multivariabel."
+    ]
+  },
+  {
+    "pageNumber": 126,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "2. Konvergensi Algoritma dan Perangkat Keras: Lompatan kapabilitas AI selalu dihasilkan dari konvergensi antara inovasi algoritma arsitektural (seperti Transformer dan Backpropagation), ketersediaan daya komputasi paralel perangkat keras (GPU/TPU), dan korpus data pelatihan berskala besar.",
+      "3. Efisiensi dan Penalaran Mendalam: Evolusi model bahasa modern bergeser dari sekadar penskalaan parameter padat (raw scaling) menuju inovasi efisiensi arsitektural (Mixture of Experts, Multi-head Latent Attention) dan penalaran mendalam (Reasoning RL)."
+    ]
+  },
+  {
+    "pageNumber": 127,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "4. Kompetensi Rekayasa Komprehensif: Penguasaan teknologi AI menuntut pemahaman terhadap seluruh siklus rekayasa (End-to-End Lifecycle), mulai dari kurasi data, pelatihan terdistribusi, fine-tuning efisien (QLoRA), alignment preferensi, hingga penyajian inferensi performa tinggi.",
+      "9.2 Roadmap Kurikulum Belajar Terstruktur (5 Fase)",
+      "Bagi mahasiswa dan praktisi yang ingin mendalami rekayasa kecerdasan buatan secara sistematis, berikut adalah kurikulum bertahap yang direkomendasikan:"
+    ]
+  },
+  {
+    "pageNumber": 128,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "Fase 1: Fondasi Matematika & Pemrograman Python (1-2 Bulan) Kuasai konsep Vektor, Matriks, Operasi Tensor, Turunan Parsial, Aturan Rantai, Distribusi Probabilitas, dan Teori Informasi. Kuasai pemrograman Python tingkat lanjut: Object-Oriented Programming (OOP), struktur data, algoritma, serta pustaka numerik NumPy dan Pandas.",
+      "Fase 2: Machine Learning Klasik & Sains Data (1-2 Bulan) Pelajari paradigma Machine Learning klasik menggunakan Scikit-Learn: Linear/Logistic Regression, Decision Tree, Random Forest, Gradient Boosted Trees (XGBoost/LightGBM), K-Means Clustering, PCA, serta metrik evaluasi formal (Precision, Recall, F1-Score, ROC-AUC)."
+    ]
+  },
+  {
+    "pageNumber": 129,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "Fase 3: Deep Learning & Framework PyTorch (2-3 Bulan) Pelajari dasar-dasar Deep Learning menggunakan framework PyTorch: manipulasi Tensor, Autograd engine, pembangunan Multi-Layer Perceptrons (MLP), Convolutional Neural Networks (CNN), dan Recurrent Neural Networks (RNN/LSTM). Pahami teknik optimasi AdamW, Dropout, Batch Normalization, dan alokasi memori GPU CUDA.",
+      "Fase 4: Transformer, LLM, & Rekayasa GenAI (2-3 Bulan) Pelajari arsitektur Transformer secara mendalam menggunakan ekosistem Hugging Face (Transformers, Datasets, Accelerate). Praktikkan implementasi Self-Attention, RoPE, RMSNorm, dan tokenisasi BPE. Lakukan fine-tuning model LLM menggunakan teknik PEFT/QLoRA dan DPO. Bangun pipeline Retrieval-Augmented Generation (RAG) menggunakan Vector Database (FAISS, ChromaDB, Qdrant)."
+    ]
+  },
+  {
+    "pageNumber": 130,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "Fase 5: LLMOps, Serving Terdistribusi, & Agentic Systems (2-3 Bulan) Pelajari teknik penyajian model inferensi performa tinggi (vLLM, TensorRT-LLM, Ollama), kuantisasi model (GGUF, AWQ), containerization Docker & orkestrasi Kubernetes, arsitektur REST API FastAPI, pembangunan Agen Otonom (Agentic AI Workflows), serta pemantauan latensi dan keamanan sistem di lingkungan produksi.",
+      "9.3 Rekomendasi Sumber Belajar Mandiri dan Komunitas Ilmiah",
+      "Berikut adalah referensi literatur buku teks standar, kursus terbuka bereputasi internasional, dan repositori komunitas open-source:"
+    ]
+  },
+  {
+    "pageNumber": 131,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "Buku Teks Akademik Standar: 'Deep Learning' (Ian Goodfellow, Yoshua Bengio, Aaron Courville - MIT Press); 'Speech and Language Processing' (Daniel Jurafsky & James H. Martin - Stanford University); 'Artificial Intelligence: A Modern Approach' (Stuart Russell & Peter Norvig); 'Designing Machine Learning Systems' (Chip Huyen - O'Reilly Media).",
+      "Kursus Daring Terbuka (MOOC): CS229: Machine Learning (Stanford University); CS224N: Natural Language Processing with Deep Learning (Stanford University); Deep Learning Specialization (DeepLearning.AI); Practical Deep Learning for Coders (Fast.ai); Hugging Face NLP Course."
+    ]
+  },
+  {
+    "pageNumber": 132,
+    "chapterIndex": 10,
+    "chapterTitle": "Bab IX: Kesimpulan & Roadmap Studi Lanjutan",
+    "shortTitle": "Bab IX",
+    "paragraphs": [
+      "Repositori Riset dan Komunitas: Hugging Face Hub; Papers With Code; arXiv.org (cs.CL dan cs.AI); LMSYS Chatbot Arena; Komunitas GitHub Open-Source AI (PyTorch, vLLM, llama.cpp, Ollama)."
+    ]
+  },
+  {
+    "pageNumber": 133,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "DAFTAR PUSTAKA",
+      "Keterangan Referensi: Seluruh konsep teoretis, data metrik historis, formulasi matematika, dan arsitektur model yang dibahas dalam monograf ini dirujuk secara ketat dari literatur akademik primer, prosiding konferensi ilmiah terindeks (NeurIPS, ICML, ICLR, ACL, CVPR), dan laporan teknis resmi laboratorium riset AI dunia:",
+      "[01] Ainslie, J., Lee-Thorp, J., de Jong, M., Zemlyanskiy, Y., Lebrón, F., & Sanghai, S. (2023). \"GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints. \" In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing (EMNLP 2023), pp. 4895-4901. https://arxiv.org/abs/2305.13245"
+    ]
+  },
+  {
+    "pageNumber": 134,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[02] Anthropic. (2024). \"The Claude 3 Model Family: Opus, Sonnet, Haiku. \" Anthropic Technical Report. https://www-cdn.anthropic.com/de8ba9b01c9ab763f50f311028f4c119c63806f4/Claude_3_Model_Family_Research_Paper.pdf",
+      "[03] Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., ... & Amodei, D. (2020). \"Language Models are Few-Shot Learners. \" Advances in Neural Information Processing Systems (NeurIPS 2020), 33, 1877-1901. https://arxiv.org/abs/2005.14165",
+      "[04] Buolamwini, J., & Gebru, T. (2018). \"Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification. \" In Conference on Fairness, Accountability and Transparency (FAT* 2018), PMLR 81, pp. 77-91. https://proceedings.mlr.press/v81/buolamwini18a.html"
+    ]
+  },
+  {
+    "pageNumber": 135,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[05] Dao, T., Fu, D. Y., Ermon, S., Rudra, A., & Ré, C. (2022). \"FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness. \" Advances in Neural Information Processing Systems (NeurIPS 2022), 35, 16344-16359. https://arxiv.org/abs/2205.14135",
+      "[06] DeepSeek-AI. (2024). \"DeepSeek-V3 Technical Report. \" arXiv preprint arXiv:2412.19437. https://arxiv.org/abs/2412.19437",
+      "[07] DeepSeek-AI. (2025). \"DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning. \" arXiv preprint arXiv:2501.12948. https://arxiv.org/abs/2501.12948",
+      "[08] Dettmers, T., Pagnoni, A., Holtzman, A., & Zettlemoyer, L. (2023). \"QLoRA: Efficient Finetuning of Quantized LLMs. \" Advances in Neural Information Processing Systems (NeurIPS 2023), 36, 10088-10115. https://arxiv.org/abs/2305.14314"
+    ]
+  },
+  {
+    "pageNumber": 136,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[09] Devlin, J., Chang, M. W., Lee, K., & Toutanova, K. (2018). \"BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. \" In Proceedings of NAACL-HLT 2019, pp. 4171-4186. https://arxiv.org/abs/1810.04805",
+      "[10] Dubey, A., Jauhri, A., Pandey, A., Kadian, A., Al-Dahle, S., Letman, A., ... & Ganapathy, R. (2024). \"The Llama 3 Herd of Models. \" Meta AI Technical Report. arXiv preprint arXiv:2407.21783. https://arxiv.org/abs/2407.21783",
+      "[11] Frantar, E., Ashkboos, S., Hoefler, T., & Alistarh, D. (2022). \"GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers. \" arXiv preprint arXiv:2210.17323. https://arxiv.org/abs/2210.17323"
+    ]
+  },
+  {
+    "pageNumber": 137,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[12] Gemini Team, Google. (2024). \"Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context. \" Google Technical Report. arXiv preprint arXiv:2403.05530. https://arxiv.org/abs/2403.05530",
+      "[13] Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., ... & Bengio, Y. (2014). \"Generative Adversarial Nets. \" Advances in Neural Information Processing Systems (NeurIPS 2014), 27, 2672-2680. https://arxiv.org/abs/1406.2661",
+      "[14] He, K., Zhang, X., Ren, S., & Sun, J. (2016). \"Deep Residual Learning for Image Recognition. \" In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR 2016), pp. 770-778. https://arxiv.org/abs/1512.03385"
+    ]
+  },
+  {
+    "pageNumber": 138,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[15] Hendrycks, D., Burns, C., Basart, S., Zou, A., Mazeika, M., Song, D., & Steinhardt, J. (2020). \"Measuring Massive Multitask Language Understanding (MMLU). \" In International Conference on Learning Representations (ICLR 2021). https://arxiv.org/abs/2009.03300",
+      "[16] Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E., Cai, T., Rutherford, E., ... & Sifre, L. (2022). \"Training Compute-Optimal Large Language Models (Chinchilla). \" Advances in Neural Information Processing Systems (NeurIPS 2022), 35, 30016-30030. https://arxiv.org/abs/2203.15556"
+    ]
+  },
+  {
+    "pageNumber": 139,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[17] Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., ... & Chen, W. (2021). \"LoRA: Low-Rank Adaptation of Large Language Models. \" In International Conference on Learning Representations (ICLR 2022). https://arxiv.org/abs/2106.09685",
+      "[18] Kaplan, J., McCandlish, S., Henighan, T., Brown, T. B., Chess, B., Child, R., ... & Amodei, D. (2020). \"Scaling Laws for Neural Language Models. \" arXiv preprint arXiv:2001.08361. https://arxiv.org/abs/2001.08361",
+      "[19] Krizhevsky, A., Sutskever, I., & Hinton, G. E. (2012). \"ImageNet Classification with Deep Convolutional Neural Networks (AlexNet). \" Advances in Neural Information Processing Systems (NeurIPS 2012), 25, 1097-1105. https://proceedings.neurips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf"
+    ]
+  },
+  {
+    "pageNumber": 140,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[20] Kwon, W., Li, Z., Zhuang, S., Sheng, Y., Zheng, L., Yu, C. H., ... & Stoica, I. (2023). \"Efficient Memory Management for Large Language Model Serving with PagedAttention (vLLM). \" In Proceedings of the 29th ACM Symposium on Operating Systems Principles (SOSP '23), pp. 611-626. https://arxiv.org/abs/2309.06180",
+      "[21] LeCun, Y., Bottou, L., Bengio, Y., & Haffner, P. (1998). \"Gradient-based learning applied to document recognition. \" Proceedings of the IEEE, 86(11), 2278-2324. http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf",
+      "[22] Lin, J., Tang, J., Tang, H., Yang, S., Dang, X., & Han, S. (2023). \"AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration. \" arXiv preprint arXiv:2306.00978. https://arxiv.org/abs/2306.00978"
+    ]
+  },
+  {
+    "pageNumber": 141,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[23] McCulloch, W. S., & Pitts, W. (1943). \"A logical calculus of the ideas immanent in nervous activity. \" The Bulletin of Mathematical Biophysics, 5(4), 115-133. https://doi.org/10.1007/BF02478259",
+      "[24] Mikolov, T., Chen, K., Corrado, G., & Dean, J. (2013). \"Efficient Estimation of Word Representations in Vector Space (Word2Vec). \" In International Conference on Learning Representations (ICLR 2013 Workshop). https://arxiv.org/abs/1301.3781",
+      "[25] Minsky, M., & Papert, S. (1969). \"Perceptrons: An Introduction to Computational Geometry. \" MIT Press, Cambridge, MA."
+    ]
+  },
+  {
+    "pageNumber": 142,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[26] Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C. L., Mishkin, P., ... & Lowe, R. (2022). \"Training language models to follow instructions with human feedback (InstructGPT). \" Advances in Neural Information Processing Systems (NeurIPS 2022), 35, 27730-27744. https://arxiv.org/abs/2203.02155",
+      "[27] Radford, A., Narasimhan, K., Salimans, T., & Sutskever, I. (2018). \"Improving Language Understanding by Generative Pre-Training (GPT-1). \" OpenAI Technical Report. https://openai.com/research/language-unsupervised"
+    ]
+  },
+  {
+    "pageNumber": 143,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[28] Rafailov, R., Sharma, A., Mitchell, E., Ermon, S., Manning, C. D., & Finn, C. (2023). \"Direct Preference Optimization: Your Language Model is Secretly a Reward Model. \" Advances in Neural Information Processing Systems (NeurIPS 2023), 36, 53728-53741. https://arxiv.org/abs/2305.18290",
+      "[29] Rosenblatt, F. (1958). \"The perceptron: A probabilistic model for information storage and organization in the brain. \" Psychological Review, 65(6), 386-408. https://doi.org/10.1037/h0042519",
+      "[30] Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). \"Learning representations by back-propagating errors. \" Nature, 323(6088), 533-536. https://doi.org/10.1038/323533a0"
+    ]
+  },
+  {
+    "pageNumber": 144,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[31] Russell, S., & Norvig, P. (2020). \"Artificial Intelligence: A Modern Approach (4th Edition). \" Pearson Series in Artificial Intelligence, Hoboken, NJ.",
+      "[32] Silver, D., Huang, A., Maddison, C. J., Guez, A., Sifre, L., van den Driessche, G., ... & Hassabis, D. (2016). \"Mastering the game of Go with deep neural networks and tree search (AlphaGo). \" Nature, 529(7587), 484-489. https://doi.org/10.1038/nature16961",
+      "[33] Su, J., Lu, Y., Pan, S., Murtadha, A., Wen, B., & Liu, Y. (2024). \"RoFormer: Enhanced Transformer with Rotary Position Embedding (RoPE). \" Neurocomputing, 568, 127063. https://arxiv.org/abs/2104.09864",
+      "[34] Turing, A. M. (1950). \"Computing Machinery and Intelligence. \" Mind, 59(236), 433-460. https://doi.org/10.1093/mind/LIX.236.433"
+    ]
+  },
+  {
+    "pageNumber": 145,
+    "chapterIndex": 11,
+    "chapterTitle": "Daftar Pustaka Akademik (IEEE/APA)",
+    "shortTitle": "Pustaka",
+    "paragraphs": [
+      "[35] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). \"Attention Is All You Need. \" Advances in Neural Information Processing Systems (NeurIPS 2017), 30, 5998-6008. https://arxiv.org/abs/1706.03762",
+      "[36] Zhang, B., & Sennrich, R. (2019). \"Root Mean Square Layer Normalization (RMSNorm). \" Advances in Neural Information Processing Systems (NeurIPS 2019), 32, 12360-12371. https://arxiv.org/abs/1910.07467",
+      "[37] Zhou, C., Liu, P., Xu, P., Iyer, S., Sun, J., Mao, Y., ... & Wang, L. (2023). \"LIMA: Less Is More for Alignment. \" Advances in Neural Information Processing Systems (NeurIPS 2023), 36, 50125-50141. https://arxiv.org/abs/2305.11206"
+    ]
+  },
+  {
+    "pageNumber": 146,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "LAMPIRAN: GLOSARIUM ISTILAH TEKNIS AI (A-Z)",
+      "Daftar Istilah Teknis: Glosarium ini memuat definisi formal dan operasional dari 54 istilah teknis utama dalam domain kecerdasan buatan, pemrosesan bahasa alami, dan rekayasa model generatif:",
+      "Tabel: L.1 Glosarium Lengkap Istilah Teknis Kecerdasan Buatan (A-Z)",
+      "Istilah Teknis",
+      "Definisi Formal & Operasional",
+      "Activation Function",
+      "Fungsi matematika non-linear (ReLU, GELU, SwiGLU) yang diterapkan pada luaran neuron untuk memungkinkan jaringan mempelajari relasi data kompleks.",
+      "AdamW",
+      "Algoritma optimasi turunan gradien standar emas untuk melatih LLM yang memisahkan peluruhan bobot (weight decay) dari pembaruan momen gradien.",
+      "Agentic AI"
+    ]
+  },
+  {
+    "pageNumber": 147,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Sistem kecerdasan buatan otonom yang mampu merencanakan sub-tugas, menggunakan tools eksternal (browsing, API, code execution), dan beradaptasi.",
+      "Alignment",
+      "Proses penyelarasan perilaku dan tujuan model AI agar sesuai dengan niat, etika, dan nilai-nilai keselamatan manusia (Helpful, Honest, Harmless).",
+      "Autoregressive Model",
+      "Model generatif yang memprediksi elemen sekuens berikutnya berdasarkan akumulasi token-token yang telah dihasilkan sebelumnya.",
+      "Backpropagation",
+      "Algoritma fundamental untuk menghitung gradien fungsi kerugian terhadap seluruh bobot jaringan saraf menggunakan aturan rantai kalkulus.",
+      "Batch Size",
+      "Jumlah sampel data yang diproses secara simultan oleh model dalam satu iterasi komputasi maju dan mundur.",
+      "Byte-Pair Encoding (BPE)"
+    ]
+  },
+  {
+    "pageNumber": 148,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Algoritma tokenisasi sub-kata yang menggabungkan pasangan karakter frekuensi tinggi secara berulang untuk membentuk kosakata efisien.",
+      "Chain-of-Thought (CoT)",
+      "Teknik penalaran di mana model menghasilkan langkah-langkah pemikiran perantara secara eksplisit sebelum memberikan jawaban akhir.",
+      "Context Window",
+      "Jumlah maksimum token yang dapat diproses dan diingat oleh model bahasa dalam satu sesi inferensi.",
+      "Cosine Similarity",
+      "Metrik aljabar linear untuk mengukur kemiripan arah antara dua vektor dalam ruang berdimensi tinggi [-1, 1].",
+      "Cross-Entropy Loss",
+      "Fungsi kerugian standar dalam klasifikasi dan causal LM yang mengukur perbedaan antara distribusi probabilitas prediksi dan label aktual.",
+      "Data Parallelism (DDP)"
+    ]
+  },
+  {
+    "pageNumber": 149,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Metode pelatihan terdistribusi di mana salinan model direplikasi ke beberapa GPU dan masing-masing memproses batch data berbeda.",
+      "Direct Preference Optimization (DPO)",
+      "Metode alignment preferensi manusia yang mengoptimasi model bahasa secara langsung tanpa memerlukan Reward Model terpisah.",
+      "Embeddings",
+      "Representasi vektor numerik kontinu dalam ruang berdimensi tinggi yang menangkap makna semantik data teks/citra.",
+      "Fine-Tuning",
+      "Proses adaptasi model fondasi yang telah di-pretrain menggunakan dataset domain spesifik yang lebih kecil untuk tugas tertentu.",
+      "FlashAttention",
+      "Algoritma komputasi Self-Attention exact yang dirancang sadar-perangkat keras (IO-aware) untuk meminimalkan transfer memori GPU SRAM-HBM.",
+      "FLOPs"
+    ]
+  },
+  {
+    "pageNumber": 150,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Floating Point Operations; satuan untuk mengukur total operasi matematika bilangan pecahan selama pelatihan atau inferensi.",
+      "Gated Linear Unit (GLU)",
+      "Komponen jaringan saraf di mana satu proyeksi linear mengontrol aliran informasi proyeksi lainnya via perkalian elemen.",
+      "Grouped-Query Attention (GQA)",
+      "Variasi atensi di mana beberapa Query heads berbagi satu pasangan Key-Value head bersama untuk menghemat memori KV Cache.",
+      "GGUF",
+      "Format file biner terpadu dari proyek llama.cpp yang menyimpan bobot terkuantisasi untuk inferensi cepat pada CPU dan GPU konsumen.",
+      "Hallucination",
+      "Kondisi di mana model AI menghasilkan informasi yang terdengar meyakinkan namun secara faktual salah atau tidak berdasar.",
+      "In-Context Learning"
+    ]
+  },
+  {
+    "pageNumber": 151,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Kemampuan model bahasa besar untuk menyelesaikan tugas baru saat inferensi hanya berdasarkan instruksi atau beberapa contoh di prompt.",
+      "Inter-Token Latency (ITL)",
+      "Waktu yang dibutuhkan mesin inferensi untuk menghasilkan satu token luaran berikutnya setelah token pertama muncul.",
+      "Jailbreak",
+      "Teknik manipulasi rekayasa prompt yang dirancang untuk melewati sistem filter keselamatan dan etika model AI.",
+      "Kullback-Leibler (KL) Divergence",
+      "Ukuran asimetris dalam teori informasi untuk menghitung derajat penyimpangan suatu distribusi probabilitas terhadap distribusi acuan.",
+      "KV Cache",
+      "Mekanisme penyimpanan vektor Key dan Value dari token sebelumnya di memori GPU selama inferensi agar tidak dikomputasi ulang.",
+      "Latent Space"
+    ]
+  },
+  {
+    "pageNumber": 152,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Ruang representasi abstrak berdimensi lebih rendah di mana fitur-fitur terpenting dari data dipetakan secara matematis.",
+      "Loss Function",
+      "Fungsi matematika yang menghitung derajat penyimpangan prediksi model terhadap nilai kebenaran data target.",
+      "Low-Rank Adaptation (LoRA)",
+      "Teknik PEFT yang membekukan bobot asli model dan menyisipkan matriks dekomposisi rank rendah untuk fine-tuning efisien.",
+      "Mixture of Experts (MoE)",
+      "Arsitektur model di mana lapisan Feed-Forward dibagi menjadi banyak sub-jaringan expert dan hanya sebagian kecil yang diaktifkan per token.",
+      "Multi-head Latent Attention (MLA)",
+      "Inovasi atensi dari DeepSeek yang mengompresi KV cache ke ruang laten berdimensi rendah guna memangkas konsumsi VRAM.",
+      "Next-Token Prediction"
+    ]
+  },
+  {
+    "pageNumber": 153,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Tugas pelatihan mendasar dari model bahasa kausal untuk memprediksi token berikutnya berdasarkan konteks sebelumnya.",
+      "Overfitting",
+      "Kondisi di mana model menghafal data latih terlalu detail sehingga gagal melakukan generalisasi pada data baru.",
+      "PagedAttention",
+      "Algoritma inferensi yang mempartisi memori KV cache ke dalam blok non-kontigu layaknya paging virtual memory sistem operasi.",
+      "Parameter",
+      "Variabel internal (bobot dan bias) di dalam jaringan saraf yang nilainya dioptimasi selama proses pelatihan.",
+      "Perplexity",
+      "Eksponensial dari cross-entropy loss; metrik standar untuk mengukur seberapa baik model bahasa memprediksi teks pengujian.",
+      "Quantization",
+      "Proses mengonversi bobot model dari presisi tinggi (FP16/FP32) ke presisi lebih rendah (INT8/INT4) guna efisiensi memori dan komputasi.",
+      "QLoRA"
+    ]
+  },
+  {
+    "pageNumber": 154,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Metode fine-tuning yang menggabungkan kuantisasi base model 4-bit NormalFloat (NF4), Double Quantization, dan adaptor LoRA.",
+      "Reinforcement Learning from Human Feedback (RLHF)",
+      "Teknik penyelarasan model bahasa menggunakan model reward dari preferensi manusia yang dioptimasi via PPO.",
+      "Residual Connection",
+      "Koneksi pintas (skip connection) yang menjumlahkan masukan lapisan langsung ke luaran (y = F(x) + x) untuk mencegah vanishing gradient.",
+      "Retrieval-Augmented Generation (RAG)",
+      "Arsitektur yang mengaugmentasi prompt LLM dengan dokumen kontekstual relevan dari basis data vektor eksternal.",
+      "RMSNorm",
+      "Normalisasi akar rata-rata kuadrat yang menstabilkan lapisan jaringan saraf tanpa perlu menghitung pergeseran nilai rata-rata (mean).",
+      "Rotary Position Embedding (RoPE)"
+    ]
+  },
+  {
+    "pageNumber": 155,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Metode penyematan posisi token relatif melalui perkalian rotasi matriks kompleks pada vektor Query dan Key.",
+      "Supervised Fine-Tuning (SFT)",
+      "Tahap pelatihan lanjutan model fondasi menggunakan pasangan data percakapan instruksi berkualitas tinggi.",
+      "SwiGLU",
+      "Fungsi aktivasi gated feed-forward yang mengombinasikan Swish activation dengan linear gating.",
+      "Temperature",
+      "Hiperparameter inferensi yang mengontrol derajat keacakan sampling probabilitas token keluaran.",
+      "Tensor",
+      "Struktur data array multidimensi yang menjadi fondasi seluruh komputasi deep learning pada framework PyTorch.",
+      "Time to First Token (TTFT)",
+      "Durasi waktu dari saat permintaan prompt dikirimkan hingga token luaran pertama kali diterima klien.",
+      "Transformer"
+    ]
+  },
+  {
+    "pageNumber": 156,
+    "chapterIndex": 12,
+    "chapterTitle": "Lampiran: Glosarium Istilah Teknis AI (A-Z)",
+    "shortTitle": "Glosarium",
+    "paragraphs": [
+      "Arsitektur jaringan saraf berbasis mekanisme Self-Attention murni yang diperkenalkan oleh Vaswani et al. pada 2017.",
+      "Underfitting",
+      "Kondisi di mana kapasitas model terlalu sederhana sehingga tidak mampu menangkap pola mendasar data.",
+      "vLLM",
+      "Pustaka serving inferensi performa tinggi untuk LLM yang menerapkan algoritma PagedAttention dan continuous batching.",
+      "Weight Decay",
+      "Teknik regularisasi L2 yang membatasi magnitudo bobot parameter agar tidak tumbuh berlebihan guna mencegah overfitting.",
+      "Zero-Shot Learning",
+      "Kemampuan model untuk menyelesaikan tugas tertentu secara akurat tanpa pernah diberikan contoh spesifik sebelumnya di dalam prompt."
+    ]
+  },
+  {
+    "pageNumber": 157,
+    "chapterIndex": 13,
+    "chapterTitle": "Halaman Kredit Penyusun & Hak Cipta",
+    "shortTitle": "Kredit",
+    "paragraphs": [
+      "HALAMAN KREDIT PENYUSUN DAN HAK CIPTA",
+      "Informasi Publikasi: Monograf akademik dan dokumentasi teknis ini disusun, dirancang, dan dirumuskan sebagai bahan ajar dan literatur rujukan ilmiah berkualitas tinggi bagi sivitas akademika dan praktisi rekayasa perangkat lunak:",
+      "Tabel: K.1 Lembar Identitas Kredit dan Hak Cipta Karya",
+      "Atribut Dokumen",
+      "Keterangan Formal",
+      "Judul Naskah",
+      "Kecerdasan Buatan (Artificial Intelligence): Fundamental, Sejarah, Metrik Pertumbuhan, dan Rekayasa Model Generatif",
+      "Penyusun Ide Konsep",
+      "ZetaGo-Aurum",
+      "Penulis & Peneliti",
+      "ZetaGo-Aurum",
+      "Klasifikasi Karya",
+      "Monograf Referensi Akademik, Kurikulum Vokasi/Sarjana (D3/S1) & Panduan Industri",
+      "Edisi / Pemutakhiran",
+      "Edisi Komprehensif 2026 (Pemutakhiran Frontier Model & Reasoning Systems)",
+      "Format Distribusi",
+      "Digital Document (.docx / OpenXML Standard)"
+    ]
+  },
+  {
+    "pageNumber": 158,
+    "chapterIndex": 13,
+    "chapterTitle": "Halaman Kredit Penyusun & Hak Cipta",
+    "shortTitle": "Kredit",
+    "paragraphs": [
+      "Lisensi Penggunaan",
+      "Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)  -  Bebas digunakan, dikutip, dan didistribusikan untuk kepentingan pendidikan, riset akademik, dan studi mandiri non-komersial dengan mencantumkan atribusi penyusun.",
+      "Pernyataan Penutup",
+      "Seluruh kode program, diagram komputasi, tabel metrik, dan uraian konseptual dalam monograf ini disusun untuk tujuan diseminasi ilmu pengetahuan dan kemajuan rekayasa perangkat lunak cerdas."
+    ]
+  }
+]
