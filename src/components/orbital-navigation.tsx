@@ -84,6 +84,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
     y: 0,
     time: 0,
   })
+  const reqAnimRef = React.useRef<number | null>(null)
   const [isInView, setIsInView] = React.useState<boolean>(true)
   const [isTabVisible, setIsTabVisible] = React.useState<boolean>(true)
 
