@@ -26,6 +26,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@designcodeio/threeui": [
+        "./src/components/complete-shelf/CompleteShelfLandingPage.tsx"
+      ],
+      "@designcodeio/threeui/style.css": [
+        "./src/shaders/threeui.css"
       ]
     }
   },

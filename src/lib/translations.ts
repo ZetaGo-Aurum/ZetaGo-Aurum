@@ -52,6 +52,10 @@ export type TranslationKey =
   | 'domains.subtitle'
   | 'domains.visit'
   | 'domains.active'
+  | 'shelf.eyebrow'
+  | 'shelf.title'
+  | 'shelf.subtitle'
+  | 'shelf.hint'
   | 'connect.title'
   | 'connect.subtitle'
   | 'connect.github'
@@ -123,6 +127,11 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
       'A network of digital platforms and flagships, each built for sovereign operations and media distribution.',
     'domains.visit': 'Visit Platform',
     'domains.active': 'Online',
+    'shelf.eyebrow': '✦ 3D Working Volumes',
+    'shelf.title': 'Tactical Volumes & Tools Archive',
+    'shelf.subtitle':
+      'An interactive Three.js 3D bookshelf containing tactical guides, offensive engines, and authored architectures.',
+    'shelf.hint': 'Interactive Three.js · Click books to open, rotate shelf, and flip pages',
     'connect.title': 'Open Channels',
     'connect.subtitle':
       'Direct contact points for engineering, architecture inquiries, and collaboration across the network.',
@@ -200,6 +209,11 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
       'Jaringan platform digital dan layanan unggulan, dibangun untuk kedaulatan operasional dan distribusi media.',
     'domains.visit': 'Kunjungi Platform',
     'domains.active': 'Aktif',
+    'shelf.eyebrow': '✦ Arsip Volume 3D',
+    'shelf.title': 'Arsip Volume & Alat Taktis',
+    'shelf.subtitle':
+      'Perpustakaan 3D Three.js interaktif yang merangkum panduan taktis, engine ofensif, dan arsitektur ciptaan atelier.',
+    'shelf.hint': 'Interaktif Three.js · Klik buku untuk membuka, putar rak, dan baca halaman',
     'connect.title': 'Saluran Terbuka',
     'connect.subtitle':
       'Titik kontak langsung untuk konsultasi rekayasa arsitektur, kode, dan kolaborasi dalam jaringan.',
