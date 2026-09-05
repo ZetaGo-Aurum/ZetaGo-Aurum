@@ -64,6 +64,14 @@ export type TranslationKey =
   | 'shelf.feature.engine'
   | 'shelf.feature.optimized'
   | 'shelf.deviceHint'
+  | 'shelf.openBook'
+  | 'shelf.closeBook'
+  | 'shelf.fullscreen'
+  | 'shelf.exitFullscreen'
+  | 'shelf.prevChapter'
+  | 'shelf.nextChapter'
+  | 'shelf.tableOfContents'
+  | 'shelf.reset3d'
   | 'connect.title'
   | 'connect.subtitle'
   | 'connect.github'
@@ -141,20 +149,28 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
       'A network of digital platforms and flagships, each built for sovereign operations and media distribution.',
     'domains.visit': 'Visit Platform',
     'domains.active': 'Online',
-    'shelf.eyebrow': '✦ 3D Working Volumes',
-    'shelf.title': 'Tactical Volumes & Tools Archive',
+    'shelf.eyebrow': '✦ 3D Exclusive Monograph',
+    'shelf.title': 'Monograph: Artificial Intelligence',
     'shelf.subtitle':
-      'An interactive Three.js 3D bookshelf containing tactical guides, offensive engines, and authored architectures.',
-    'shelf.hint': 'Interactive Three.js · Click books to open, rotate shelf, and flip pages',
+      'A comprehensive academic monograph authored by ZetaGo-Aurum: fundamentals, 1943-2026 historiography, scaling metrics, Transformer architecture, and generative model engineering.',
+    'shelf.hint': 'Interactive 3D · Drag to rotate in 3D, click Open Book to read full chapters',
     'shelf.launch3d': 'Launch 3D Bookshelf',
     'shelf.exit3d': 'Close 3D View',
-    'shelf.previewTitle': 'Working Volumes · 3D Atelier',
+    'shelf.previewTitle': 'Kecerdasan Buatan · Academic Monograph',
     'shelf.previewDesc':
-      'An interactive 3D bookshelf authored in Three.js with 7 tactile volumes. Optimized for smooth navigation on all devices.',
-    'shelf.feature.volumes': '7 Tactical Volumes',
-    'shelf.feature.engine': 'Three.js r165',
-    'shelf.feature.optimized': 'Low-End Optimized',
-    'shelf.deviceHint': 'Tap Launch to enter full 3D interactive mode without touch scroll interference.',
+      'An exclusive technical book by ZetaGo-Aurum with 14 comprehensive chapters. Optimized, responsive, and available in fullscreen mode.',
+    'shelf.feature.volumes': '14 Comprehensive Chapters',
+    'shelf.feature.engine': 'CSS 3D & Hardware Accelerated',
+    'shelf.feature.optimized': 'Ultra Lightweight & Mobile Ready',
+    'shelf.deviceHint': 'Rotate the 3D book in 360° or open the immersive digital reader with full text.',
+    'shelf.openBook': 'Open & Read Book',
+    'shelf.closeBook': 'Close to 3D',
+    'shelf.fullscreen': 'Fullscreen',
+    'shelf.exitFullscreen': 'Exit Fullscreen',
+    'shelf.prevChapter': 'Previous Chapter',
+    'shelf.nextChapter': 'Next Chapter',
+    'shelf.tableOfContents': 'Table of Contents',
+    'shelf.reset3d': 'Reset Angle',
     'connect.title': 'Open Channels',
     'connect.subtitle':
       'Direct contact points for engineering, architecture inquiries, and collaboration across the network.',
@@ -232,20 +248,28 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
       'Jaringan platform digital dan layanan unggulan, dibangun untuk kedaulatan operasional dan distribusi media.',
     'domains.visit': 'Kunjungi Platform',
     'domains.active': 'Aktif',
-    'shelf.eyebrow': '✦ Arsip Volume 3D',
-    'shelf.title': 'Arsip Volume & Alat Taktis',
+    'shelf.eyebrow': '✦ Monograf Eksklusif 3D',
+    'shelf.title': 'Buku Monograf: Kecerdasan Buatan',
     'shelf.subtitle':
-      'Perpustakaan 3D Three.js interaktif yang merangkum panduan taktis, engine ofensif, dan arsitektur ciptaan atelier.',
-    'shelf.hint': 'Interaktif Three.js · Klik buku untuk membuka, putar rak, dan baca halaman',
+      'Monograf akademik komprehensif karya ZetaGo-Aurum: fundamental, historiografi komputasi cerdas (1943-2026), metrik pertumbuhan, arsitektur Transformer, dan rekayasa model generatif.',
+    'shelf.hint': 'Interaktif 3D · Drag untuk memutar buku 360°, klik Buka Buku untuk membaca seluruh bab',
     'shelf.launch3d': 'Buka Rak Buku 3D',
     'shelf.exit3d': 'Tutup Mode 3D',
-    'shelf.previewTitle': 'Arsip Volume · Atelier 3D',
+    'shelf.previewTitle': 'Kecerdasan Buatan · Monograf Akademik',
     'shelf.previewDesc':
-      'Perpustakaan rak buku 3D interaktif Three.js dengan 7 volume taktis. Didesain mulus dan ringan untuk semua perangkat.',
-    'shelf.feature.volumes': '7 Volume Taktis',
-    'shelf.feature.engine': 'Three.js r165',
-    'shelf.feature.optimized': 'Ringan & Teroptimasi',
-    'shelf.deviceHint': 'Ketuk Buka untuk masuk ke mode 3D interaktif tanpa mengganggu kenyamanan scroll layar.',
+      'Karya monograf teknis eksklusif ZetaGo-Aurum dengan 14 bab lengkap. Sangat ringan, responsif untuk HP, dan mendukung tampilan layar penuh.',
+    'shelf.feature.volumes': '14 Bab Lengkap',
+    'shelf.feature.engine': 'CSS 3D & Akselerasi Hardware',
+    'shelf.feature.optimized': 'Sangat Ringan & Responsif Mobile',
+    'shelf.deviceHint': 'Putar buku 3D dalam sudut 360° atau buka pembaca digital imersif dengan teks lengkap.',
+    'shelf.openBook': 'Buka & Baca Buku',
+    'shelf.closeBook': 'Tutup ke 3D',
+    'shelf.fullscreen': 'Layar Penuh',
+    'shelf.exitFullscreen': 'Keluar Layar Penuh',
+    'shelf.prevChapter': 'Bab Sebelumnya',
+    'shelf.nextChapter': 'Bab Selanjutnya',
+    'shelf.tableOfContents': 'Daftar Isi',
+    'shelf.reset3d': 'Reset Sudut',
     'connect.title': 'Saluran Terbuka',
     'connect.subtitle':
       'Titik kontak langsung untuk konsultasi rekayasa arsitektur, kode, dan kolaborasi dalam jaringan.',
