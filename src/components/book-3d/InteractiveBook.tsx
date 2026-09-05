@@ -7,7 +7,6 @@ import {
   Minimize2,
   ChevronLeft,
   ChevronRight,
-  RotateCcw,
   Menu,
   X,
   Bookmark,
@@ -42,14 +41,22 @@ export function InteractiveBook() {
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
   const bookGroupRef = useRef<THREE.Group | null>(null)
+
+  // Hardcover & Spine meshes
   const frontPivotRef = useRef<THREE.Group | null>(null)
   const frontCoverMeshRef = useRef<THREE.Mesh | null>(null)
+  const leftCoverBaseRef = useRef<THREE.Mesh | null>(null)
+  const rightCoverBaseRef = useRef<THREE.Mesh | null>(null)
+  const spineMeshRef = useRef<THREE.Mesh | null>(null)
 
-  // Dynamic Physical Paper Thickness Refs
+  // Dynamic Physical Paper Thickness Meshes
   const leftBlockMeshRef = useRef<THREE.Mesh | null>(null)
   const rightBlockMeshRef = useRef<THREE.Mesh | null>(null)
   const leftPageMeshRef = useRef<THREE.Mesh | null>(null)
   const rightPageMeshRef = useRef<THREE.Mesh | null>(null)
+  const creaseMeshRef = useRef<THREE.Mesh | null>(null)
+
+  // Turning leaf refs
   const turningPivotRef = useRef<THREE.Group | null>(null)
   const frontLeafMeshRef = useRef<THREE.Mesh | null>(null)
   const backLeafMeshRef = useRef<THREE.Mesh | null>(null)
@@ -59,7 +66,7 @@ export function InteractiveBook() {
   // Drag interaction state
   const dragRef = useRef({
     active: false,
-    mode: null as 'cover-open' | 'cover-close' | 'page-next' | 'page-prev' | null,
+    mode: null as 'cover-open' | 'page-next' | 'page-prev' | null,
     startX: 0,
     startY: 0,
     progress: 0,
@@ -73,17 +80,17 @@ export function InteractiveBook() {
     targetOpenProgress: 0,
     flipProgress: 0,
     flipDirection: null as 'next' | 'prev' | null,
-    flipDuration: 0.65,
+    flipDuration: 0.62,
     flipStartTime: 0,
     isHovered: false,
     ambientAngle: 0,
     // Real physical paper thickness
-    totalStackDepth: 0.22,
-    minThickness: 0.008,
-    leftThickness: 0.008,
-    rightThickness: 0.22,
-    targetLeftThickness: 0.008,
-    targetRightThickness: 0.22,
+    totalStackDepth: 0.18,
+    minThickness: 0.006,
+    leftThickness: 0.006,
+    rightThickness: 0.18,
+    targetLeftThickness: 0.006,
+    targetRightThickness: 0.18,
   })
 
   // Texture cache map
@@ -101,139 +108,278 @@ export function InteractiveBook() {
       const filter = ctx.createBiquadFilter()
 
       filter.type = 'lowpass'
-      filter.frequency.setValueAtTime(900, ctx.currentTime)
-      filter.frequency.exponentialRampToValueAtTime(2600, ctx.currentTime + 0.12)
-      filter.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + 0.28)
+      filter.frequency.setValueAtTime(800, ctx.currentTime)
+      filter.frequency.exponentialRampToValueAtTime(2400, ctx.currentTime + 0.1)
+      filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.26)
 
       gain.gain.setValueAtTime(0.001, ctx.currentTime)
-      gain.gain.linearRampToValueAtTime(0.07, ctx.currentTime + 0.04)
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3)
+      gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.03)
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.28)
 
       osc.type = 'triangle'
-      osc.frequency.setValueAtTime(150, ctx.currentTime)
-      osc.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.28)
+      osc.frequency.setValueAtTime(140, ctx.currentTime)
+      osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.26)
 
       osc.connect(filter)
       filter.connect(gain)
       gain.connect(ctx.destination)
 
       osc.start()
-      osc.stop(ctx.currentTime + 0.31)
+      osc.stop(ctx.currentTime + 0.29)
     } catch {
       // Audio context failure gracefully ignored
     }
   }, [soundEnabled])
 
   // ==========================================
-  // TEXTURE GENERATORS (CANVAS 2D)
+  // TEXTURE GENERATORS (HIGH RESOLUTION CANVAS)
   // ==========================================
 
   const generateCoverTexture = useCallback(() => {
     const canvas = document.createElement('canvas')
-    canvas.width = 1024
-    canvas.height = 1536
+    canvas.width = 1200
+    canvas.height = 1800
     const ctx = canvas.getContext('2d')!
 
-    ctx.fillStyle = '#0a0d14'
+    // 1. Deep Obsidian Velvet Base with soft radial vignette
+    ctx.fillStyle = '#07080c'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    const grad = ctx.createRadialGradient(512, 768, 100, 512, 768, 900)
-    grad.addColorStop(0, 'rgba(24, 28, 40, 0.4)')
-    grad.addColorStop(0.7, 'rgba(10, 13, 20, 0.8)')
+    const grad = ctx.createRadialGradient(600, 680, 80, 600, 680, 950)
+    grad.addColorStop(0, 'rgba(22, 28, 44, 0.45)')
+    grad.addColorStop(0.55, 'rgba(10, 13, 20, 0.85)')
     grad.addColorStop(1, 'rgba(4, 5, 8, 0.98)')
     ctx.fillStyle = grad
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    // Micro leather grain stippling
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.015)'
+    for (let i = 0; i < 2800; i += 1) {
+      const rx = (Math.sin(i * 997) * 0.5 + 0.5) * canvas.width
+      const ry = (Math.cos(i * 613) * 0.5 + 0.5) * canvas.height
+      ctx.fillRect(rx, ry, 1.5, 1.5)
+    }
+
+    // 2. Gold Foil Framing
+    // Outer hairline
     ctx.strokeStyle = '#cba358'
-    ctx.lineWidth = 4
-    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96)
+    ctx.lineWidth = 2
+    ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84)
 
-    ctx.strokeStyle = '#99732b'
-    ctx.lineWidth = 1.5
-    ctx.strokeRect(62, 62, canvas.width - 124, canvas.height - 124)
+    // Inner hairline
+    ctx.strokeStyle = '#856424'
+    ctx.lineWidth = 1.2
+    ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108)
 
-    const drawCorner = (x: number, y: number, rot: number) => {
+    // Main sculpted gold border
+    ctx.strokeStyle = '#f5df8b'
+    ctx.lineWidth = 3.5
+    ctx.strokeRect(68, 68, canvas.width - 136, canvas.height - 136)
+
+    // Classical Art-Deco Corner Filigrees
+    const drawCornerOrnament = (x: number, y: number, rot: number) => {
       ctx.save()
       ctx.translate(x, y)
       ctx.rotate(rot)
-      ctx.strokeStyle = '#d4af37'
+      ctx.strokeStyle = '#f5df8b'
       ctx.lineWidth = 2.5
+
+      // Stepped corner bracket
       ctx.beginPath()
       ctx.moveTo(0, 0)
-      ctx.lineTo(44, 0)
-      ctx.lineTo(44, 12)
-      ctx.lineTo(12, 12)
-      ctx.lineTo(12, 44)
-      ctx.lineTo(0, 44)
+      ctx.lineTo(52, 0)
+      ctx.lineTo(52, 14)
+      ctx.lineTo(14, 14)
+      ctx.lineTo(14, 52)
+      ctx.lineTo(0, 52)
       ctx.closePath()
       ctx.stroke()
-      ctx.fillStyle = '#d4af37'
+
+      // Inner diagonal flourish
+      ctx.strokeStyle = '#cba358'
+      ctx.lineWidth = 1.5
       ctx.beginPath()
-      ctx.arc(22, 22, 4.5, 0, Math.PI * 2)
+      ctx.moveTo(22, 22)
+      ctx.lineTo(44, 44)
+      ctx.stroke()
+
+      // Corner diamond stud
+      ctx.fillStyle = '#f5df8b'
+      ctx.beginPath()
+      ctx.moveTo(28, 22)
+      ctx.lineTo(34, 28)
+      ctx.lineTo(28, 34)
+      ctx.lineTo(22, 28)
+      ctx.closePath()
       ctx.fill()
+
       ctx.restore()
     }
 
-    drawCorner(66, 66, 0)
-    drawCorner(canvas.width - 66, 66, Math.PI / 2)
-    drawCorner(canvas.width - 66, canvas.height - 66, Math.PI)
-    drawCorner(66, canvas.height - 66, -Math.PI / 2)
+    drawCornerOrnament(72, 72, 0)
+    drawCornerOrnament(canvas.width - 72, 72, Math.PI / 2)
+    drawCornerOrnament(canvas.width - 72, canvas.height - 72, Math.PI)
+    drawCornerOrnament(72, canvas.height - 72, -Math.PI / 2)
 
-    ctx.fillStyle = '#d4af37'
+    // 3. Header Colophon
+    ctx.fillStyle = '#f5df8b'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = '600 20px Inter, -apple-system, sans-serif'
-    ctx.letterSpacing = '6px'
-    ctx.fillText('ZETAGO-AURUM  ·  EDISI MONOGRAF 2026', 512, 160)
+    ctx.font = '600 22px Inter, -apple-system, sans-serif'
+    ctx.letterSpacing = '8px'
+    ctx.fillText('Z E T A G O - A U R U M', 600, 160)
 
     ctx.fillStyle = '#cba358'
-    ctx.fillRect(380, 185, 264, 1.5)
+    ctx.font = 'italic 15px "Times New Roman", serif'
+    ctx.letterSpacing = '4px'
+    ctx.fillText('MONOGRAPHIA SYSTEMATIS ARTIFICIALIS', 600, 195)
 
-    const cx = 512
-    const cy = 480
-    ctx.save()
-    ctx.strokeStyle = '#d4af37'
-    ctx.lineWidth = 3
-    for (let r = 0; r < 4; r += 1) {
-      ctx.beginPath()
-      ctx.arc(cx, cy, 100 + r * 26, 0, Math.PI * 2)
-      ctx.globalAlpha = 0.35 + r * 0.2
-      ctx.stroke()
-    }
-    ctx.globalAlpha = 1
+    // Gilded divider with center diamond
+    ctx.strokeStyle = '#a3853b'
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    ctx.moveTo(420, 225)
+    ctx.lineTo(580, 225)
+    ctx.moveTo(620, 225)
+    ctx.lineTo(780, 225)
+    ctx.stroke()
 
     ctx.fillStyle = '#f5df8b'
-    ctx.font = 'bold 110px "Cinzel", "Times New Roman", serif'
-    ctx.fillText('Z', cx, cy + 8)
+    ctx.beginPath()
+    ctx.moveTo(600, 220)
+    ctx.lineTo(606, 225)
+    ctx.lineTo(600, 230)
+    ctx.lineTo(594, 225)
+    ctx.closePath()
+    ctx.fill()
+
+    // 4. Center Celestial Astrolabe Medallion
+    const cx = 600
+    const cy = 560
+
+    // Outer dotted orbit ring
+    ctx.save()
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)'
+    ctx.lineWidth = 1.5
+    ctx.setLineDash([4, 6])
+    ctx.beginPath()
+    ctx.arc(cx, cy, 190, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.setLineDash([])
+
+    // Chronometer radial tick marks ring
+    ctx.strokeStyle = '#cba358'
+    ctx.lineWidth = 1.5
+    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 36) {
+      const isMajor = Math.round((angle / (Math.PI / 18))) % 2 === 0
+      const r1 = 168
+      const r2 = isMajor ? 180 : 174
+      ctx.beginPath()
+      ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1)
+      ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2)
+      ctx.stroke()
+    }
+
+    // Inner solid ring
+    ctx.strokeStyle = '#f5df8b'
+    ctx.lineWidth = 2.5
+    ctx.beginPath()
+    ctx.arc(cx, cy, 160, 0, Math.PI * 2)
+    ctx.stroke()
+
+    // 14 Roman Numerals around ring representing 14 Chapters
+    const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV']
+    ctx.fillStyle = '#d4af37'
+    ctx.font = 'bold 13px Inter, sans-serif'
+    romanNumerals.forEach((rom, idx) => {
+      const theta = (idx / 14) * Math.PI * 2 - Math.PI / 2
+      const rx = cx + Math.cos(theta) * 140
+      const ry = cy + Math.sin(theta) * 140
+      ctx.fillText(rom, rx, ry)
+    })
+
+    // Glowing golden medallion disc
+    const sunGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 105)
+    sunGrad.addColorStop(0, '#fef1b8')
+    sunGrad.addColorStop(0.5, '#d4af37')
+    sunGrad.addColorStop(0.9, '#8c6b2d')
+    sunGrad.addColorStop(1, '#4a3814')
+    ctx.fillStyle = sunGrad
+    ctx.beginPath()
+    ctx.arc(cx, cy, 100, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Inner obsidian core
+    ctx.fillStyle = '#080a10'
+    ctx.beginPath()
+    ctx.arc(cx, cy, 90, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.strokeStyle = '#f5df8b'
+    ctx.lineWidth = 2
+    ctx.stroke()
+
+    // Sculpted Gold Monogram 'Z'
+    const zGrad = ctx.createLinearGradient(cx - 50, cy - 60, cx + 50, cy + 60)
+    zGrad.addColorStop(0, '#ffffff')
+    zGrad.addColorStop(0.3, '#fbe396')
+    zGrad.addColorStop(0.7, '#d4af37')
+    zGrad.addColorStop(1, '#8c6b2d')
+    ctx.fillStyle = zGrad
+    ctx.font = 'bold 125px "Cinzel", "Playfair Display", "Times New Roman", serif'
+    ctx.fillText('Z', cx, cy + 12)
     ctx.restore()
 
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 54px "Cinzel", "Times New Roman", serif'
-    ctx.letterSpacing = '3px'
-    ctx.fillText('KECERDASAN BUATAN', 512, 780)
+    // 5. Grand Typography
+    const titleGrad = ctx.createLinearGradient(200, 870, 1000, 870)
+    titleGrad.addColorStop(0, '#e2be58')
+    titleGrad.addColorStop(0.5, '#ffffff')
+    titleGrad.addColorStop(1, '#e2be58')
+    ctx.fillStyle = titleGrad
+    ctx.font = 'bold 58px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '5px'
+    ctx.fillText('KECERDASAN BUATAN', 600, 890)
 
-    ctx.fillStyle = '#d4af37'
-    ctx.font = '500 24px Inter, sans-serif'
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = '600 24px Inter, sans-serif'
     ctx.letterSpacing = '4px'
-    ctx.fillText('FUNDAMENTAL, SEJARAH & REKAYASA MODEL GENERATIF', 512, 840)
+    ctx.fillText('FUNDAMENTAL, SEJARAH & REKAYASA MODEL GENERATIF', 600, 955)
 
+    // Ornamental flourish
     ctx.strokeStyle = '#d4af37'
-    ctx.lineWidth = 2
+    ctx.lineWidth = 1.5
     ctx.beginPath()
-    ctx.moveTo(256, 880)
-    ctx.lineTo(768, 880)
+    ctx.moveTo(340, 995)
+    ctx.lineTo(860, 995)
     ctx.stroke()
 
     ctx.fillStyle = '#b3bac7'
-    ctx.font = '400 21px "Times New Roman", serif'
+    ctx.font = '400 22px "Times New Roman", serif'
     ctx.letterSpacing = '1px'
-    ctx.fillText('Buku Pegangan Komprehensif Arsitektur AI, Jaringan Saraf,', 512, 940)
-    ctx.fillText('Transformer, Siklus Pelatihan Frontier, hingga Implementasi Kode', 512, 975)
+    ctx.fillText('Buku Pegangan Komprehensif Arsitektur AI, Jaringan Saraf,', 600, 1055)
+    ctx.fillText('Transformer, Frontier Training Loop, hingga Implementasi Kode', 600, 1095)
 
-    ctx.fillStyle = '#d4af37'
-    ctx.font = '600 20px Inter, sans-serif'
+    // 6. Bottom Colophon Seal Box
+    const badgeW = 720
+    const badgeH = 76
+    const badgeX = (canvas.width - badgeW) / 2
+    const badgeY = 1570
+
+    ctx.fillStyle = 'rgba(18, 22, 34, 0.7)'
+    ctx.fillRect(badgeX, badgeY, badgeW, badgeH)
+    ctx.strokeStyle = '#cba358'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(badgeX, badgeY, badgeW, badgeH)
+
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = '600 17px Inter, sans-serif'
     ctx.letterSpacing = '4px'
-    ctx.fillText('KARYA MONOGRAF LENGKAP · 14 BAB · 158 HALAMAN', 512, 1340)
+    ctx.fillText('KARYA MONOGRAF LENGKAP · 14 BAB · 158 HALAMAN', 600, badgeY + 28)
+
+    ctx.fillStyle = '#a3853b'
+    ctx.font = '500 13px Inter, sans-serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('MMXXVI · TERBITAN RESMI RESEARCH FOUNDATION', 600, badgeY + 54)
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
@@ -243,32 +389,45 @@ export function InteractiveBook() {
 
   const generateSpineTexture = useCallback(() => {
     const canvas = document.createElement('canvas')
-    canvas.width = 320
-    canvas.height = 1536
+    canvas.width = 360
+    canvas.height = 1800
     const ctx = canvas.getContext('2d')!
 
-    ctx.fillStyle = '#080a0f'
+    ctx.fillStyle = '#07090e'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    ctx.fillStyle = '#1e2433'
+    // Raised gilded ribbing bands
     for (let i = 1; i <= 5; i += 1) {
       const y = (canvas.height / 6) * i
-      ctx.fillRect(0, y - 8, canvas.width, 16)
+      ctx.fillStyle = '#181d2a'
+      ctx.fillRect(0, y - 10, canvas.width, 20)
+
       ctx.fillStyle = '#d4af37'
-      ctx.fillRect(20, y - 2, canvas.width - 40, 4)
-      ctx.fillStyle = '#1e2433'
+      ctx.fillRect(24, y - 2.5, canvas.width - 48, 5)
     }
 
+    // Top logo
+    ctx.fillStyle = '#f5df8b'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = 'bold 28px "Cinzel", serif'
+    ctx.fillText('✦ Z ✦', canvas.width / 2, 140)
+
+    // Vertical book title
     ctx.save()
     ctx.translate(canvas.width / 2, canvas.height / 2)
     ctx.rotate(Math.PI / 2)
     ctx.fillStyle = '#f5df8b'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.font = 'bold 36px "Cinzel", "Times New Roman", serif'
-    ctx.letterSpacing = '5px'
-    ctx.fillText('ZETAGO-AURUM  ✦  KECERDASAN BUATAN  ✦  2026', 0, 0)
+    ctx.font = 'bold 38px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '6px'
+    ctx.fillText('ZETAGO-AURUM  ✦  KECERDASAN BUATAN  ✦  MMXXVI', 0, 0)
     ctx.restore()
+
+    // Bottom colophon
+    ctx.fillStyle = '#cba358'
+    ctx.font = '600 15px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('14 BAB · 158 HALAMAN', canvas.width / 2, canvas.height - 140)
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
@@ -277,34 +436,40 @@ export function InteractiveBook() {
 
   const generateBackCoverTexture = useCallback(() => {
     const canvas = document.createElement('canvas')
-    canvas.width = 1024
-    canvas.height = 1536
+    canvas.width = 1200
+    canvas.height = 1800
     const ctx = canvas.getContext('2d')!
 
-    ctx.fillStyle = '#0a0d14'
+    ctx.fillStyle = '#07080c'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    // Framing
     ctx.strokeStyle = '#cba358'
-    ctx.lineWidth = 3
-    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96)
+    ctx.lineWidth = 2
+    ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84)
 
+    ctx.strokeStyle = '#f5df8b'
+    ctx.lineWidth = 3.5
+    ctx.strokeRect(68, 68, canvas.width - 136, canvas.height - 136)
+
+    // Philosophical Quote
     ctx.fillStyle = '#f5df8b'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = 'italic 28px "Times New Roman", serif'
-    ctx.fillText('"Kecerdasan bukanlah sekadar replikasi logika manusia,', 512, 680)
-    ctx.fillText('melainkan jembatan matematis yang memperluas cakrawala', 512, 730)
-    ctx.fillText('pemikiran, rekayasa, dan masa depan peradaban."', 512, 780)
+    ctx.font = 'italic 32px "Times New Roman", serif'
+    ctx.fillText('"Kecerdasan bukanlah sekadar replikasi logika manusia,', 600, 780)
+    ctx.fillText('melainkan jembatan matematis yang memperluas cakrawala', 600, 835)
+    ctx.fillText('pemikiran, rekayasa, dan masa depan peradaban."', 600, 890)
 
     ctx.fillStyle = '#d4af37'
-    ctx.font = '500 20px Inter, sans-serif'
-    ctx.letterSpacing = '3px'
-    ctx.fillText(': ZETAGO-AURUM RESEARCH FOUNDATION :', 512, 870)
+    ctx.font = '600 22px Inter, sans-serif'
+    ctx.letterSpacing = '4px'
+    ctx.fillText(': ZETAGO-AURUM RESEARCH FOUNDATION :', 600, 990)
 
     ctx.fillStyle = '#8b949e'
     ctx.font = '400 18px Inter, sans-serif'
-    ctx.letterSpacing = '2px'
-    ctx.fillText('EDISI PERTAMA · DOKUMEN TAHUN 2026 · TERDAFTAR SECARA RESMI', 512, 1380)
+    ctx.letterSpacing = '3px'
+    ctx.fillText('EDISI PERTAMA · DOKUMEN TAHUN 2026 · TERDAFTAR SECARA RESMI', 600, 1600)
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
@@ -317,17 +482,17 @@ export function InteractiveBook() {
     canvas.height = 1536
     const ctx = canvas.getContext('2d')!
 
-    ctx.fillStyle = '#10141f'
+    ctx.fillStyle = '#0d101a'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.18)'
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.16)'
     ctx.lineWidth = 1.2
 
-    const step = 48
+    const step = 56
     for (let x = 0; x < canvas.width; x += step) {
       for (let y = 0; y < canvas.height; y += step) {
         ctx.beginPath()
-        ctx.arc(x, y, 22, 0, Math.PI * 2)
+        ctx.arc(x, y, 24, 0, Math.PI * 2)
         ctx.stroke()
       }
     }
@@ -345,9 +510,9 @@ export function InteractiveBook() {
 
     const grad = ctx.createLinearGradient(0, 0, 64, 0)
     grad.addColorStop(0, 'rgba(0, 0, 0, 0)')
-    grad.addColorStop(0.35, 'rgba(0, 0, 0, 0.2)')
-    grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.38)')
-    grad.addColorStop(0.65, 'rgba(0, 0, 0, 0.2)')
+    grad.addColorStop(0.35, 'rgba(0, 0, 0, 0.22)')
+    grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.42)')
+    grad.addColorStop(0.65, 'rgba(0, 0, 0, 0.22)')
     grad.addColorStop(1, 'rgba(0, 0, 0, 0)')
 
     ctx.fillStyle = grad
@@ -374,14 +539,15 @@ export function InteractiveBook() {
     ctx.fillStyle = bgColor
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    // Inner binding shadow gradient
     const edgeGrad = ctx.createLinearGradient(0, 0, canvas.width, 0)
     if (side === 'left') {
       edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.03)')
-      edgeGrad.addColorStop(0.9, 'transparent')
-      edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.12)')
+      edgeGrad.addColorStop(0.88, 'transparent')
+      edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.32)' : 'rgba(0,0,0,0.12)')
     } else {
-      edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.12)')
-      edgeGrad.addColorStop(0.1, 'transparent')
+      edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.32)' : 'rgba(0,0,0,0.12)')
+      edgeGrad.addColorStop(0.12, 'transparent')
       edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.03)')
     }
     ctx.fillStyle = edgeGrad
@@ -555,7 +721,7 @@ export function InteractiveBook() {
   }, [generatePageTexture])
 
   // ==========================================
-  // THREE.JS INITIALIZATION & LIFECYCLE
+  // THREE.JS INITIALIZATION & SCENE RIGGING
   // ==========================================
 
   useEffect(() => {
@@ -571,9 +737,9 @@ export function InteractiveBook() {
     const scene = new THREE.Scene()
     sceneRef.current = scene
 
-    // Camera: Stable natural distance (NO auto-zoom on open)
+    // Camera: Stable natural distance (NO forced auto-zoom)
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100)
-    camera.position.set(0, 0.3, isMobile ? 6.4 : 5.4)
+    camera.position.set(0, 0.25, isMobile ? 6.2 : 5.2)
     cameraRef.current = camera
 
     // Renderer
@@ -589,7 +755,7 @@ export function InteractiveBook() {
     renderer.toneMappingExposure = 1.15
     rendererRef.current = renderer
 
-    // Controls: ALWAYS enabled for 360 orbit
+    // Controls: ALWAYS enabled for free 360 orbit
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.06
@@ -600,30 +766,30 @@ export function InteractiveBook() {
     controlsRef.current = controls
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xfff8ee, 1.0)
+    const ambientLight = new THREE.AmbientLight(0xfff9ef, 1.1)
     scene.add(ambientLight)
 
-    const mainKeyLight = new THREE.DirectionalLight(0xffe8c6, 2.0)
+    const mainKeyLight = new THREE.DirectionalLight(0xffe8c6, 2.2)
     mainKeyLight.position.set(3.5, 6.5, 5.5)
     scene.add(mainKeyLight)
 
-    const fillLight = new THREE.DirectionalLight(0xd4e2f5, 0.9)
+    const fillLight = new THREE.DirectionalLight(0xd4e2f5, 0.85)
     fillLight.position.set(-4.5, 2.5, 3.8)
     scene.add(fillLight)
 
-    const rimLight = new THREE.DirectionalLight(0xd4af37, 1.4)
+    const rimLight = new THREE.DirectionalLight(0xd4af37, 1.5)
     rimLight.position.set(0, -3.5, -4.5)
     scene.add(rimLight)
 
     // ==========================================
     // BUILD PHYSICAL 3D BOOK RIG (SPINE AT X = 0)
     // ==========================================
-    const bookWidth = 1.9
-    const bookHeight = 2.7
-    const totalStackDepth = 0.22
-    const boardThickness = 0.024
+    const bookWidth = 1.85
+    const bookHeight = 2.65
+    const totalStackDepth = 0.18
+    const boardThickness = 0.02
     const coverWidth = bookWidth + 0.04
-    const coverHeight = bookHeight + 0.08
+    const coverHeight = bookHeight + 0.06
 
     const rootGroup = new THREE.Group()
     scene.add(rootGroup)
@@ -639,17 +805,21 @@ export function InteractiveBook() {
     const endpaperTex = generateEndpaperTexture()
     const creaseTex = generateCreaseShadowTexture()
 
-    // 1. Back Cover (Right side: x = 0 to coverWidth)
-    const backCoverGeom = new RoundedBoxGeometry(coverWidth, coverHeight, boardThickness, 2, 0.008)
+    // Materials
     const leatherMat = new THREE.MeshStandardMaterial({
-      color: 0x0a0d14,
-      roughness: 0.75,
+      color: 0x07080c,
+      roughness: 0.72,
       metalness: 0.15,
     })
-    const backCoverMesh = new THREE.Mesh(backCoverGeom, leatherMat)
-    backCoverMesh.position.set(coverWidth / 2, 0, -totalStackDepth / 2 - boardThickness / 2)
-    rootGroup.add(backCoverMesh)
 
+    // 1. Right Cover Base (Underneath right pages at Z = -boardThickness / 2)
+    const rightCoverGeom = new RoundedBoxGeometry(coverWidth, coverHeight, boardThickness, 2, 0.006)
+    const rightCoverBase = new THREE.Mesh(rightCoverGeom, leatherMat)
+    rightCoverBase.position.set(coverWidth / 2, 0, -boardThickness / 2)
+    rootGroup.add(rightCoverBase)
+    rightCoverBaseRef.current = rightCoverBase
+
+    // Back cover artwork plane on underside of right cover base
     const backPlaneGeom = new THREE.PlaneGeometry(coverWidth - 0.02, coverHeight - 0.02)
     const backPlaneMat = new THREE.MeshStandardMaterial({
       map: backCoverTex,
@@ -658,21 +828,31 @@ export function InteractiveBook() {
     })
     const backPlane = new THREE.Mesh(backPlaneGeom, backPlaneMat)
     backPlane.rotation.y = Math.PI
-    backPlane.position.set(coverWidth / 2, 0, -totalStackDepth / 2 - boardThickness - 0.001)
+    backPlane.position.set(coverWidth / 2, 0, -boardThickness - 0.001)
     rootGroup.add(backPlane)
 
-    // 2. Spine along x = 0
-    const spineGeom = new RoundedBoxGeometry(boardThickness * 1.6, coverHeight, totalStackDepth + boardThickness * 2, 2, 0.005)
+    // 2. Left Cover Base (Flat underneath left pages when open)
+    const leftCoverGeom = new RoundedBoxGeometry(coverWidth, coverHeight, boardThickness, 2, 0.006)
+    const leftCoverBase = new THREE.Mesh(leftCoverGeom, leatherMat)
+    leftCoverBase.position.set(-coverWidth / 2, 0, -boardThickness / 2)
+    leftCoverBase.visible = false
+    rootGroup.add(leftCoverBase)
+    leftCoverBaseRef.current = leftCoverBase
+
+    // 3. Dynamic Spine (Shrinks to flat base under gutter when open)
+    const spineGeom = new RoundedBoxGeometry(boardThickness * 1.5, coverHeight, 1, 2, 0.005)
     const spineMat = new THREE.MeshStandardMaterial({
       map: spineTex,
       roughness: 0.7,
       metalness: 0.25,
     })
     const spineMesh = new THREE.Mesh(spineGeom, spineMat)
-    spineMesh.position.set(-boardThickness * 0.8, 0, 0)
+    spineMesh.position.set(-boardThickness * 0.75, 0, totalStackDepth / 2)
+    spineMesh.scale.set(1, 1, totalStackDepth + boardThickness)
     rootGroup.add(spineMesh)
+    spineMeshRef.current = spineMesh
 
-    // 3. Dynamic Paper Stack Texture (Gilded / Layered edge)
+    // 4. Dynamic Gilded Paper Stack Edge Texture
     const edgeCanvas = document.createElement('canvas')
     edgeCanvas.width = 128
     edgeCanvas.height = 512
@@ -686,42 +866,41 @@ export function InteractiveBook() {
     const edgeTex = new THREE.CanvasTexture(edgeCanvas)
     const pageEdgeMat = new THREE.MeshStandardMaterial({
       map: edgeTex,
-      roughness: 0.9,
-      metalness: 0.1,
+      roughness: 0.88,
+      metalness: 0.12,
     })
 
-    // 4. Right Page Block Mesh (Scaleable depth for physical paper stacking)
+    // 5. Right Page Block Mesh (Scaleable depth for physical paper stacking)
     const blockBaseGeom = new RoundedBoxGeometry(bookWidth, bookHeight, 1, 2, 0.004)
     const rightBlockMesh = new THREE.Mesh(blockBaseGeom, pageEdgeMat)
-    rightBlockMesh.position.set(bookWidth / 2, 0, 0)
+    rightBlockMesh.position.set(bookWidth / 2, 0, totalStackDepth / 2)
     rightBlockMesh.scale.set(1, 1, totalStackDepth)
     rootGroup.add(rightBlockMesh)
     rightBlockMeshRef.current = rightBlockMesh
 
-    // 5. Left Page Block Mesh (Scaleable depth on opened left side!)
+    // 6. Left Page Block Mesh (Scaleable depth on opened left side)
     const leftBlockMesh = new THREE.Mesh(blockBaseGeom, pageEdgeMat)
-    leftBlockMesh.position.set(-bookWidth / 2, 0, -totalStackDepth / 2 + 0.005)
-    leftBlockMesh.scale.set(1, 1, 0.008)
+    leftBlockMesh.position.set(-bookWidth / 2, 0, 0.003)
+    leftBlockMesh.scale.set(1, 1, 0.006)
     leftBlockMesh.visible = false
     rootGroup.add(leftBlockMesh)
     leftBlockMeshRef.current = leftBlockMesh
 
-    // 6. Front Cover Pivot (Hinged at x = 0)
+    // 7. Swinging Front Cover (Used during closed state and opening transition)
     const frontPivot = new THREE.Group()
-    frontPivot.position.set(0, 0, totalStackDepth / 2 + boardThickness / 2)
+    frontPivot.position.set(0, 0, totalStackDepth + boardThickness / 2)
     frontPivotRef.current = frontPivot
 
-    const frontCoverGeom = new RoundedBoxGeometry(coverWidth, coverHeight, boardThickness, 2, 0.008)
-    const frontCoverMesh = new THREE.Mesh(frontCoverGeom, leatherMat)
+    const frontCoverMesh = new THREE.Mesh(rightCoverGeom, leatherMat)
     frontCoverMesh.position.set(coverWidth / 2, 0, 0)
     frontPivot.add(frontCoverMesh)
     frontCoverMeshRef.current = frontCoverMesh
 
-    // Front Cover Artwork Plane (Outside facing)
+    // Front Cover Artwork Plane (Facing outside +Z)
     const frontCoverPlaneGeom = new THREE.PlaneGeometry(coverWidth - 0.02, coverHeight - 0.02)
     const frontCoverPlaneMat = new THREE.MeshStandardMaterial({
       map: coverTex,
-      roughness: 0.65,
+      roughness: 0.62,
       metalness: 0.25,
     })
     const frontCoverPlane = new THREE.Mesh(frontCoverPlaneGeom, frontCoverPlaneMat)
@@ -730,7 +909,7 @@ export function InteractiveBook() {
 
     rootGroup.add(frontPivot)
 
-    // 7. Left Page Mesh (Dynamic surface in open reading mode)
+    // 8. Left Page Mesh (Surface on top of left paper stack)
     const pageGeom = new THREE.PlaneGeometry(bookWidth, bookHeight)
     const leftPageMat = new THREE.MeshStandardMaterial({
       map: endpaperTex,
@@ -739,12 +918,12 @@ export function InteractiveBook() {
       side: THREE.FrontSide,
     })
     const leftPageMesh = new THREE.Mesh(pageGeom, leftPageMat)
-    leftPageMesh.position.set(-bookWidth / 2, 0, -totalStackDepth / 2 + 0.01)
+    leftPageMesh.position.set(-bookWidth / 2, 0, 0.007)
     leftPageMesh.visible = false
     rootGroup.add(leftPageMesh)
     leftPageMeshRef.current = leftPageMesh
 
-    // 8. Right Page Mesh (Surface on top of right paper stack)
+    // 9. Right Page Mesh (Surface on top of right paper stack)
     const rightPageMat = new THREE.MeshStandardMaterial({
       map: getPageTexture(aiBookPages[0], 'ivory', 'right'),
       roughness: 0.92,
@@ -752,26 +931,28 @@ export function InteractiveBook() {
       side: THREE.FrontSide,
     })
     const rightPageMesh = new THREE.Mesh(pageGeom, rightPageMat)
-    rightPageMesh.position.set(bookWidth / 2, 0, totalStackDepth / 2 + 0.001)
+    rightPageMesh.position.set(bookWidth / 2, 0, totalStackDepth + 0.001)
     rightPageMesh.visible = false
     rootGroup.add(rightPageMesh)
     rightPageMeshRef.current = rightPageMesh
 
-    // 9. Center Spine Crease Shadow
-    const creaseGeom = new THREE.PlaneGeometry(0.12, bookHeight)
+    // 10. Center Spine Crease Shadow (Subtle binding shadow at X = 0)
+    const creaseGeom = new THREE.PlaneGeometry(0.09, bookHeight)
     const creaseMat = new THREE.MeshBasicMaterial({
       map: creaseTex,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.65,
       depthWrite: false,
     })
     const creaseMesh = new THREE.Mesh(creaseGeom, creaseMat)
-    creaseMesh.position.set(0, 0, totalStackDepth / 2 + 0.003)
+    creaseMesh.position.set(0, 0, totalStackDepth + 0.002)
+    creaseMesh.visible = false
     rootGroup.add(creaseMesh)
+    creaseMeshRef.current = creaseMesh
 
-    // 10. Dynamic 3D Turning Page Leaf with Flexible Vertex Curvature
+    // 11. Dynamic 3D Turning Page Leaf with Flexible Vertex Curvature
     const leafPivot = new THREE.Group()
-    leafPivot.position.set(0, 0, totalStackDepth / 2 + 0.005)
+    leafPivot.position.set(0, 0, totalStackDepth + 0.004)
     turningPivotRef.current = leafPivot
     leafPivot.visible = false
 
@@ -828,61 +1009,104 @@ export function InteractiveBook() {
         anim.targetLeftThickness = anim.minThickness + progressRatio * (anim.totalStackDepth - anim.minThickness)
         anim.targetRightThickness = anim.minThickness + (1 - progressRatio) * (anim.totalStackDepth - anim.minThickness)
       } else {
-        // When closed, all pages are in right block
         anim.targetLeftThickness = anim.minThickness
         anim.targetRightThickness = anim.totalStackDepth
       }
 
       // Smooth physical thickness interpolation
-      anim.leftThickness = lerp(anim.leftThickness, anim.targetLeftThickness, dt * 5)
-      anim.rightThickness = lerp(anim.rightThickness, anim.targetRightThickness, dt * 5)
+      anim.leftThickness = lerp(anim.leftThickness, anim.targetLeftThickness, dt * 6)
+      anim.rightThickness = lerp(anim.rightThickness, anim.targetRightThickness, dt * 6)
 
       // Update Right Page Block depth & surface
       if (rightBlockMeshRef.current && rightPageMeshRef.current) {
         rightBlockMeshRef.current.scale.z = anim.rightThickness
-        const rightTopZ = -anim.totalStackDepth / 2 + anim.rightThickness
-        rightBlockMeshRef.current.position.z = -anim.totalStackDepth / 2 + anim.rightThickness / 2
-        rightPageMeshRef.current.position.z = rightTopZ + 0.001
+        rightBlockMeshRef.current.position.z = anim.rightThickness / 2
+        rightPageMeshRef.current.position.z = anim.rightThickness + 0.001
       }
 
       // Update Left Page Block depth & surface
       if (leftBlockMeshRef.current && leftPageMeshRef.current) {
         leftBlockMeshRef.current.scale.z = anim.leftThickness
-        const leftTopZ = -anim.totalStackDepth / 2 + anim.leftThickness
-        leftBlockMeshRef.current.position.z = -anim.totalStackDepth / 2 + anim.leftThickness / 2
-        leftPageMeshRef.current.position.z = leftTopZ + 0.001
+        leftBlockMeshRef.current.position.z = anim.leftThickness / 2
+        leftPageMeshRef.current.position.z = anim.leftThickness + 0.001
       }
 
-      // Cover animation
-      if (!dragRef.current.active || (dragRef.current.mode !== 'cover-open' && dragRef.current.mode !== 'cover-close')) {
-        anim.openProgress = lerp(anim.openProgress, anim.targetOpenProgress, dt * 7)
+      // Update Center Crease Shadow position
+      if (creaseMeshRef.current) {
+        creaseMeshRef.current.position.z = Math.max(anim.leftThickness, anim.rightThickness) + 0.0015
+      }
+
+      // Smooth Open/Close Animation Loop
+      if (!dragRef.current.active || dragRef.current.mode !== 'cover-open') {
+        anim.openProgress = lerp(anim.openProgress, anim.targetOpenProgress, dt * 7.5)
         const openAmount = anim.openProgress
 
-        const hoverCrack = !isOpen && anim.isHovered ? -0.15 : 0
-        const targetRotY = openAmount > 0.001
-          ? (-Math.PI + 0.04) * openAmount
-          : hoverCrack
-        frontPivot.rotation.y = lerp(frontPivot.rotation.y, targetRotY, dt * 10)
+        // When openAmount is near 1 (Fully open reading state)
+        if (openAmount > 0.98) {
+          // Front swinging cover is completely docked and hidden
+          frontPivot.visible = false
+          leftCoverBase.visible = true
+          leftBlockMesh.visible = true
+          leftPageMesh.visible = true
+          rightPageMesh.visible = true
+          if (creaseMeshRef.current) creaseMeshRef.current.visible = true
 
-        const targetRootX = lerp(-bookWidth / 2, 0, openAmount)
-        rootGroup.position.x = lerp(rootGroup.position.x, targetRootX, dt * 7)
+          // Spine is flat at base underneath gutter
+          spineMesh.position.set(0, 0, -boardThickness / 2)
+          spineMesh.scale.set(1, 1, boardThickness)
 
-        if (openAmount > 0.01) {
-          rootGroup.position.y = lerp(rootGroup.position.y, 0, dt * 6)
-          rootGroup.rotation.x = lerp(rootGroup.rotation.x, 0, dt * 6)
-          rootGroup.rotation.y = lerp(rootGroup.rotation.y, 0, dt * 6)
-          rootGroup.rotation.z = lerp(rootGroup.rotation.z, 0, dt * 6)
-
-          leftPageMesh.visible = openAmount > 0.35
-          rightPageMesh.visible = openAmount > 0.35
-          leftBlockMesh.visible = openAmount > 0.35
-        } else {
-          anim.ambientAngle += dt * 0.4
-          const floatY = Math.sin(anim.ambientAngle * 1.5) * 0.04
-          rootGroup.position.y = floatY
+          // Center spread in viewport
+          rootGroup.position.x = lerp(rootGroup.position.x, 0, dt * 8)
+          rootGroup.position.y = lerp(rootGroup.position.y, 0, dt * 8)
+          rootGroup.rotation.x = lerp(rootGroup.rotation.x, 0, dt * 8)
+          rootGroup.rotation.y = lerp(rootGroup.rotation.y, 0, dt * 8)
+          rootGroup.rotation.z = lerp(rootGroup.rotation.z, 0, dt * 8)
+        } else if (openAmount < 0.02) {
+          // Closed state
+          frontPivot.visible = true
+          leftCoverBase.visible = false
+          leftBlockMesh.visible = false
           leftPageMesh.visible = false
           rightPageMesh.visible = false
-          leftBlockMesh.visible = false
+          if (creaseMeshRef.current) creaseMeshRef.current.visible = false
+
+          // Spine wraps left edge
+          spineMesh.position.set(-boardThickness * 0.75, 0, anim.totalStackDepth / 2)
+          spineMesh.scale.set(1, 1, anim.totalStackDepth + boardThickness)
+
+          const hoverCrack = !isOpen && anim.isHovered ? -0.14 : 0
+          frontPivot.rotation.y = lerp(frontPivot.rotation.y, hoverCrack, dt * 10)
+          frontPivot.position.set(0, 0, anim.totalStackDepth + boardThickness / 2)
+
+          anim.ambientAngle += dt * 0.4
+          const floatY = Math.sin(anim.ambientAngle * 1.5) * 0.035
+          rootGroup.position.set(-bookWidth / 2, floatY, 0)
+          rootGroup.rotation.set(0.12, -0.32, 0)
+        } else {
+          // In transition between closed and open
+          frontPivot.visible = true
+          leftCoverBase.visible = false
+
+          // Front cover swings smoothly from 0 to -Math.PI
+          frontPivot.rotation.y = -Math.PI * openAmount
+          frontPivot.position.z = lerp(anim.totalStackDepth + boardThickness / 2, -boardThickness / 2, openAmount)
+
+          // Spine smoothly flattens down to base
+          spineMesh.scale.z = lerp(anim.totalStackDepth + boardThickness, boardThickness, openAmount)
+          spineMesh.position.z = lerp(anim.totalStackDepth / 2, -boardThickness / 2, openAmount)
+          spineMesh.position.x = lerp(-boardThickness * 0.75, 0, openAmount)
+
+          // Root group centers smoothly
+          rootGroup.position.x = lerp(-bookWidth / 2, 0, openAmount)
+          rootGroup.position.y = lerp(0, 0, openAmount)
+          rootGroup.rotation.x = lerp(0.12, 0, openAmount)
+          rootGroup.rotation.y = lerp(-0.32, 0, openAmount)
+          rootGroup.rotation.z = lerp(0, 0, openAmount)
+
+          rightPageMesh.visible = openAmount > 0.25
+          leftBlockMesh.visible = openAmount > 0.65
+          leftPageMesh.visible = openAmount > 0.65
+          if (creaseMeshRef.current) creaseMeshRef.current.visible = openAmount > 0.65
         }
       }
 
@@ -900,13 +1124,13 @@ export function InteractiveBook() {
         }
         leafPivot.rotation.y = leafRotY
 
-        // Dynamic Z height across physical stacks
-        const startZ = -anim.totalStackDepth / 2 + (anim.flipDirection === 'next' ? anim.rightThickness : anim.leftThickness) + 0.003
-        const endZ = -anim.totalStackDepth / 2 + (anim.flipDirection === 'next' ? anim.leftThickness : anim.rightThickness) + 0.003
+        // Dynamic Z height transition across physical paper stacks
+        const startZ = (anim.flipDirection === 'next' ? anim.rightThickness : anim.leftThickness) + 0.003
+        const endZ = (anim.flipDirection === 'next' ? anim.leftThickness : anim.rightThickness) + 0.003
         leafPivot.position.z = lerp(startZ, endZ, progress)
 
         const arch = Math.sin(progress * Math.PI) * 0.22
-        const twist = Math.sin(progress * Math.PI) * 0.08
+        const twist = Math.sin(progress * Math.PI) * 0.07
 
         if (flexGeomFrontRef.current) {
           const pFront = flexGeomFrontRef.current.attributes.position
@@ -1083,7 +1307,7 @@ export function InteractiveBook() {
   }, [])
 
   // ==========================================
-  // DRAG-TO-OPEN & DRAG-TO-FLIP PHYSICS
+  // DRAG & POINTER INTERACTIONS
   // ==========================================
 
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -1099,13 +1323,15 @@ export function InteractiveBook() {
     raycaster.setFromCamera(mouse, cameraRef.current)
 
     const hits: THREE.Intersection[] = []
-    if (frontCoverMeshRef.current) hits.push(...raycaster.intersectObject(frontCoverMeshRef.current, true))
-    if (leftPageMeshRef.current && leftPageMeshRef.current.visible) hits.push(...raycaster.intersectObject(leftPageMeshRef.current))
-    if (rightPageMeshRef.current && rightPageMeshRef.current.visible) hits.push(...raycaster.intersectObject(rightPageMeshRef.current))
+    if (!isOpen && frontCoverMeshRef.current) {
+      hits.push(...raycaster.intersectObject(frontCoverMeshRef.current, true))
+    }
+    if (isOpen) {
+      if (leftPageMeshRef.current && leftPageMeshRef.current.visible) hits.push(...raycaster.intersectObject(leftPageMeshRef.current))
+      if (rightPageMeshRef.current && rightPageMeshRef.current.visible) hits.push(...raycaster.intersectObject(rightPageMeshRef.current))
+    }
 
     if (hits.length > 0) {
-      if (controlsRef.current) controlsRef.current.enabled = false
-
       const drag = dragRef.current
       drag.active = true
       drag.startX = e.clientX
@@ -1115,14 +1341,13 @@ export function InteractiveBook() {
 
       if (!isOpen) {
         drag.mode = 'cover-open'
+        if (controlsRef.current) controlsRef.current.enabled = false
       } else {
         const hitObj = hits[0].object
         if (hitObj === leftPageMeshRef.current) {
-          drag.mode = currentPage === 0 ? 'cover-close' : 'page-prev'
+          drag.mode = 'page-prev'
         } else if (hitObj === rightPageMeshRef.current) {
           drag.mode = 'page-next'
-        } else {
-          drag.mode = 'cover-close'
         }
       }
 
@@ -1145,29 +1370,16 @@ export function InteractiveBook() {
       drag.moved = true
     }
 
-    const frontPivot = frontPivotRef.current
-    const rootGroup = bookGroupRef.current
-    if (!frontPivot || !rootGroup) return
-
-    const bookWidth = 1.9
-
     if (drag.mode === 'cover-open') {
-      const prog = clamp(-deltaX / 240, 0, 1)
+      const prog = clamp(-deltaX / 220, 0, 1)
       drag.progress = prog
-      frontPivot.rotation.y = (-Math.PI + 0.04) * prog
-      rootGroup.position.x = lerp(-bookWidth / 2, 0, prog)
-      if (rightPageMeshRef.current && leftPageMeshRef.current) {
-        rightPageMeshRef.current.visible = prog > 0.35
-        leftPageMeshRef.current.visible = prog > 0.35
-      }
-    } else if (drag.mode === 'cover-close') {
-      const prog = clamp(deltaX / 240, 0, 1)
-      drag.progress = prog
-      frontPivot.rotation.y = (-Math.PI + 0.04) * (1 - prog)
-      rootGroup.position.x = lerp(0, -bookWidth / 2, prog)
-      if (rightPageMeshRef.current && leftPageMeshRef.current) {
-        rightPageMeshRef.current.visible = prog < 0.65
-        leftPageMeshRef.current.visible = prog < 0.65
+      animStateRef.current.openProgress = prog
+      const frontPivot = frontPivotRef.current
+      const rootGroup = bookGroupRef.current
+      if (frontPivot && rootGroup) {
+        const bookWidth = 1.85
+        frontPivot.rotation.y = -Math.PI * prog
+        rootGroup.position.x = lerp(-bookWidth / 2, 0, prog)
       }
     }
   }
@@ -1183,6 +1395,7 @@ export function InteractiveBook() {
       canvasRef.current.releasePointerCapture(drag.pointerId)
     }
 
+    // Tap / Click Handler
     if (!drag.moved) {
       if (!isOpen) {
         setIsOpen(true)
@@ -1192,9 +1405,9 @@ export function InteractiveBook() {
         if (rect) {
           const clickX = e.clientX - rect.left
           const midX = rect.width / 2
-          if (clickX > midX + 30) {
+          if (clickX > midX + 25) {
             flipNext()
-          } else if (clickX < midX - 30) {
+          } else if (clickX < midX - 25) {
             flipPrev()
           }
         }
@@ -1202,6 +1415,7 @@ export function InteractiveBook() {
       return
     }
 
+    // Drag Handler
     if (drag.mode === 'cover-open') {
       if (drag.progress > 0.22) {
         setIsOpen(true)
@@ -1209,19 +1423,12 @@ export function InteractiveBook() {
       } else {
         animStateRef.current.targetOpenProgress = 0
       }
-    } else if (drag.mode === 'cover-close') {
-      if (drag.progress > 0.22) {
-        setIsOpen(false)
-        playPageSound()
-      } else {
-        animStateRef.current.targetOpenProgress = 1
-      }
     } else if (drag.mode === 'page-next') {
-      if (e.clientX - drag.startX < -40) {
+      if (e.clientX - drag.startX < -35) {
         flipNext()
       }
     } else if (drag.mode === 'page-prev') {
-      if (e.clientX - drag.startX > 40) {
+      if (e.clientX - drag.startX > 35) {
         flipPrev()
       }
     }
@@ -1255,8 +1462,8 @@ export function InteractiveBook() {
       ref={containerRef}
       className={`relative w-full overflow-hidden transition-colors duration-500 select-none ${
         isFullscreen
-          ? 'fixed inset-0 z-50 h-screen bg-[#07090e]'
-          : 'h-[65vh] min-h-[540px] sm:min-h-[720px] max-h-[820px] rounded-2xl border border-[oklch(0.72_0.13_80_/_0.25)] bg-[#07090e] shadow-2xl'
+          ? 'fixed inset-0 z-50 h-screen w-screen bg-[#06080d]'
+          : 'h-[68vh] min-h-[500px] sm:min-h-[660px] max-h-[780px] rounded-2xl border border-[oklch(0.72_0.13_80_/_0.2)] bg-[#06080d] shadow-2xl'
       }`}
     >
       {/* 3D WebGL Canvas */}
@@ -1274,7 +1481,7 @@ export function InteractiveBook() {
         {isOpen && (
           <button
             onClick={() => setIsTocOpen(true)}
-            title="Daftar Isi Bab"
+            title="Daftar Bab"
             className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
           >
             <Menu className="h-4 w-4" />
@@ -1301,7 +1508,7 @@ export function InteractiveBook() {
 
         <button
           onClick={toggleFullscreen}
-          title={isFullscreen ? 'Keluar Fullscreen' : 'Layar Penuh'}
+          title={isFullscreen ? 'Keluar Layar Penuh' : 'Layar Penuh'}
           className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
         >
           {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -1316,9 +1523,9 @@ export function InteractiveBook() {
               setIsOpen(true)
               playPageSound()
             }}
-            className="group flex items-center gap-2 rounded-full border border-[oklch(0.72_0.13_80_/_0.4)] bg-black/60 px-5 py-2 text-xs font-mono tracking-wider text-[oklch(0.72_0.13_80)] backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] hover:text-white transition-all"
+            className="group flex items-center gap-2 rounded-full border border-[oklch(0.72_0.13_80_/_0.35)] bg-black/60 px-5 py-2 text-xs font-mono tracking-wider text-[oklch(0.72_0.13_80)] backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] hover:text-white transition-all shadow-lg"
           >
-            <span>Klik atau Tarik Buku untuk Membuka</span>
+            <span>Klik atau Geser Buku untuk Membuka</span>
             <span className="text-zinc-500">·</span>
             <span className="text-zinc-400 group-hover:text-zinc-200">Orbit 360°</span>
           </button>
@@ -1332,12 +1539,12 @@ export function InteractiveBook() {
             onClick={flipPrev}
             disabled={currentPage <= 0 || isFlipping}
             title="Halaman Sebelumnya"
-            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-zinc-300 backdrop-blur-md disabled:opacity-20 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] hover:text-white active:scale-95 transition-all"
+            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-zinc-300 backdrop-blur-md disabled:opacity-20 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] hover:text-white active:scale-95 transition-all shadow-lg"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
 
-          <div className="pointer-events-auto flex items-center gap-4 rounded-full border border-white/10 bg-black/60 px-4 py-1.5 backdrop-blur-md">
+          <div className="pointer-events-auto flex items-center gap-4 rounded-full border border-white/10 bg-black/60 px-4 py-1.5 backdrop-blur-md shadow-lg">
             <span className="font-mono text-xs text-zinc-300">
               Hal. {currentPage === 0 ? '1' : `${currentPage} · ${currentPage + 1}`} <span className="text-zinc-500">/ 158</span>
             </span>
@@ -1357,7 +1564,7 @@ export function InteractiveBook() {
             onClick={flipNext}
             disabled={currentPage >= aiBookPages.length - 1 || isFlipping}
             title="Halaman Selanjutnya"
-            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-zinc-300 backdrop-blur-md disabled:opacity-20 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] hover:text-white active:scale-95 transition-all"
+            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-zinc-300 backdrop-blur-md disabled:opacity-20 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] hover:text-white active:scale-95 transition-all shadow-lg"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -1367,17 +1574,17 @@ export function InteractiveBook() {
       {/* TABLE OF CONTENTS DRAWER */}
       {isTocOpen && (
         <div className="absolute inset-0 z-40 flex justify-end bg-black/60 backdrop-blur-sm transition-opacity">
-          <div className="h-full w-full max-w-md border-l border-border/80 bg-[#0c0f17] p-6 shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+          <div className="h-full w-full max-w-md border-l border-white/10 bg-[#0b0e17] p-6 shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <Bookmark className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />
-                <h3 className="font-serif text-base font-bold text-foreground">
+                <h3 className="font-serif text-base font-bold text-white">
                   Daftar Bab Monograf (14 Bab)
                 </h3>
               </div>
               <button
                 onClick={() => setIsTocOpen(false)}
-                className="rounded-full p-1.5 text-muted-foreground hover:text-foreground"
+                className="rounded-full p-1.5 text-zinc-400 hover:text-white transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1394,17 +1601,17 @@ export function InteractiveBook() {
                       setIsTocOpen(false)
                       playPageSound()
                     }}
-                    className="group flex w-full items-center justify-between rounded-xl border border-border/40 bg-card/40 p-3 text-left transition-all hover:border-[oklch(0.72_0.13_80)] hover:bg-[oklch(0.72_0.13_80_/_0.1)]"
+                    className="group flex w-full items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-3 text-left transition-all hover:border-[oklch(0.72_0.13_80)] hover:bg-[oklch(0.72_0.13_80_/_0.08)]"
                   >
                     <div>
                       <div className="font-mono text-[10px] font-bold text-[oklch(0.72_0.13_80)]">
                         Bab {idx + 1}
                       </div>
-                      <div className="font-serif text-xs font-semibold text-foreground line-clamp-1">
+                      <div className="font-serif text-xs font-semibold text-zinc-200 line-clamp-1">
                         {sec.title}
                       </div>
                     </div>
-                    <span className="font-mono text-[10px] text-muted-foreground">
+                    <span className="font-mono text-[10px] text-zinc-400">
                       Hal. {targetPage}
                     </span>
                   </button>
