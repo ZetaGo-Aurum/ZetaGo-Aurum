@@ -152,57 +152,57 @@ export function InteractiveBook() {
     canvas.height = 1800
     const ctx = canvas.getContext('2d')!
 
-    // 1. Deep Obsidian Velvet Base with soft radial vignette
-    ctx.fillStyle = '#07080c'
+    // 1. Deep Obsidian Velvet Morocco Leather Base with rich radial lighting
+    ctx.fillStyle = '#06070a'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    const grad = ctx.createRadialGradient(600, 680, 80, 600, 680, 950)
-    grad.addColorStop(0, 'rgba(22, 28, 44, 0.45)')
-    grad.addColorStop(0.55, 'rgba(10, 13, 20, 0.85)')
+    const grad = ctx.createRadialGradient(600, 720, 60, 600, 720, 980)
+    grad.addColorStop(0, 'rgba(26, 32, 48, 0.42)')
+    grad.addColorStop(0.45, 'rgba(12, 16, 26, 0.78)')
     grad.addColorStop(1, 'rgba(4, 5, 8, 0.98)')
     ctx.fillStyle = grad
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Micro leather grain stippling
-    ctx.fillStyle = 'rgba(212, 175, 55, 0.015)'
-    for (let i = 0; i < 2800; i += 1) {
+    // Micro leather grain stippling (tactile relief)
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.018)'
+    for (let i = 0; i < 3500; i += 1) {
       const rx = (Math.sin(i * 997) * 0.5 + 0.5) * canvas.width
       const ry = (Math.cos(i * 613) * 0.5 + 0.5) * canvas.height
-      ctx.fillRect(rx, ry, 1.5, 1.5)
+      ctx.fillRect(rx, ry, 1.4, 1.4)
     }
 
-    // 2. Gold Foil Framing
+    // 2. Classical Architectural Gilt Framing
     // Outer hairline
     ctx.strokeStyle = '#cba358'
-    ctx.lineWidth = 2
-    ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84)
+    ctx.lineWidth = 1.6
+    ctx.strokeRect(46, 46, canvas.width - 92, canvas.height - 92)
 
-    // Inner hairline
-    ctx.strokeStyle = '#856424'
+    // Stepped inner shadow hairline
+    ctx.strokeStyle = '#6b511d'
     ctx.lineWidth = 1.2
-    ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108)
+    ctx.strokeRect(58, 58, canvas.width - 116, canvas.height - 116)
 
-    // Main sculpted gold border
+    // Main sculpted gold relief border
     ctx.strokeStyle = '#f5df8b'
-    ctx.lineWidth = 3.5
-    ctx.strokeRect(68, 68, canvas.width - 136, canvas.height - 136)
+    ctx.lineWidth = 3.6
+    ctx.strokeRect(72, 72, canvas.width - 144, canvas.height - 144)
 
-    // Classical Art-Deco Corner Filigrees
-    const drawCornerOrnament = (x: number, y: number, rot: number) => {
+    // Classical Architectural Stepped Cornerpieces
+    const drawClassicalCorner = (x: number, y: number, rot: number) => {
       ctx.save()
       ctx.translate(x, y)
       ctx.rotate(rot)
-      ctx.strokeStyle = '#f5df8b'
-      ctx.lineWidth = 2.5
 
-      // Stepped corner bracket
+      // Stepped gold brackets
+      ctx.strokeStyle = '#f5df8b'
+      ctx.lineWidth = 2.4
       ctx.beginPath()
       ctx.moveTo(0, 0)
-      ctx.lineTo(52, 0)
-      ctx.lineTo(52, 14)
-      ctx.lineTo(14, 14)
-      ctx.lineTo(14, 52)
-      ctx.lineTo(0, 52)
+      ctx.lineTo(48, 0)
+      ctx.lineTo(48, 12)
+      ctx.lineTo(12, 12)
+      ctx.lineTo(12, 48)
+      ctx.lineTo(0, 48)
       ctx.closePath()
       ctx.stroke()
 
@@ -210,187 +210,257 @@ export function InteractiveBook() {
       ctx.strokeStyle = '#cba358'
       ctx.lineWidth = 1.5
       ctx.beginPath()
-      ctx.moveTo(22, 22)
-      ctx.lineTo(44, 44)
+      ctx.moveTo(18, 18)
+      ctx.lineTo(40, 40)
       ctx.stroke()
 
-      // Corner diamond stud
+      // Central faceted diamond rivet
       ctx.fillStyle = '#f5df8b'
       ctx.beginPath()
-      ctx.moveTo(28, 22)
-      ctx.lineTo(34, 28)
-      ctx.lineTo(28, 34)
-      ctx.lineTo(22, 28)
+      ctx.moveTo(25, 19)
+      ctx.lineTo(31, 25)
+      ctx.lineTo(25, 31)
+      ctx.lineTo(19, 25)
       ctx.closePath()
       ctx.fill()
 
       ctx.restore()
     }
 
-    drawCornerOrnament(72, 72, 0)
-    drawCornerOrnament(canvas.width - 72, 72, Math.PI / 2)
-    drawCornerOrnament(canvas.width - 72, canvas.height - 72, Math.PI)
-    drawCornerOrnament(72, canvas.height - 72, -Math.PI / 2)
+    drawClassicalCorner(76, 76, 0)
+    drawClassicalCorner(canvas.width - 76, 76, Math.PI / 2)
+    drawClassicalCorner(canvas.width - 76, canvas.height - 76, Math.PI)
+    drawClassicalCorner(76, canvas.height - 76, -Math.PI / 2)
 
-    // 3. Header Colophon
+    // 3. Official Academic Authority Headpiece
     ctx.fillStyle = '#f5df8b'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = '600 22px Inter, -apple-system, sans-serif'
+    ctx.font = '600 20px Inter, -apple-system, sans-serif'
     ctx.letterSpacing = '8px'
-    ctx.fillText('Z E T A G O - A U R U M', 600, 160)
+    ctx.fillText('Z E T A G O - A U R U M   F O U N D A T I O N', 600, 152)
 
     ctx.fillStyle = '#cba358'
-    ctx.font = 'italic 15px "Times New Roman", serif'
+    ctx.font = 'italic 14.5px "Times New Roman", serif'
     ctx.letterSpacing = '4px'
-    ctx.fillText('MONOGRAPHIA SYSTEMATIS ARTIFICIALIS', 600, 195)
+    ctx.fillText('SERIES MONOGRAPHICA IN SYSTEMATIBUS INTELLIGENTIAE ARTIFICIALIS', 600, 186)
 
-    // Gilded divider with center diamond
+    // Gilded divider rule with center diamond
     ctx.strokeStyle = '#a3853b'
-    ctx.lineWidth = 1.5
+    ctx.lineWidth = 1.2
     ctx.beginPath()
-    ctx.moveTo(420, 225)
-    ctx.lineTo(580, 225)
-    ctx.moveTo(620, 225)
-    ctx.lineTo(780, 225)
+    ctx.moveTo(400, 214)
+    ctx.lineTo(580, 214)
+    ctx.moveTo(620, 214)
+    ctx.lineTo(800, 214)
     ctx.stroke()
 
     ctx.fillStyle = '#f5df8b'
     ctx.beginPath()
-    ctx.moveTo(600, 220)
-    ctx.lineTo(606, 225)
-    ctx.lineTo(600, 230)
-    ctx.lineTo(594, 225)
+    ctx.moveTo(600, 209)
+    ctx.lineTo(605, 214)
+    ctx.lineTo(600, 219)
+    ctx.lineTo(595, 214)
     ctx.closePath()
     ctx.fill()
 
-    // 4. Center Celestial Astrolabe Medallion
+    ctx.fillStyle = '#a68b4c'
+    ctx.font = '500 12px Inter, monospace'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('TOMUS I · VOLUMEN I · EDITIO PRIMA · MMXXVI', 600, 238)
+
+    // 4. Noble Academic Research Insignia (NO AI SLOP)
     const cx = 600
-    const cy = 560
+    const cy = 480
 
-    // Outer dotted orbit ring
-    ctx.save()
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)'
-    ctx.lineWidth = 1.5
-    ctx.setLineDash([4, 6])
-    ctx.beginPath()
-    ctx.arc(cx, cy, 190, 0, Math.PI * 2)
-    ctx.stroke()
-    ctx.setLineDash([])
-
-    // Chronometer radial tick marks ring
-    ctx.strokeStyle = '#cba358'
-    ctx.lineWidth = 1.5
-    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 36) {
-      const isMajor = Math.round((angle / (Math.PI / 18))) % 2 === 0
-      const r1 = 168
-      const r2 = isMajor ? 180 : 174
+    // Outer beaded rim
+    const beadCount = 48
+    ctx.fillStyle = '#d4af37'
+    for (let b = 0; b < beadCount; b += 1) {
+      const theta = (b / beadCount) * Math.PI * 2
+      const bx = cx + Math.cos(theta) * 118
+      const by = cy + Math.sin(theta) * 118
       ctx.beginPath()
-      ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1)
-      ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2)
-      ctx.stroke()
+      ctx.arc(bx, by, 1.8, 0, Math.PI * 2)
+      ctx.fill()
     }
 
-    // Inner solid ring
+    // Double concentric gold relief rings
     ctx.strokeStyle = '#f5df8b'
     ctx.lineWidth = 2.5
     ctx.beginPath()
-    ctx.arc(cx, cy, 160, 0, Math.PI * 2)
+    ctx.arc(cx, cy, 110, 0, Math.PI * 2)
     ctx.stroke()
 
-    // 14 Roman Numerals around ring representing 14 Chapters
-    const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV']
-    ctx.fillStyle = '#d4af37'
-    ctx.font = 'bold 13px Inter, sans-serif'
-    romanNumerals.forEach((rom, idx) => {
-      const theta = (idx / 14) * Math.PI * 2 - Math.PI / 2
-      const rx = cx + Math.cos(theta) * 140
-      const ry = cy + Math.sin(theta) * 140
-      ctx.fillText(rom, rx, ry)
-    })
-
-    // Glowing golden medallion disc
-    const sunGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 105)
-    sunGrad.addColorStop(0, '#fef1b8')
-    sunGrad.addColorStop(0.5, '#d4af37')
-    sunGrad.addColorStop(0.9, '#8c6b2d')
-    sunGrad.addColorStop(1, '#4a3814')
-    ctx.fillStyle = sunGrad
+    ctx.strokeStyle = '#8c6b2d'
+    ctx.lineWidth = 1.5
     ctx.beginPath()
-    ctx.arc(cx, cy, 100, 0, Math.PI * 2)
+    ctx.arc(cx, cy, 88, 0, Math.PI * 2)
+    ctx.stroke()
+
+    // Inner bronze annular ring
+    const ringGrad = ctx.createLinearGradient(cx - 95, cy - 95, cx + 95, cy + 95)
+    ringGrad.addColorStop(0, '#261e0e')
+    ringGrad.addColorStop(0.5, '#443516')
+    ringGrad.addColorStop(1, '#1e170a')
+    ctx.fillStyle = ringGrad
+    ctx.beginPath()
+    ctx.arc(cx, cy, 108, 0, Math.PI * 2)
+    ctx.arc(cx, cy, 90, 0, Math.PI * 2, true)
     ctx.fill()
 
-    // Inner obsidian core
-    ctx.fillStyle = '#080a10'
-    ctx.beginPath()
-    ctx.arc(cx, cy, 90, 0, Math.PI * 2)
-    ctx.fill()
+    // Arc inscription text
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = 'bold 10px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('✦  INSTITUTUM SCIENTIAE ARTIFICIALIS  ✦', cx, cy - 99)
+    ctx.fillText('ZETAGO-AURUM · MMXXVI', cx, cy + 99)
 
+    // Center obsidian medallion
+    ctx.fillStyle = '#07090e'
+    ctx.beginPath()
+    ctx.arc(cx, cy, 86, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.strokeStyle = '#d4af37'
+    ctx.lineWidth = 1.8
+    ctx.stroke()
+
+    // Classical Open Book & Laurel Wreath vector insignia
+    ctx.save()
+    ctx.translate(cx, cy)
+
+    // Flanking laurel leaves left & right
+    ctx.fillStyle = '#c5a048'
+    for (let l = -4; l <= 4; l += 1) {
+      if (l === 0) continue
+      const ly = l * 12
+      const lx = 48 + Math.abs(l) * 2
+      // Left laurel leaf
+      ctx.beginPath()
+      ctx.ellipse(-lx, ly, 7, 3, Math.PI / 4, 0, Math.PI * 2)
+      ctx.fill()
+      // Right laurel leaf
+      ctx.beginPath()
+      ctx.ellipse(lx, ly, 7, 3, -Math.PI / 4, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    // Open Codex Pages
     ctx.strokeStyle = '#f5df8b'
-    ctx.lineWidth = 2
+    ctx.lineWidth = 2.2
+    ctx.fillStyle = '#101420'
+
+    // Left page
+    ctx.beginPath()
+    ctx.moveTo(0, 18)
+    ctx.bezierCurveTo(-14, 14, -28, 16, -34, 18)
+    ctx.lineTo(-34, -14)
+    ctx.bezierCurveTo(-28, -16, -14, -14, 0, -10)
+    ctx.closePath()
+    ctx.fill()
     ctx.stroke()
 
-    // Sculpted Gold Monogram 'Z'
-    const zGrad = ctx.createLinearGradient(cx - 50, cy - 60, cx + 50, cy + 60)
-    zGrad.addColorStop(0, '#ffffff')
-    zGrad.addColorStop(0.3, '#fbe396')
-    zGrad.addColorStop(0.7, '#d4af37')
-    zGrad.addColorStop(1, '#8c6b2d')
-    ctx.fillStyle = zGrad
-    ctx.font = 'bold 125px "Cinzel", "Playfair Display", "Times New Roman", serif'
-    ctx.fillText('Z', cx, cy + 12)
+    // Right page
+    ctx.beginPath()
+    ctx.moveTo(0, 18)
+    ctx.bezierCurveTo(14, 14, 28, 16, 34, 18)
+    ctx.lineTo(34, -14)
+    ctx.bezierCurveTo(28, -16, 14, -14, 0, -10)
+    ctx.closePath()
+    ctx.fill()
+    ctx.stroke()
+
+    // Center sewn spine binding pin
+    ctx.strokeStyle = '#f5df8b'
+    ctx.lineWidth = 2.5
+    ctx.beginPath()
+    ctx.moveTo(0, -12)
+    ctx.lineTo(0, 20)
+    ctx.stroke()
+
+    // Roman Monogram ZA above codex
+    const zaGrad = ctx.createLinearGradient(-30, -50, 30, -30)
+    zaGrad.addColorStop(0, '#ffffff')
+    zaGrad.addColorStop(0.5, '#fbe396')
+    zaGrad.addColorStop(1, '#cba358')
+    ctx.fillStyle = zaGrad
+    ctx.font = 'bold 24px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('ZA', 0, -38)
+
+    // Latin motto ribbon below codex
+    ctx.fillStyle = '#d4af37'
+    ctx.font = '600 8.5px Inter, sans-serif'
+    ctx.letterSpacing = '1.5px'
+    ctx.fillText('SCIENTIA · VERITAS · RECURSIO', 0, 36)
+
     ctx.restore()
 
     // 5. Grand Typography
-    const titleGrad = ctx.createLinearGradient(200, 870, 1000, 870)
+    const titleGrad = ctx.createLinearGradient(200, 770, 1000, 770)
     titleGrad.addColorStop(0, '#e2be58')
-    titleGrad.addColorStop(0.5, '#ffffff')
+    titleGrad.addColorStop(0.48, '#ffffff')
     titleGrad.addColorStop(1, '#e2be58')
     ctx.fillStyle = titleGrad
-    ctx.font = 'bold 58px "Cinzel", "Times New Roman", serif'
-    ctx.letterSpacing = '5px'
-    ctx.fillText('KECERDASAN BUATAN', 600, 890)
+    ctx.font = 'bold 56px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '4px'
+    ctx.fillText('KECERDASAN BUATAN', 600, 780)
 
     ctx.fillStyle = '#f5df8b'
-    ctx.font = '600 24px Inter, sans-serif'
-    ctx.letterSpacing = '4px'
-    ctx.fillText('FUNDAMENTAL, SEJARAH & REKAYASA MODEL GENERATIF', 600, 955)
+    ctx.font = '600 20px Inter, sans-serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('FUNDAMENTAL, SEJARAH, METRIK & REKAYASA MODEL GENERATIF', 600, 840)
 
     // Ornamental flourish
     ctx.strokeStyle = '#d4af37'
-    ctx.lineWidth = 1.5
+    ctx.lineWidth = 1.4
     ctx.beginPath()
-    ctx.moveTo(340, 995)
-    ctx.lineTo(860, 995)
+    ctx.moveTo(320, 876)
+    ctx.lineTo(880, 876)
     ctx.stroke()
 
-    ctx.fillStyle = '#b3bac7'
-    ctx.font = '400 22px "Times New Roman", serif'
+    ctx.fillStyle = '#a8b4c7'
+    ctx.font = '400 20.5px "Times New Roman", serif'
     ctx.letterSpacing = '1px'
-    ctx.fillText('Buku Pegangan Komprehensif Arsitektur AI, Jaringan Saraf,', 600, 1055)
-    ctx.fillText('Transformer, Frontier Training Loop, hingga Implementasi Kode', 600, 1095)
+    ctx.fillText('Buku Pegangan Komprehensif Fondasi Matematika, Arsitektur Jaringan Saraf,', 600, 930)
+    ctx.fillText('Transformer, Siklus Pelatihan Frontier, hingga Standar Rekayasa Industri', 600, 966)
 
-    // 6. Bottom Colophon Seal Box
-    const badgeW = 720
-    const badgeH = 76
-    const badgeX = (canvas.width - badgeW) / 2
-    const badgeY = 1570
+    // 6. Bottom Official Book Codes & Registry Plaque (CODE BUKU)
+    const plaqueW = 860
+    const plaqueH = 136
+    const plaqueX = (canvas.width - plaqueW) / 2
+    const plaqueY = 1520
 
-    ctx.fillStyle = 'rgba(18, 22, 34, 0.7)'
-    ctx.fillRect(badgeX, badgeY, badgeW, badgeH)
+    ctx.fillStyle = 'rgba(10, 14, 24, 0.88)'
+    ctx.fillRect(plaqueX, plaqueY, plaqueW, plaqueH)
+
     ctx.strokeStyle = '#cba358'
     ctx.lineWidth = 1.5
-    ctx.strokeRect(badgeX, badgeY, badgeW, badgeH)
+    ctx.strokeRect(plaqueX, plaqueY, plaqueW, plaqueH)
+
+    ctx.strokeStyle = '#6e511b'
+    ctx.lineWidth = 1
+    ctx.strokeRect(plaqueX + 5, plaqueY + 5, plaqueW - 10, plaqueH - 10)
 
     ctx.fillStyle = '#f5df8b'
-    ctx.font = '600 17px Inter, sans-serif'
-    ctx.letterSpacing = '4px'
-    ctx.fillText('KARYA MONOGRAF LENGKAP · 14 BAB · 158 HALAMAN', 600, badgeY + 28)
-
-    ctx.fillStyle = '#a3853b'
-    ctx.font = '500 13px Inter, sans-serif'
+    ctx.font = '600 13.5px Inter, sans-serif'
     ctx.letterSpacing = '3px'
-    ctx.fillText('MMXXVI · TERBITAN RESMI RESEARCH FOUNDATION', 600, badgeY + 54)
+    ctx.fillText('KARYA MONOGRAF LENGKAP · 14 BAB · 158 HALAMAN', 600, plaqueY + 28)
+
+    ctx.fillStyle = '#e2be58'
+    ctx.font = '600 13px Inter, monospace'
+    ctx.letterSpacing = '1.5px'
+    ctx.fillText('KODE DOKUMEN: ZA-MONO-2026-AI · DDC: 006.3 · LC: QA76.87 .Z48 2026', 600, plaqueY + 60)
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 13.5px Inter, monospace'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('ISBN 978-623-09-8812-4  (JILID LENGKAP REFERENSI RESMI)', 600, plaqueY + 92)
+
+    ctx.fillStyle = '#8b949e'
+    ctx.font = '500 11px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('TERBITAN RESMI ZETAGO-AURUM RESEARCH PRESS · JAKARTA · MMXXVI', 600, plaqueY + 118)
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
@@ -400,48 +470,149 @@ export function InteractiveBook() {
 
   const generateSpineTexture = useCallback(() => {
     const canvas = document.createElement('canvas')
-    canvas.width = 360
+    canvas.width = 440
     canvas.height = 1800
     const ctx = canvas.getContext('2d')!
 
-    ctx.fillStyle = '#07090e'
+    // Base obsidian leather
+    ctx.fillStyle = '#07090f'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Raised gilded ribbing bands
-    for (let i = 1; i <= 5; i += 1) {
-      const y = (canvas.height / 6) * i
-      ctx.fillStyle = '#181d2a'
-      ctx.fillRect(0, y - 10, canvas.width, 20)
+    // 5 3D Raised Gilded Hub Bands (Ribs) defining architectural compartments
+    const ribPositions = [180, 420, 1180, 1420, 1660]
+    ribPositions.forEach((y) => {
+      // Deep under-rib shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.85)'
+      ctx.fillRect(0, y + 14, canvas.width, 14)
 
-      ctx.fillStyle = '#d4af37'
-      ctx.fillRect(24, y - 2.5, canvas.width - 48, 5)
-    }
+      // Raised leather band
+      ctx.fillStyle = '#151a26'
+      ctx.fillRect(0, y - 12, canvas.width, 24)
 
-    // Top logo
+      // Top edge highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)'
+      ctx.fillRect(0, y - 12, canvas.width, 2)
+
+      // Gold foil center stripe
+      ctx.fillStyle = '#f5df8b'
+      ctx.fillRect(28, y - 3, canvas.width - 56, 6)
+
+      // Flanking gold hairlines
+      ctx.fillStyle = '#8c6b2d'
+      ctx.fillRect(36, y - 8, canvas.width - 72, 1.2)
+      ctx.fillRect(36, y + 6, canvas.width - 72, 1.2)
+    })
+
+    // Compartment 1: Head (Crown)
     ctx.fillStyle = '#f5df8b'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = 'bold 28px "Cinzel", serif'
-    ctx.fillText('✦ Z ✦', canvas.width / 2, 140)
+    ctx.font = 'bold 24px "Cinzel", "Times New Roman", serif'
+    ctx.letterSpacing = '4px'
+    ctx.fillText('✦ ZA ✦', canvas.width / 2, 80)
 
-    // Vertical book title
+    ctx.fillStyle = '#c5a048'
+    ctx.font = '600 12px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('TOMUS I · VOL. I', canvas.width / 2, 115)
+
+    // Compartment 2: Series Colophon
+    ctx.fillStyle = '#cba358'
+    ctx.font = 'italic 13.5px "Times New Roman", serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('SERIES MONOGRAPHICA', canvas.width / 2, 280)
+    ctx.fillText('MMXXVI', canvas.width / 2, 310)
+
+    // Compartment 3: Grand Monograph Spine Title (Between Rib 2 & 3, centered at y=800)
     ctx.save()
-    ctx.translate(canvas.width / 2, canvas.height / 2)
+    ctx.translate(canvas.width / 2, 800)
     ctx.rotate(Math.PI / 2)
-    ctx.fillStyle = '#f5df8b'
-    ctx.font = 'bold 38px "Cinzel", "Times New Roman", serif'
+
+    const titleGrad = ctx.createLinearGradient(-320, 0, 320, 0)
+    titleGrad.addColorStop(0, '#d4af37')
+    titleGrad.addColorStop(0.5, '#ffffff')
+    titleGrad.addColorStop(1, '#d4af37')
+    ctx.fillStyle = titleGrad
+    ctx.font = 'bold 36px "Cinzel", "Times New Roman", serif'
     ctx.letterSpacing = '6px'
-    ctx.fillText('ZETAGO-AURUM  ✦  KECERDASAN BUATAN  ✦  MMXXVI', 0, 0)
+    ctx.fillText('ZETAGO-AURUM   ✦   KECERDASAN BUATAN   ✦   MMXXVI', 0, 0)
+
+    ctx.fillStyle = '#c5a048'
+    ctx.font = 'italic 15px "Times New Roman", serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('MONOGRAPHIA SYSTEMATIS ARTIFICIALIS', 0, 36)
     ctx.restore()
 
-    // Bottom colophon
-    ctx.fillStyle = '#cba358'
-    ctx.font = '600 15px Inter, sans-serif'
+    // Compartment 4: Volume Scope & ISBN (Between Rib 3 & 4)
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = '600 13.5px Inter, sans-serif'
+    ctx.letterSpacing = '2.5px'
+    ctx.fillText('14 BAB · 158 HALAMAN', canvas.width / 2, 1240)
+
+    ctx.fillStyle = '#a68b4c'
+    ctx.font = 'italic 12px "Times New Roman", serif'
     ctx.letterSpacing = '2px'
-    ctx.fillText('14 BAB · 158 HALAMAN', canvas.width / 2, canvas.height - 140)
+    ctx.fillText('TEORI & REKAYASA MODEL GENERATIF', canvas.width / 2, 1270)
+
+    ctx.strokeStyle = '#8c6b2d'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(80, 1295)
+    ctx.lineTo(canvas.width - 80, 1295)
+    ctx.stroke()
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 12.5px Inter, monospace'
+    ctx.letterSpacing = '1px'
+    ctx.fillText('ISBN 978-623-09-8812-4', canvas.width / 2, 1325)
+
+    ctx.fillStyle = '#8b949e'
+    ctx.font = '500 11px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('EDISI PERTAMA RESMI', canvas.width / 2, 1355)
+
+    // Compartment 5: Tail Library Spine Call Number Tag (Between Rib 4 & 5)
+    const tagW = 320
+    const tagH = 150
+    const tagX = (canvas.width - tagW) / 2
+    const tagY = 1465
+
+    // Parchment tag background
+    ctx.fillStyle = '#f6f2e8'
+    ctx.fillRect(tagX, tagY, tagW, tagH)
+
+    ctx.strokeStyle = '#8c6b2d'
+    ctx.lineWidth = 2
+    ctx.strokeRect(tagX, tagY, tagW, tagH)
+
+    ctx.strokeStyle = '#cba358'
+    ctx.lineWidth = 1
+    ctx.strokeRect(tagX + 4, tagY + 4, tagW - 8, tagH - 8)
+
+    // High-contrast library spine call number
+    ctx.fillStyle = '#111319'
+    ctx.font = 'bold 18px "Courier New", monospace'
+    ctx.letterSpacing = '1.5px'
+    ctx.fillText('QA 76.87', canvas.width / 2, tagY + 34)
+    ctx.fillText('.Z48', canvas.width / 2, tagY + 66)
+    ctx.fillText('2026', canvas.width / 2, tagY + 98)
+
+    ctx.fillStyle = '#3a3f4d'
+    ctx.font = 'bold 12px Inter, monospace'
+    ctx.letterSpacing = '1.5px'
+    ctx.fillText('DDC: 006.3', canvas.width / 2, tagY + 128)
+
+    // Compartment 6: Base Foot Imprint Mark (Below Rib 5)
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = 'bold 13px "Cinzel", serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('✦ ZA PRESS ✦', canvas.width / 2, 1730)
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
+    texture.wrapS = THREE.RepeatWrapping
+    texture.repeat.x = -1
+    texture.offset.x = 1
     return texture
   }, [])
 
@@ -451,36 +622,177 @@ export function InteractiveBook() {
     canvas.height = 1800
     const ctx = canvas.getContext('2d')!
 
-    ctx.fillStyle = '#07080c'
+    ctx.fillStyle = '#06070a'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Framing
+    // Framing matching front cover
     ctx.strokeStyle = '#cba358'
-    ctx.lineWidth = 2
-    ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84)
+    ctx.lineWidth = 1.6
+    ctx.strokeRect(46, 46, canvas.width - 92, canvas.height - 92)
+
+    ctx.strokeStyle = '#6b511d'
+    ctx.lineWidth = 1.2
+    ctx.strokeRect(58, 58, canvas.width - 116, canvas.height - 116)
 
     ctx.strokeStyle = '#f5df8b'
-    ctx.lineWidth = 3.5
-    ctx.strokeRect(68, 68, canvas.width - 136, canvas.height - 136)
+    ctx.lineWidth = 3.6
+    ctx.strokeRect(72, 72, canvas.width - 144, canvas.height - 144)
 
-    // Philosophical Quote
+    // Top Publisher Colophon
     ctx.fillStyle = '#f5df8b'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = 'italic 32px "Times New Roman", serif'
-    ctx.fillText('"Kecerdasan bukanlah sekadar replikasi logika manusia,', 600, 780)
-    ctx.fillText('melainkan jembatan matematis yang memperluas cakrawala', 600, 835)
-    ctx.fillText('pemikiran, rekayasa, dan masa depan peradaban."', 600, 890)
+    ctx.font = '600 18px Inter, sans-serif'
+    ctx.letterSpacing = '6px'
+    ctx.fillText('ZETAGO-AURUM RESEARCH FOUNDATION PRESS', 600, 150)
+
+    ctx.fillStyle = '#c5a048'
+    ctx.font = 'italic 14px "Times New Roman", serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('DIVISI PUBLIKASI RISET & MONOGRAF AKADEMIK', 600, 182)
+
+    // Gold hairline rule
+    ctx.strokeStyle = '#a3853b'
+    ctx.lineWidth = 1.2
+    ctx.beginPath()
+    ctx.moveTo(360, 210)
+    ctx.lineTo(840, 210)
+    ctx.stroke()
+
+    // Scholarly Philosophical Quote
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = 'italic 25px "Times New Roman", serif'
+    ctx.fillText('"Kecerdasan bukanlah sekadar replikasi logika manusia,', 600, 280)
+    ctx.fillText('melainkan jembatan matematis yang memperluas cakrawala', 600, 320)
+    ctx.fillText('pemikiran, rekayasa, dan masa depan peradaban."', 600, 360)
 
     ctx.fillStyle = '#d4af37'
-    ctx.font = '600 22px Inter, sans-serif'
-    ctx.letterSpacing = '4px'
-    ctx.fillText(': ZETAGO-AURUM RESEARCH FOUNDATION :', 600, 990)
+    ctx.font = 'bold 15px Inter, sans-serif'
+    ctx.letterSpacing = '3px'
+    ctx.fillText(': ZETAGO-AURUM RESEARCH FOUNDATION :', 600, 415)
+
+    ctx.fillStyle = '#9da7b8'
+    ctx.font = '400 17px "Times New Roman", serif'
+    ctx.fillText('Monograf akademik rujukan ilmiah yang merumuskan fondasi matematika,', 600, 470)
+    ctx.fillText('arsitektur komputasi cerdas, historiografi keilmuan 1943-2026, hingga implementasi', 600, 502)
+    ctx.fillText('jaringan saraf transformer dan model frontier berskala masif.', 600, 534)
+
+    // Official Katalog Dalam Terbitan (KDT / CIP) Plaque
+    const kdtW = 880
+    const kdtH = 430
+    const kdtX = (canvas.width - kdtW) / 2
+    const kdtY = 610
+
+    ctx.fillStyle = 'rgba(10, 14, 24, 0.85)'
+    ctx.fillRect(kdtX, kdtY, kdtW, kdtH)
+
+    ctx.strokeStyle = '#cba358'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(kdtX, kdtY, kdtW, kdtH)
+
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = 'bold 13px Inter, sans-serif'
+    ctx.letterSpacing = '3px'
+    ctx.textAlign = 'center'
+    ctx.fillText('KATALOG DALAM TERBITAN (KDT) / CIP', 600, kdtY + 30)
+
+    ctx.strokeStyle = '#7a5d20'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(kdtX + 24, kdtY + 48)
+    ctx.lineTo(kdtX + kdtW - 24, kdtY + 48)
+    ctx.stroke()
+
+    ctx.textAlign = 'left'
+    ctx.fillStyle = '#d4d8e2'
+    ctx.font = '15px "Times New Roman", serif'
+    let ky = kdtY + 80
+    const kLines = [
+      'ZetaGo-Aurum',
+      '    Kecerdasan Buatan : Fundamental, Sejarah, Metrik Pertumbuhan,',
+      '    dan Rekayasa Model Generatif / Tim Peneliti ZetaGo-Aurum.',
+      '    -- Cetakan Pertama. -- Jakarta : ZetaGo-Aurum Research Press, 2026.',
+      '    xvi, 158 hlm. ; 18.5 x 26.5 cm. (Seri Monograf Komputasi, Jilid 1)',
+      '',
+      '    Bibliografi : hlm. 154-157.',
+      '    Indeks : hlm. 158.',
+      '    ISBN 978-623-09-8812-4 (Jilid 1, Hardcover Koleksi)',
+      '    e-ISBN 978-623-09-8813-1 (Berkas Digital PDF/EPUB)',
+      '',
+      '    1. Artificial Intelligence.   2. Deep Learning.   3. Generative Models.',
+      '    I. Judul.   II. Seri Monograf Akademik.',
+      '',
+      '    DDC 23 : 006.3                                   LC : QA76.87 .Z48 2026',
+    ]
+    kLines.forEach((line) => {
+      ctx.fillText(line, kdtX + 40, ky)
+      ky += 22
+    })
+
+    // Real Drawn EAN-13 Barcode Card
+    const barW = 440
+    const barH = 175
+    const barX = (canvas.width - barW) / 2
+    const barY = 1380
+
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(barX, barY, barW, barH)
+
+    ctx.strokeStyle = '#c5a048'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(barX, barY, barW, barH)
+
+    ctx.fillStyle = '#000000'
+    ctx.textAlign = 'center'
+    ctx.font = 'bold 14px "Courier New", monospace'
+    ctx.letterSpacing = '1px'
+    ctx.fillText('ISBN 978-623-09-8812-4', 600, barY + 24)
+
+    // Draw Vector Barcode Stripes for 9786230988124
+    const barcodeTop = barY + 36
+    const barcodeH = 82
+    const barStartX = barX + 35
+    const barPattern = [
+      1,0,1,
+      0,0,1,1,0,1, 0,0,1,0,0,1, 0,1,1,1,1,0, 0,1,0,1,1,1, 0,1,1,0,1,1, 0,0,0,1,0,1,
+      0,1,0,1,0,
+      1,1,1,0,0,1, 1,1,0,0,1,1, 1,0,0,1,0,0, 1,0,0,0,0,1, 1,0,1,1,1,0, 1,1,1,0,1,0,
+      1,0,1
+    ]
+    const barUnitW = 4.4
+    barPattern.forEach((val, idx) => {
+      if (val === 1) {
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(barStartX + idx * barUnitW, barcodeTop, barUnitW, barcodeH)
+      }
+    })
+
+    ctx.fillStyle = '#000000'
+    ctx.font = 'bold 15px "Courier New", monospace'
+    ctx.letterSpacing = '3px'
+    ctx.fillText('9  786230  988124', 600, barY + 140)
+
+    ctx.fillStyle = '#444444'
+    ctx.font = '600 9px Inter, sans-serif'
+    ctx.letterSpacing = '1.5px'
+    ctx.fillText('DOKUMEN RESMI TERDAFTAR · PERPUSTAKAAN NASIONAL RI', 600, barY + 160)
+
+    // Flanking Pricing & Classification stamp
+    ctx.fillStyle = '#f5df8b'
+    ctx.font = '600 13px Inter, monospace'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('HARGA RESMI: IDR 450.000 / USD $38.00', 600, 1610)
 
     ctx.fillStyle = '#8b949e'
-    ctx.font = '400 18px Inter, sans-serif'
-    ctx.letterSpacing = '3px'
-    ctx.fillText('EDISI PERTAMA · DOKUMEN TAHUN 2026 · TERDAFTAR SECARA RESMI', 600, 1600)
+    ctx.font = '400 12px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('EDISI TERBATAS KOLEKSI PERPUSTAKAAN & PENELITI', 600, 1636)
+
+    // Bottom Security Colophon
+    ctx.fillStyle = '#c5a048'
+    ctx.font = '500 11.5px Inter, sans-serif'
+    ctx.letterSpacing = '2px'
+    ctx.fillText('HAK CIPTA DILINDUNGI UNDANG-UNDANG · TERDAFTAR RESMI TAHUN 2026', 600, 1715)
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
@@ -959,18 +1271,25 @@ export function InteractiveBook() {
     rootGroup.add(headbandBottom)
     headbandBottomRef.current = headbandBottom
 
-    // 3. Dynamic Spine (Shrinks to flat base under gutter when open)
-    const spineGeom = new RoundedBoxGeometry(boardThickness * 1.5, coverHeight, 1, 2, 0.005)
-    const spineMat = new THREE.MeshStandardMaterial({
-      map: spineTex,
-      roughness: 0.7,
-      metalness: 0.25,
-    })
-    const spineMesh = new THREE.Mesh(spineGeom, spineMat)
-    spineMesh.position.set(-boardThickness * 0.75, 0, totalStackDepth / 2)
-    spineMesh.scale.set(1, 1, totalStackDepth + boardThickness)
+    // 3. Physically Authentic Hardcover Spine (Rigid geometry, never squashed)
+    const spineWidth = totalStackDepth + boardThickness
+    const spineGeom = new RoundedBoxGeometry(spineWidth, coverHeight, boardThickness, 3, 0.006)
+    const spineMesh = new THREE.Mesh(spineGeom, leatherMat)
+    spineMesh.position.set(-boardThickness / 2, 0, totalStackDepth / 2)
+    spineMesh.rotation.y = -Math.PI * 0.5
     rootGroup.add(spineMesh)
     spineMeshRef.current = spineMesh
+
+    // Spine artwork plane on outer face (+Z facing outwards)
+    const spinePlaneGeom = new THREE.PlaneGeometry(spineWidth - 0.004, coverHeight - 0.004)
+    const spinePlaneMat = new THREE.MeshStandardMaterial({
+      map: spineTex,
+      roughness: 0.65,
+      metalness: 0.22,
+    })
+    const spinePlane = new THREE.Mesh(spinePlaneGeom, spinePlaneMat)
+    spinePlane.position.set(0, 0, boardThickness / 2 + 0.001)
+    spineMesh.add(spinePlane)
 
     // 4. Dynamic Gilded Paper Stack Edge Texture
     const edgeCanvas = document.createElement('canvas')
@@ -1262,29 +1581,38 @@ export function InteractiveBook() {
       if (!dragRef.current.active || dragRef.current.mode !== 'cover-open') {
         anim.openProgress = lerp(anim.openProgress, anim.targetOpenProgress, dt * 7.5)
         const openAmount = anim.openProgress
+        const spineWidth = anim.totalStackDepth + boardThickness
 
         // Headbands positioning at spine head & tail
         if (headbandTopRef.current && headbandBottomRef.current) {
-          const hX = lerp(-0.01, 0, openAmount)
-          const hZ = lerp(anim.totalStackDepth / 2, 0.006, openAmount)
+          const hX = lerp(-boardThickness / 2, 0, openAmount)
+          const hZ = lerp(anim.totalStackDepth / 2, -boardThickness / 2 + 0.01, openAmount)
           headbandTopRef.current.position.set(hX, bookHeight / 2 - 0.002, hZ)
           headbandBottomRef.current.position.set(hX, -bookHeight / 2 + 0.002, hZ)
         }
 
-        // When openAmount is near 1 (Fully open reading state)
-        if (openAmount > 0.98) {
-          // Front swinging cover is VISIBLE, resting on the left side!
-          frontPivot.visible = true
-          frontPivot.rotation.y = -Math.PI
-          frontPivot.position.set(0, 0, -boardThickness / 2)
+        // Spine position & rotation (Rigid constant 1:1 scale, never squashed)
+        spineMesh.position.x = lerp(-boardThickness / 2, 0, openAmount)
+        spineMesh.position.z = lerp(anim.totalStackDepth / 2, -boardThickness / 2, openAmount)
+        spineMesh.rotation.y = lerp(-Math.PI * 0.5, -Math.PI, openAmount)
+        spineMesh.scale.set(1, 1, 1)
 
+        // Front Cover pivot kinematics
+        frontPivot.visible = true
+        frontPivot.position.x = lerp(0, -spineWidth / 2, openAmount)
+        frontPivot.position.z = lerp(anim.totalStackDepth + boardThickness / 2, -boardThickness / 2, openAmount)
+
+        // Back Cover (Right Cover Base) position
+        if (rightCoverBaseRef.current) {
+          rightCoverBaseRef.current.position.x = lerp(coverWidth / 2, spineWidth / 2 + coverWidth / 2, openAmount)
+        }
+
+        // Closed vs Open specific states
+        if (openAmount > 0.98) {
+          frontPivot.rotation.y = -Math.PI
           leftBlockMesh.visible = curPg > 0
           leftPageMesh.visible = true
           rightPageMesh.visible = true
-
-          // Spine is flat at base underneath gutter
-          spineMesh.position.set(0, 0, -boardThickness / 2)
-          spineMesh.scale.set(1, 1, boardThickness)
 
           // Center spread in viewport
           rootGroup.position.x = lerp(rootGroup.position.x, 0, dt * 8)
@@ -1293,34 +1621,19 @@ export function InteractiveBook() {
           rootGroup.rotation.y = lerp(rootGroup.rotation.y, 0, dt * 8)
           rootGroup.rotation.z = lerp(rootGroup.rotation.z, 0, dt * 8)
         } else if (openAmount < 0.02) {
-          // Closed state
-          frontPivot.visible = true
           leftBlockMesh.visible = false
           leftPageMesh.visible = false
           rightPageMesh.visible = false
 
-          // Spine wraps left edge
-          spineMesh.position.set(-boardThickness * 0.75, 0, anim.totalStackDepth / 2)
-          spineMesh.scale.set(1, 1, anim.totalStackDepth + boardThickness)
-
           const hoverCrack = !isOpenRef.current && anim.isHovered ? -0.14 : 0
           frontPivot.rotation.y = lerp(frontPivot.rotation.y, hoverCrack, dt * 10)
-          frontPivot.position.set(0, 0, anim.totalStackDepth + boardThickness / 2)
 
           anim.ambientAngle += dt * 0.4
           const floatY = Math.sin(anim.ambientAngle * 1.5) * 0.035
           rootGroup.position.set(-bookWidth / 2, floatY, 0)
           rootGroup.rotation.set(0.12, -0.32, 0)
         } else {
-          // In transition between closed and open
-          frontPivot.visible = true
           frontPivot.rotation.y = -Math.PI * openAmount
-          frontPivot.position.z = lerp(anim.totalStackDepth + boardThickness / 2, -boardThickness / 2, openAmount)
-
-          // Spine smoothly flattens down to base
-          spineMesh.scale.z = lerp(anim.totalStackDepth + boardThickness, boardThickness, openAmount)
-          spineMesh.position.z = lerp(anim.totalStackDepth / 2, -boardThickness / 2, openAmount)
-          spineMesh.position.x = lerp(-boardThickness * 0.75, 0, openAmount)
 
           // Root group centers smoothly
           rootGroup.position.x = lerp(-bookWidth / 2, 0, openAmount)
@@ -1657,11 +1970,31 @@ export function InteractiveBook() {
       animStateRef.current.openProgress = prog
       const frontPivot = frontPivotRef.current
       const rootGroup = bookGroupRef.current
+      const spineMesh = spineMeshRef.current
+      const rightCoverBase = rightCoverBaseRef.current
       if (frontPivot && rootGroup) {
         const bookWidth = 1.85
+        const totalStackDepth = animStateRef.current.totalStackDepth
         const boardThickness = 0.046
+        const spineWidth = totalStackDepth + boardThickness
+        const coverOverhangX = 0.04
+        const coverWidth = bookWidth + coverOverhangX * 2
+
+        frontPivot.position.x = lerp(0, -spineWidth / 2, prog)
+        frontPivot.position.z = lerp(totalStackDepth + boardThickness / 2, -boardThickness / 2, prog)
         frontPivot.rotation.y = -Math.PI * prog
-        frontPivot.position.z = lerp(animStateRef.current.totalStackDepth + boardThickness / 2, -boardThickness / 2, prog)
+
+        if (spineMesh) {
+          spineMesh.position.x = lerp(-boardThickness / 2, 0, prog)
+          spineMesh.position.z = lerp(totalStackDepth / 2, -boardThickness / 2, prog)
+          spineMesh.rotation.y = lerp(-Math.PI * 0.5, -Math.PI, prog)
+          spineMesh.scale.set(1, 1, 1)
+        }
+
+        if (rightCoverBase) {
+          rightCoverBase.position.x = lerp(coverWidth / 2, spineWidth / 2 + coverWidth / 2, prog)
+        }
+
         rootGroup.position.x = lerp(-bookWidth / 2, 0, prog)
         rootGroup.rotation.x = lerp(0.12, 0, prog)
         rootGroup.rotation.y = lerp(-0.32, 0, prog)
