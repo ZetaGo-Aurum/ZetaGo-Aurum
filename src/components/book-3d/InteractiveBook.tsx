@@ -57,15 +57,15 @@ export function InteractiveBook() {
   const headbandBottomRef = useRef<THREE.Mesh | null>(null)
   const isOpenRef = useRef(false)
 
-  // Dynamic Physical Paper Thickness Meshes
+  // Dynamic Physical Paper Thickness Meshes & Subdivided Gutter Geometries
   const leftBlockMeshRef = useRef<THREE.Mesh | null>(null)
   const rightBlockMeshRef = useRef<THREE.Mesh | null>(null)
   const leftPageMeshRef = useRef<THREE.Mesh | null>(null)
   const rightPageMeshRef = useRef<THREE.Mesh | null>(null)
-
-  // Curved Gutter Mesh (Natural paper spine arch)
-  const curvedGutterMeshRef = useRef<THREE.Mesh | null>(null)
-  const curvedGutterGeomRef = useRef<THREE.PlaneGeometry | null>(null)
+  const leftBlockGeomRef = useRef<THREE.BoxGeometry | null>(null)
+  const rightBlockGeomRef = useRef<THREE.BoxGeometry | null>(null)
+  const leftPageGeomRef = useRef<THREE.PlaneGeometry | null>(null)
+  const rightPageGeomRef = useRef<THREE.PlaneGeometry | null>(null)
 
   // Turning leaf refs
   const turningPivotRef = useRef<THREE.Group | null>(null)
@@ -513,43 +513,6 @@ export function InteractiveBook() {
     return texture
   }, [])
 
-  const generateGutterTexture = useCallback((theme: 'ivory' | 'dark') => {
-    const canvas = document.createElement('canvas')
-    canvas.width = 256
-    canvas.height = 512
-    const ctx = canvas.getContext('2d')!
-
-    const isDark = theme === 'dark'
-    const bgColor = isDark ? '#11141c' : '#fbf9f4'
-    ctx.fillStyle = bgColor
-    ctx.fillRect(0, 0, 256, 512)
-
-    // Soft organic shadow gradient deepening towards the center binding crease
-    const grad = ctx.createLinearGradient(0, 0, 256, 0)
-    grad.addColorStop(0, 'rgba(0, 0, 0, 0)')
-    grad.addColorStop(0.35, isDark ? 'rgba(0, 0, 0, 0.18)' : 'rgba(0, 0, 0, 0.08)')
-    grad.addColorStop(0.48, isDark ? 'rgba(0, 0, 0, 0.38)' : 'rgba(0, 0, 0, 0.22)')
-    grad.addColorStop(0.50, isDark ? 'rgba(0, 0, 0, 0.50)' : 'rgba(0, 0, 0, 0.35)')
-    grad.addColorStop(0.52, isDark ? 'rgba(0, 0, 0, 0.38)' : 'rgba(0, 0, 0, 0.22)')
-    grad.addColorStop(0.65, isDark ? 'rgba(0, 0, 0, 0.18)' : 'rgba(0, 0, 0, 0.08)')
-    grad.addColorStop(1, 'rgba(0, 0, 0, 0)')
-
-    ctx.fillStyle = grad
-    ctx.fillRect(0, 0, 256, 512)
-
-    // Subtle center sewn binding seam
-    ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.55)' : 'rgba(100, 80, 50, 0.30)'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(128, 0)
-    ctx.lineTo(128, 512)
-    ctx.stroke()
-
-    const texture = new THREE.CanvasTexture(canvas)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-  }, [])
-
   const generatePageTexture = useCallback((page: BookPage | null, theme: 'ivory' | 'dark', side: 'left' | 'right') => {
     const canvas = document.createElement('canvas')
     canvas.width = 768
@@ -566,23 +529,38 @@ export function InteractiveBook() {
     ctx.fillStyle = bgColor
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Inner binding shadow gradient
+    // Inner binding shadow gradient (spine crease shadow)
     const edgeGrad = ctx.createLinearGradient(0, 0, canvas.width, 0)
     if (side === 'left') {
       edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.03)')
-      edgeGrad.addColorStop(0.88, 'transparent')
-      edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.28)' : 'rgba(0,0,0,0.12)')
+      edgeGrad.addColorStop(0.85, 'transparent')
+      edgeGrad.addColorStop(0.96, isDark ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.08)')
+      edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.38)' : 'rgba(0,0,0,0.20)')
     } else {
-      edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.28)' : 'rgba(0,0,0,0.12)')
-      edgeGrad.addColorStop(0.12, 'transparent')
+      edgeGrad.addColorStop(0, isDark ? 'rgba(0,0,0,0.38)' : 'rgba(0,0,0,0.20)')
+      edgeGrad.addColorStop(0.04, isDark ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.08)')
+      edgeGrad.addColorStop(0.15, 'transparent')
       edgeGrad.addColorStop(1, isDark ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.03)')
     }
     ctx.fillStyle = edgeGrad
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    // Subtle spine crease line right at the binding edge
+    ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(90, 70, 45, 0.25)'
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    if (side === 'left') {
+      ctx.moveTo(canvas.width - 0.75, 0)
+      ctx.lineTo(canvas.width - 0.75, canvas.height)
+    } else {
+      ctx.moveTo(0.75, 0)
+      ctx.lineTo(0.75, canvas.height)
+    }
+    ctx.stroke()
+
     if (!page) {
       ctx.fillStyle = subColor
-      ctx.font = 'italic 20px "Times New Roman", serif'
+      ctx.font = 'italic 22px "Times New Roman", serif'
       ctx.textAlign = 'center'
       ctx.fillText('Akhir Naskah Monograf', 384, 576)
       const emptyTex = new THREE.CanvasTexture(canvas)
@@ -590,63 +568,86 @@ export function InteractiveBook() {
       return emptyTex
     }
 
-    const startX = side === 'left' ? 64 : 92
-    const endX = side === 'left' ? 768 - 92 : 768 - 64
+    // Wide, spacious margins (Gutter side is 108px, outer side is 88px)
+    const startX = side === 'left' ? 88 : 108
+    const endX = side === 'left' ? 768 - 108 : 768 - 88
     const maxWidth = endX - startX
 
+    // Running Header
     ctx.fillStyle = headerColor
     ctx.font = '600 13px Inter, sans-serif'
     ctx.letterSpacing = '2px'
 
     if (side === 'left') {
       ctx.textAlign = 'left'
-      ctx.fillText(page.shortTitle.toUpperCase(), startX, 72)
+      ctx.fillText(page.shortTitle.toUpperCase(), startX, 70)
       ctx.textAlign = 'right'
-      ctx.fillText('KECERDASAN BUATAN', endX, 72)
+      ctx.fillText('KECERDASAN BUATAN', endX, 70)
     } else {
       ctx.textAlign = 'left'
-      ctx.fillText('KECERDASAN BUATAN', startX, 72)
+      ctx.fillText('KECERDASAN BUATAN', startX, 70)
       ctx.textAlign = 'right'
-      ctx.fillText(page.shortTitle.toUpperCase(), endX, 72)
+      ctx.fillText(page.shortTitle.toUpperCase(), endX, 70)
     }
 
     ctx.strokeStyle = ruleColor
     ctx.lineWidth = 1.2
     ctx.beginPath()
-    ctx.moveTo(startX, 88)
-    ctx.lineTo(endX, 88)
+    ctx.moveTo(startX, 86)
+    ctx.lineTo(endX, 86)
     ctx.stroke()
 
-    let curY = 135
+    let curY = 138
+    const maxTextY = 960
 
-    const wrapAndDraw = (text: string, fontSize: number, lineHeight: number, isItalic = false, isBold = false) => {
+    const wrapAndDraw = (
+      text: string,
+      fontSize: number,
+      lineHeight: number,
+      isItalic = false,
+      isBold = false,
+      indent = 0
+    ) => {
       ctx.font = `${isBold ? 'bold ' : ''}${isItalic ? 'italic ' : ''}${fontSize}px "Iowan Old Style", "Baskerville", "Times New Roman", serif`
       ctx.textAlign = 'left'
       const words = text.split(' ')
       let line = ''
+      let isFirstLine = indent > 0
+
       for (const w of words) {
         const testLine = line ? `${line} ${w}` : w
+        const currentIndent = isFirstLine ? indent : 0
         const metrics = ctx.measureText(testLine)
-        if (metrics.width > maxWidth && line) {
-          ctx.fillText(line, startX, curY)
+        if (metrics.width > maxWidth - currentIndent && line) {
+          if (curY + lineHeight > maxTextY) {
+            ctx.fillText(line.replace(/[,.;]?$/, '...'), startX + currentIndent, curY)
+            curY += lineHeight
+            return false
+          }
+          ctx.fillText(line, startX + currentIndent, curY)
           line = w
           curY += lineHeight
-          if (curY > 1050) break
+          isFirstLine = false
         } else {
           line = testLine
         }
       }
-      if (line && curY <= 1050) {
-        ctx.fillText(line, startX, curY)
+
+      if (line && curY <= maxTextY) {
+        const currentIndent = isFirstLine ? indent : 0
+        ctx.fillText(line, startX + currentIndent, curY)
         curY += lineHeight
+        return true
       }
+      return false
     }
 
     page.paragraphs.forEach((p) => {
-      if (curY > 1050) return
+      if (curY > maxTextY - 20) return
 
       const isSpecial = p.startsWith('Kajian Khusus:')
       const isChapterTitle = p.startsWith('BAB ') || p.startsWith('Bab ') || p.startsWith('MONOGRAF')
+      const isSubtitle = /^\d+(\.\d+)*\s+/.test(p) || p.startsWith('Tabel:') || p.startsWith('Dimensi Perbandingan')
 
       if (isSpecial) {
         const boxStartY = curY
@@ -665,49 +666,78 @@ export function InteractiveBook() {
             tempLine = tLine
           }
         }
-        const boxHeight = Math.max(56, countLines * 24 + 42)
+        const boxHeight = Math.min(countLines * 25 + 46, maxTextY - boxStartY - 10)
 
-        ctx.fillStyle = isDark ? 'rgba(200, 162, 72, 0.12)' : 'rgba(200, 162, 72, 0.1)'
+        ctx.fillStyle = isDark ? 'rgba(200, 162, 72, 0.10)' : 'rgba(200, 162, 72, 0.08)'
         ctx.fillRect(startX, boxStartY, maxWidth, boxHeight)
         ctx.strokeStyle = isDark ? '#c8a248' : '#b8860b'
-        ctx.lineWidth = 1.5
+        ctx.lineWidth = 1.2
         ctx.strokeRect(startX, boxStartY, maxWidth, boxHeight)
 
         ctx.fillStyle = headerColor
         ctx.font = 'bold 11px Inter, sans-serif'
         ctx.letterSpacing = '2px'
         ctx.textAlign = 'left'
-        ctx.fillText('✦ KAJIAN KHUSUS', startX + 16, boxStartY + 22)
+        ctx.fillText('✦ KAJIAN KHUSUS', startX + 16, boxStartY + 20)
 
         ctx.fillStyle = textColor
-        ctx.font = '400 15.5px "Times New Roman", serif'
+        ctx.font = '400 16px "Times New Roman", serif'
         let innerY = boxStartY + 44
         tempLine = ''
         for (const w of words) {
           const tLine = tempLine ? `${tempLine} ${w}` : w
           if (ctx.measureText(tLine).width > maxWidth - 36) {
-            ctx.fillText(tempLine, startX + 16, innerY)
+            if (innerY + 24 <= boxStartY + boxHeight - 8) {
+              ctx.fillText(tempLine, startX + 16, innerY)
+            }
             tempLine = w
-            innerY += 23
+            innerY += 24
           } else {
             tempLine = tLine
           }
         }
-        if (tempLine) {
+        if (tempLine && innerY <= boxStartY + boxHeight - 8) {
           ctx.fillText(tempLine, startX + 16, innerY)
         }
 
-        curY = boxStartY + boxHeight + 20
+        curY = boxStartY + boxHeight + 22
       } else if (isChapterTitle) {
         ctx.fillStyle = headerColor
-        wrapAndDraw(p, 23, 32, false, true)
-        curY += 8
+        wrapAndDraw(p, 25, 34, false, true, 0)
+        curY += 16
+      } else if (isSubtitle) {
+        ctx.fillStyle = headerColor
+        wrapAndDraw(p, 19, 28, true, true, 0)
+        curY += 10
       } else {
-        ctx.fillStyle = textColor
-        wrapAndDraw(p, 19, 29, false, false)
-        curY += 14
+        const labelMatch = p.match(/^(\d+\.\s*[^:]+:)\s*(.*)$/)
+        if (labelMatch) {
+          const headingLabel = labelMatch[1]
+          const bodyText = labelMatch[2]
+
+          ctx.fillStyle = headerColor
+          wrapAndDraw(headingLabel, 19, 28, false, true, 0)
+          curY += 6
+
+          if (bodyText) {
+            ctx.fillStyle = textColor
+            wrapAndDraw(bodyText, 21.5, 35, false, false, 28)
+            curY += 16
+          }
+        } else {
+          ctx.fillStyle = textColor
+          wrapAndDraw(p, 21.5, 35, false, false, 28)
+          curY += 16
+        }
       }
     })
+
+    ctx.strokeStyle = ruleColor
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(startX, 1076)
+    ctx.lineTo(endX, 1076)
+    ctx.stroke()
 
     ctx.fillStyle = subColor
     ctx.font = '500 12px Inter, monospace'
@@ -715,22 +745,15 @@ export function InteractiveBook() {
 
     if (side === 'left') {
       ctx.textAlign = 'left'
-      ctx.fillText(`Hal. ${page.pageNumber}`, startX, 1105)
+      ctx.fillText(`Hal. ${page.pageNumber}`, startX, 1102)
       ctx.textAlign = 'right'
-      ctx.fillText('ZetaGo-Aurum · 2026', endX, 1105)
+      ctx.fillText('ZetaGo-Aurum · 2026', endX, 1102)
     } else {
       ctx.textAlign = 'left'
-      ctx.fillText('ZetaGo-Aurum · 2026', startX, 1105)
+      ctx.fillText('ZetaGo-Aurum · 2026', startX, 1102)
       ctx.textAlign = 'right'
-      ctx.fillText(`Hal. ${page.pageNumber}`, endX, 1105)
+      ctx.fillText(`Hal. ${page.pageNumber}`, endX, 1102)
     }
-
-    ctx.strokeStyle = ruleColor
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(startX, 1085)
-    ctx.lineTo(endX, 1085)
-    ctx.stroke()
 
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
@@ -840,7 +863,6 @@ export function InteractiveBook() {
     const spineTex = generateSpineTexture()
     const backCoverTex = generateBackCoverTexture()
     const endpaperTex = generateEndpaperTexture()
-    const gutterTex = generateGutterTexture(paperTheme)
 
     // Materials
     const leatherMat = new THREE.MeshStandardMaterial({
@@ -985,23 +1007,40 @@ export function InteractiveBook() {
       metalness: 0.02,
     })
 
-    // BoxGeometry for sharp precision-cut paper blocks with 6 materials
-    // Face indices: 0: +X (Right), 1: -X (Left), 2: +Y (Top), 3: -Y (Bottom), 4: +Z (Front), 5: -Z (Back)
-    const blockBaseGeom = new THREE.BoxGeometry(bookWidth, bookHeight, 1)
+    const seamZ = 0.006
+    const gutterWidth = 0.38
+
+    // Subdivided paper block geometries (28 segments along X to curve smoothly into gutter)
+    const rightBlockGeom = new THREE.BoxGeometry(bookWidth, bookHeight, 1, 28, 1, 1)
+    rightBlockGeom.translate(bookWidth / 2, 0, 0.5)
+    const rightOrigZ = new Float32Array(rightBlockGeom.attributes.position.count)
+    for (let i = 0; i < rightOrigZ.length; i += 1) {
+      rightOrigZ[i] = rightBlockGeom.attributes.position.getZ(i)
+    }
+    rightBlockGeom.userData.origZ = rightOrigZ
+    rightBlockGeomRef.current = rightBlockGeom
 
     // Right block materials: +X is outer (gilded), -X is inner spine (paper tone)
     const rightBlockMats = [pageEdgeMat, paperToneMat, pageEdgeMat, pageEdgeMat, paperToneMat, leatherMat]
-    const rightBlockMesh = new THREE.Mesh(blockBaseGeom, rightBlockMats)
-    rightBlockMesh.position.set(bookWidth / 2, 0, totalStackDepth / 2)
-    rightBlockMesh.scale.set(1, 1, totalStackDepth)
+    const rightBlockMesh = new THREE.Mesh(rightBlockGeom, rightBlockMats)
+    rightBlockMesh.position.set(0, 0, 0)
     rootGroup.add(rightBlockMesh)
     rightBlockMeshRef.current = rightBlockMesh
 
+    // Left block geometry
+    const leftBlockGeom = new THREE.BoxGeometry(bookWidth, bookHeight, 1, 28, 1, 1)
+    leftBlockGeom.translate(-bookWidth / 2, 0, 0.5)
+    const leftOrigZ = new Float32Array(leftBlockGeom.attributes.position.count)
+    for (let i = 0; i < leftOrigZ.length; i += 1) {
+      leftOrigZ[i] = leftBlockGeom.attributes.position.getZ(i)
+    }
+    leftBlockGeom.userData.origZ = leftOrigZ
+    leftBlockGeomRef.current = leftBlockGeom
+
     // Left block materials: +X is inner spine (paper tone), -X is outer (gilded)
     const leftBlockMats = [paperToneMat, pageEdgeMat, pageEdgeMat, pageEdgeMat, paperToneMat, leatherMat]
-    const leftBlockMesh = new THREE.Mesh(blockBaseGeom, leftBlockMats)
-    leftBlockMesh.position.set(-bookWidth / 2, 0, 0.004)
-    leftBlockMesh.scale.set(1, 1, 0.008)
+    const leftBlockMesh = new THREE.Mesh(leftBlockGeom, leftBlockMats)
+    leftBlockMesh.position.set(0, 0, 0)
     leftBlockMesh.visible = false
     rootGroup.add(leftBlockMesh)
     leftBlockMeshRef.current = leftBlockMesh
@@ -1045,49 +1084,39 @@ export function InteractiveBook() {
 
     rootGroup.add(frontPivot)
 
-    // 6. Left Page Mesh (Surface on top of left paper stack)
-    const pageGeom = new THREE.PlaneGeometry(bookWidth, bookHeight)
+    // 6. Left Page Mesh (Subdivided surface matching gutter curve)
+    const leftPageGeom = new THREE.PlaneGeometry(bookWidth, bookHeight, 28, 2)
+    leftPageGeom.translate(-bookWidth / 2, 0, 0)
+    leftPageGeomRef.current = leftPageGeom
+
     const leftPageMat = new THREE.MeshStandardMaterial({
       map: endpaperTex,
       roughness: 0.92,
       metalness: 0.02,
       side: THREE.FrontSide,
     })
-    const leftPageMesh = new THREE.Mesh(pageGeom, leftPageMat)
-    leftPageMesh.position.set(-bookWidth / 2, 0, 0.009)
+    const leftPageMesh = new THREE.Mesh(leftPageGeom, leftPageMat)
+    leftPageMesh.position.set(0, 0, 0)
     leftPageMesh.visible = false
     rootGroup.add(leftPageMesh)
     leftPageMeshRef.current = leftPageMesh
 
-    // 7. Right Page Mesh (Surface on top of right paper stack)
+    // 7. Right Page Mesh (Subdivided surface matching gutter curve)
+    const rightPageGeom = new THREE.PlaneGeometry(bookWidth, bookHeight, 28, 2)
+    rightPageGeom.translate(bookWidth / 2, 0, 0)
+    rightPageGeomRef.current = rightPageGeom
+
     const rightPageMat = new THREE.MeshStandardMaterial({
       map: getPageTexture(aiBookPages[0], 'ivory', 'right'),
       roughness: 0.92,
       metalness: 0.02,
       side: THREE.FrontSide,
     })
-    const rightPageMesh = new THREE.Mesh(pageGeom, rightPageMat)
-    rightPageMesh.position.set(bookWidth / 2, 0, totalStackDepth + 0.001)
+    const rightPageMesh = new THREE.Mesh(rightPageGeom, rightPageMat)
+    rightPageMesh.position.set(0, 0, 0)
     rightPageMesh.visible = false
     rootGroup.add(rightPageMesh)
     rightPageMeshRef.current = rightPageMesh
-
-    // 8. Curved Gutter Mesh: Natural paper arch bridging the two stacks across X = 0!
-    const gutterWidth = 0.26
-    const curvedGutterGeom = new THREE.PlaneGeometry(gutterWidth, bookHeight, 28, 2)
-    curvedGutterGeomRef.current = curvedGutterGeom
-
-    const curvedGutterMat = new THREE.MeshStandardMaterial({
-      map: gutterTex,
-      roughness: 0.92,
-      metalness: 0.02,
-      side: THREE.DoubleSide,
-    })
-    const curvedGutterMesh = new THREE.Mesh(curvedGutterGeom, curvedGutterMat)
-    curvedGutterMesh.position.set(0, 0, 0.01)
-    curvedGutterMesh.visible = false
-    rootGroup.add(curvedGutterMesh)
-    curvedGutterMeshRef.current = curvedGutterMesh
 
     // 9. Dynamic 3D Turning Page Leaf with Flexible Vertex Curvature
     const leafPivot = new THREE.Group()
@@ -1157,36 +1186,76 @@ export function InteractiveBook() {
       anim.leftThickness = lerp(anim.leftThickness, anim.targetLeftThickness, dt * 7)
       anim.rightThickness = lerp(anim.rightThickness, anim.targetRightThickness, dt * 7)
 
-      // Update Right Page Block depth & surface
-      if (rightBlockMeshRef.current && rightPageMeshRef.current) {
-        rightBlockMeshRef.current.scale.z = anim.rightThickness
-        rightBlockMeshRef.current.position.z = anim.rightThickness / 2
-        rightPageMeshRef.current.position.z = anim.rightThickness + 0.001
-      }
-
-      // Update Left Page Block depth & surface
-      if (leftBlockMeshRef.current && leftPageMeshRef.current) {
-        leftBlockMeshRef.current.scale.z = anim.leftThickness
-        leftBlockMeshRef.current.position.z = anim.leftThickness / 2
-        leftPageMeshRef.current.position.z = anim.leftThickness + 0.001
-      }
-
-      // Update Curved Gutter Paper Arch between left & right pages
-      if (curvedGutterGeomRef.current) {
-        const pos = curvedGutterGeomRef.current.attributes.position
-        const gw = gutterWidth
+      // Update Right Page Block and Page Mesh vertex heights (Hermite gutter curve down to seamZ at x=0)
+      if (rightBlockGeomRef.current) {
+        const rGeom = rightBlockGeomRef.current
+        const pos = rGeom.attributes.position
+        const origZ = rGeom.userData.origZ as Float32Array
         for (let i = 0; i < pos.count; i += 1) {
-          const lx = pos.getX(i) // from -gw/2 to +gw/2
-          const t = (lx + gw / 2) / gw // 0 to 1
-          // Smooth Hermite S-curve bridging the two stack heights
-          const sT = t * t * (3 - 2 * t)
-          const baseH = lerp(anim.leftThickness, anim.rightThickness, sT)
-          // Gentle natural paper dip into the binding seam
-          const dip = Math.sin(t * Math.PI) * Math.min(anim.leftThickness, anim.rightThickness, 0.032)
-          pos.setZ(i, baseH - dip + 0.0015)
+          if (origZ[i] <= 0.5) {
+            pos.setZ(i, 0)
+          } else {
+            const vx = pos.getX(i)
+            const u = clamp(vx / gutterWidth, 0, 1)
+            const sT = u * u * (3 - 2 * u)
+            const curvedH = seamZ + (anim.rightThickness - seamZ) * sT
+            const h = lerp(anim.rightThickness, curvedH, anim.openProgress)
+            pos.setZ(i, h)
+          }
         }
         pos.needsUpdate = true
-        curvedGutterGeomRef.current.computeVertexNormals()
+        rGeom.computeVertexNormals()
+      }
+
+      if (rightPageGeomRef.current) {
+        const rpGeom = rightPageGeomRef.current
+        const pos = rpGeom.attributes.position
+        for (let i = 0; i < pos.count; i += 1) {
+          const vx = pos.getX(i)
+          const u = clamp(vx / gutterWidth, 0, 1)
+          const sT = u * u * (3 - 2 * u)
+          const curvedH = seamZ + (anim.rightThickness - seamZ) * sT
+          const h = lerp(anim.rightThickness, curvedH, anim.openProgress)
+          pos.setZ(i, h + 0.0008)
+        }
+        pos.needsUpdate = true
+        rpGeom.computeVertexNormals()
+      }
+
+      // Update Left Page Block and Page Mesh vertex heights (Hermite gutter curve down to seamZ at x=0)
+      if (leftBlockGeomRef.current) {
+        const lGeom = leftBlockGeomRef.current
+        const pos = lGeom.attributes.position
+        const origZ = lGeom.userData.origZ as Float32Array
+        for (let i = 0; i < pos.count; i += 1) {
+          if (origZ[i] <= 0.5) {
+            pos.setZ(i, 0)
+          } else {
+            const vx = Math.abs(pos.getX(i))
+            const u = clamp(vx / gutterWidth, 0, 1)
+            const sT = u * u * (3 - 2 * u)
+            const curvedH = seamZ + (anim.leftThickness - seamZ) * sT
+            const h = lerp(anim.leftThickness, curvedH, anim.openProgress)
+            pos.setZ(i, h)
+          }
+        }
+        pos.needsUpdate = true
+        lGeom.computeVertexNormals()
+      }
+
+      if (leftPageGeomRef.current) {
+        const lpGeom = leftPageGeomRef.current
+        const pos = lpGeom.attributes.position
+        for (let i = 0; i < pos.count; i += 1) {
+          const vx = Math.abs(pos.getX(i))
+          const u = clamp(vx / gutterWidth, 0, 1)
+          const sT = u * u * (3 - 2 * u)
+          const curvedH = seamZ + (anim.leftThickness - seamZ) * sT
+          const h = lerp(anim.leftThickness, curvedH, anim.openProgress)
+          pos.setZ(i, h + 0.0008)
+        }
+        pos.needsUpdate = true
+        lpGeom.computeVertexNormals()
       }
 
       // Smooth Open/Close Animation Loop
@@ -1197,7 +1266,7 @@ export function InteractiveBook() {
         // Headbands positioning at spine head & tail
         if (headbandTopRef.current && headbandBottomRef.current) {
           const hX = lerp(-0.01, 0, openAmount)
-          const hZ = lerp(anim.totalStackDepth / 2, 0.008, openAmount)
+          const hZ = lerp(anim.totalStackDepth / 2, 0.006, openAmount)
           headbandTopRef.current.position.set(hX, bookHeight / 2 - 0.002, hZ)
           headbandBottomRef.current.position.set(hX, -bookHeight / 2 + 0.002, hZ)
         }
@@ -1212,7 +1281,6 @@ export function InteractiveBook() {
           leftBlockMesh.visible = curPg > 0
           leftPageMesh.visible = true
           rightPageMesh.visible = true
-          if (curvedGutterMeshRef.current) curvedGutterMeshRef.current.visible = true
 
           // Spine is flat at base underneath gutter
           spineMesh.position.set(0, 0, -boardThickness / 2)
@@ -1230,7 +1298,6 @@ export function InteractiveBook() {
           leftBlockMesh.visible = false
           leftPageMesh.visible = false
           rightPageMesh.visible = false
-          if (curvedGutterMeshRef.current) curvedGutterMeshRef.current.visible = false
 
           // Spine wraps left edge
           spineMesh.position.set(-boardThickness * 0.75, 0, anim.totalStackDepth / 2)
@@ -1265,7 +1332,6 @@ export function InteractiveBook() {
           rightPageMesh.visible = openAmount > 0.25
           leftBlockMesh.visible = openAmount > 0.65 && curPg > 0
           leftPageMesh.visible = openAmount > 0.65
-          if (curvedGutterMeshRef.current) curvedGutterMeshRef.current.visible = openAmount > 0.65
         }
       }
 
@@ -1376,7 +1442,7 @@ export function InteractiveBook() {
       controls?.dispose()
       renderer?.dispose()
     }
-  }, [generateCoverTexture, generateSpineTexture, generateBackCoverTexture, generateEndpaperTexture, generateGutterTexture, getPageTexture])
+  }, [generateCoverTexture, generateSpineTexture, generateBackCoverTexture, generateEndpaperTexture, getPageTexture])
 
   // ==========================================
   // SYNC REACT STATE WITH 3D SCENE
@@ -1404,12 +1470,7 @@ export function InteractiveBook() {
       (rightPageMeshRef.current.material as THREE.MeshStandardMaterial).map = rightTex
       rightPageMeshRef.current.material.needsUpdate = true
     }
-    if (curvedGutterMeshRef.current) {
-      const gTex = generateGutterTexture(paperTheme)
-      ;(curvedGutterMeshRef.current.material as THREE.MeshStandardMaterial).map = gTex
-      curvedGutterMeshRef.current.material.needsUpdate = true
-    }
-  }, [currentPage, paperTheme, isFlipping, generateEndpaperTexture, getPageTexture, generateGutterTexture])
+  }, [currentPage, paperTheme, isFlipping, generateEndpaperTexture, getPageTexture])
 
   // Flip Next Page in 3D (Zero-flicker pre-bound textures)
   const flipNext = useCallback(() => {
@@ -1687,7 +1748,7 @@ export function InteractiveBook() {
       className={`relative w-full overflow-hidden transition-colors duration-500 select-none ${
         isFullscreen
           ? 'fixed inset-0 z-50 h-screen w-screen bg-[#06080d]'
-          : 'h-[68vh] min-h-[500px] sm:min-h-[660px] max-h-[780px] rounded-2xl border border-[oklch(0.72_0.13_80_/_0.2)] bg-[#06080d] shadow-2xl'
+          : 'h-[76vh] min-h-[560px] sm:min-h-[660px] max-h-[820px] rounded-2xl border border-[oklch(0.72_0.13_80_/_0.2)] bg-[#06080d] shadow-2xl'
       }`}
     >
       {/* 3D WebGL Canvas */}
@@ -1700,13 +1761,13 @@ export function InteractiveBook() {
         className="block h-full w-full cursor-grab active:cursor-grabbing touch-none"
       />
 
-      {/* Top Floating Minimalist Icon Bar */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 p-1.5 backdrop-blur-md">
+      {/* Top Minimalist Action Controls */}
+      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5">
         {isOpen && (
           <button
             onClick={() => setIsTocOpen(true)}
             title="Daftar Bab"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-black/40 text-zinc-300 hover:bg-black/70 hover:text-white backdrop-blur-md transition-colors"
           >
             <Menu className="h-4 w-4" />
           </button>
@@ -1716,7 +1777,7 @@ export function InteractiveBook() {
           <button
             onClick={() => setPaperTheme((t) => (t === 'ivory' ? 'dark' : 'ivory'))}
             title="Ganti Tema Kertas"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-black/40 text-zinc-300 hover:bg-black/70 hover:text-white backdrop-blur-md transition-colors"
           >
             {paperTheme === 'ivory' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-[oklch(0.72_0.13_80)]" />}
           </button>
@@ -1725,7 +1786,7 @@ export function InteractiveBook() {
         <button
           onClick={() => setSoundEnabled((s) => !s)}
           title={soundEnabled ? 'Matikan Suara Kertas' : 'Aktifkan Suara Kertas'}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-black/40 text-zinc-300 hover:bg-black/70 hover:text-white backdrop-blur-md transition-colors"
         >
           {soundEnabled ? <Volume2 className="h-4 w-4 text-[oklch(0.72_0.13_80)]" /> : <VolumeX className="h-4 w-4 text-zinc-500" />}
         </button>
@@ -1733,7 +1794,7 @@ export function InteractiveBook() {
         <button
           onClick={toggleFullscreen}
           title={isFullscreen ? 'Keluar Layar Penuh' : 'Layar Penuh'}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-black/40 text-zinc-300 hover:bg-black/70 hover:text-white backdrop-blur-md transition-colors"
         >
           {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
         </button>
@@ -1741,57 +1802,59 @@ export function InteractiveBook() {
 
       {/* CLOSED STATE: Minimalist Bottom Text Link */}
       {!isOpen && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-auto">
+        <div className="absolute bottom-4 inset-x-0 z-20 flex justify-center pointer-events-none px-3">
           <button
             onClick={() => {
               setIsOpen(true)
               playPageSound()
             }}
-            className="group flex items-center gap-2 rounded-full border border-[oklch(0.72_0.13_80_/_0.35)] bg-black/60 px-5 py-2 text-xs font-mono tracking-wider text-[oklch(0.72_0.13_80)] backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] hover:text-white transition-all shadow-lg"
+            className="pointer-events-auto group flex items-center gap-2 rounded-xl border border-[oklch(0.72_0.13_80_/_0.35)] bg-black/60 px-4 py-1.5 text-xs font-mono tracking-wider text-[oklch(0.72_0.13_80)] backdrop-blur-md hover:border-[oklch(0.72_0.13_80)] hover:text-white transition-all shadow-lg"
           >
-            <span>Klik atau Geser Buku untuk Membuka</span>
+            <span>Buka Monograf</span>
             <span className="text-zinc-500">·</span>
             <span className="text-zinc-400 group-hover:text-zinc-200">Orbit 360°</span>
           </button>
         </div>
       )}
 
-      {/* OPEN STATE: Sleek Minimalist Bottom Navigation */}
+      {/* OPEN STATE: Sleek Single-Bar Bottom Navigation */}
       {isOpen && (
-        <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
-          <button
-            onClick={flipPrev}
-            disabled={currentPage <= 0 || isFlipping}
-            title="Halaman Sebelumnya"
-            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-zinc-300 backdrop-blur-md disabled:opacity-20 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] hover:text-white active:scale-95 transition-all shadow-lg"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
+        <div className="absolute bottom-3 inset-x-0 z-20 flex justify-center pointer-events-none px-3">
+          <div className="pointer-events-auto flex items-center gap-1 sm:gap-2 rounded-xl border border-white/10 bg-black/60 px-2 sm:px-3 py-1 backdrop-blur-md shadow-xl text-xs font-mono">
+            <button
+              onClick={flipPrev}
+              disabled={currentPage <= 0 || isFlipping}
+              title="Halaman Sebelumnya"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/10 hover:text-white disabled:opacity-20 disabled:pointer-events-none transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
 
-          <div className="pointer-events-auto flex items-center gap-4 rounded-full border border-white/10 bg-black/60 px-4 py-1.5 backdrop-blur-md shadow-lg">
-            <span className="font-mono text-xs text-zinc-300">
+            <span className="px-2 text-zinc-300 text-[11px] sm:text-xs select-none">
               Hal. {currentPage === 0 ? '1' : `${currentPage} · ${currentPage + 1}`} <span className="text-zinc-500">/ 158</span>
             </span>
+
+            <span className="text-zinc-600">|</span>
 
             <button
               onClick={() => {
                 setIsOpen(false)
                 playPageSound()
               }}
-              className="text-xs font-mono text-[oklch(0.72_0.13_80)] hover:underline active:scale-95 transition-all"
+              className="px-2 py-0.5 rounded-md text-[11px] sm:text-xs text-[oklch(0.72_0.13_80)] hover:bg-[oklch(0.72_0.13_80_/_0.15)] hover:underline transition-colors"
             >
-              Tutup Buku
+              Tutup
+            </button>
+
+            <button
+              onClick={flipNext}
+              disabled={currentPage >= aiBookPages.length - 1 || isFlipping}
+              title="Halaman Selanjutnya"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/10 hover:text-white disabled:opacity-20 disabled:pointer-events-none transition-colors"
+            >
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
-
-          <button
-            onClick={flipNext}
-            disabled={currentPage >= aiBookPages.length - 1 || isFlipping}
-            title="Halaman Selanjutnya"
-            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-zinc-300 backdrop-blur-md disabled:opacity-20 disabled:pointer-events-none hover:border-[oklch(0.72_0.13_80)] hover:text-white active:scale-95 transition-all shadow-lg"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
         </div>
       )}
 
