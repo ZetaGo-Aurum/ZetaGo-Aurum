@@ -33,6 +33,8 @@ export type LandingPageFrameProps = {
    * receives slider values. Memoize it on the values it reads.
    */
   applyScene?: (frame: HTMLIFrameElement) => void;
+  /** Optional manual suspension override to pause the WebGL loop and save resources */
+  suspended?: boolean;
 };
 
 export type LandingPageProps = Omit<
@@ -44,6 +46,21 @@ const URL_FRAME_SANDBOX = "allow-downloads allow-forms allow-modals allow-popups
 const SRCDOC_FRAME_SANDBOX = "allow-downloads allow-forms allow-modals allow-popups allow-scripts";
 
 const BACKGROUND_PRESENTATION_STYLE_ID = "threeui-background-presentation";
+
+function setDocumentSuspension(frame: HTMLIFrameElement | null, suspend: boolean) {
+  if (!frame) return;
+  try {
+    const doc = frame.contentDocument;
+    if (!doc) return;
+    Object.defineProperty(doc, "hidden", {
+      get: () => suspend,
+      configurable: true,
+    });
+    doc.dispatchEvent(new Event("visibilitychange"));
+  } catch {
+    // Cross-origin or restricted context fallback
+  }
+}
 
 export function applyBackgroundPresentation(
   frame: HTMLIFrameElement | null,
@@ -123,10 +140,37 @@ export function LandingPageFrame({
   sourceUrl,
   srcDoc,
   style,
+  suspended = false,
   title,
 }: LandingPageFrameProps) {
   const [ready, setReady] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
+
+  // IntersectionObserver to observe viewport visibility and pause WebGL loops when offscreen
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      { threshold: 0.01, rootMargin: "180px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Sync suspension state into iframe document to halt RAF loop and save battery/GPU
+  const shouldSuspend = suspended || !isInViewport;
+  useEffect(() => {
+    if (ready && frameRef.current) {
+      setDocumentSuspension(frameRef.current, shouldSuspend);
+    }
+  }, [ready, shouldSuspend]);
 
   // Re-applied on every change; the load handler covers the first paint and
   // any navigation the page does inside its own frame.
@@ -139,22 +183,34 @@ export function LandingPageFrame({
 
   return (
     <div
+      ref={containerRef}
       className={`threeui-background landing-page-frame${className ? ` ${className}` : ""}`}
       data-state={ready ? "ready" : "loading"}
       style={{ position: "relative", overflow: "hidden", background: "#080808", pointerEvents: "auto", ...style }}
     >
+      {!ready && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0c10] text-muted-foreground z-10 transition-opacity duration-300">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[oklch(0.72_0.13_80)] border-t-transparent mb-3" />
+          <span className="text-xs font-mono tracking-wider text-[oklch(0.72_0.13_80)]">
+            Loading Three.js Atelier...
+          </span>
+        </div>
+      )}
       <iframe
         ref={frameRef}
         title={title}
         {...(srcDoc ? { srcDoc } : { src: sourceUrl })}
         sandbox={srcDoc ? SRCDOC_FRAME_SANDBOX : URL_FRAME_SANDBOX}
-        loading="eager"
+        loading="lazy"
         onLoad={(event) => {
           applyPageCustomization(event.currentTarget, customization);
           postPageCustomization(event.currentTarget, customization);
           applyBackgroundPresentation(event.currentTarget, backgroundCanvasSelector, backgroundVisualSelector);
           applyScene?.(event.currentTarget);
           setReady(true);
+          if (shouldSuspend) {
+            setDocumentSuspension(event.currentTarget, true);
+          }
         }}
         style={{
           position: "absolute",

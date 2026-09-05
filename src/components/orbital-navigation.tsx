@@ -84,18 +84,53 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
     y: 0,
     time: 0,
   })
-  const reqAnimRef = React.useRef<number | null>(null)
+  const [isInView, setIsInView] = React.useState<boolean>(true)
+  const [isTabVisible, setIsTabVisible] = React.useState<boolean>(true)
 
-  // Animation Loop for Auto Orbit and Inertia Damping
+  // IntersectionObserver to completely halt the 60fps RAF loop when scrolled offscreen
   React.useEffect(() => {
+    const el = containerRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting)
+      },
+      { threshold: 0.02, rootMargin: '120px' }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  // Suspend loop when user switches browser tab
+  React.useEffect(() => {
+    const onVisibilityChange = () => {
+      setIsTabVisible(!document.hidden)
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
+  }, [])
+
+  // Animation Loop for Auto Orbit and Inertia Damping (Halts offscreen to save 100% CPU on low-end devices)
+  React.useEffect(() => {
+    if (!isInView || !isTabVisible) {
+      if (reqAnimRef.current) {
+        cancelAnimationFrame(reqAnimRef.current)
+        reqAnimRef.current = null
+      }
+      return
+    }
+
     let lastTime = performance.now()
+    let lastRenderTime = 0
 
     const loop = (time: number) => {
       const dt = Math.min((time - lastTime) / 1000, 0.1)
       lastTime = time
 
       if (!isDragging) {
-        // Apply inertia velocity
+        // Apply inertia velocity (runs at full 60fps for ultra-smooth responsiveness)
         if (Math.abs(velocityRef.current.vx) > 0.001 || Math.abs(velocityRef.current.vy) > 0.001) {
           setRotY((y) => (y + velocityRef.current.vx * dt * 60) % 360)
           setRotX((x) => Math.max(-65, Math.min(65, x + velocityRef.current.vy * dt * 60)))
@@ -104,8 +139,13 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
           velocityRef.current.vx *= 0.94
           velocityRef.current.vy *= 0.94
         } else if (autoOrbit) {
-          // Slow continuous ambient orbit
-          setRotY((y) => (y + 12 * dt) % 360)
+          // On mobile / low-end devices, throttle idle ambient orbit to ~30fps to halve React re-renders & save battery
+          const isMobileDevice = isMobile.current
+          if (!isMobileDevice || time - lastRenderTime >= 30) {
+            const timeSinceLastRender = lastRenderTime > 0 ? (time - lastRenderTime) / 1000 : dt
+            lastRenderTime = time
+            setRotY((y) => (y + 12 * timeSinceLastRender) % 360)
+          }
         }
       }
 
@@ -114,9 +154,12 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
 
     reqAnimRef.current = requestAnimationFrame(loop)
     return () => {
-      if (reqAnimRef.current) cancelAnimationFrame(reqAnimRef.current)
+      if (reqAnimRef.current) {
+        cancelAnimationFrame(reqAnimRef.current)
+        reqAnimRef.current = null
+      }
     }
-  }, [isDragging, autoOrbit])
+  }, [isDragging, autoOrbit, isInView, isTabVisible])
 
   // Refs for drag vs click distinction and hover tooltip bridge
   const didDragRef = React.useRef<boolean>(false)
@@ -395,6 +438,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
               width: 290,
               height: 290,
               transform: `rotateX(${rotX + 12}deg) rotateY(${rotY}deg) translateZ(0px)`,
+              willChange: 'transform',
             }}
           />
 
@@ -405,6 +449,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
               width: 450,
               height: 450,
               transform: `rotateX(${rotX - 18}deg) rotateY(${rotY}deg) translateZ(0px)`,
+              willChange: 'transform',
             }}
           />
 
@@ -415,6 +460,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
               width: 610,
               height: 610,
               transform: `rotateX(${rotX + 28}deg) rotateY(${rotY}deg) translateZ(0px)`,
+              willChange: 'transform',
             }}
           />
         </div>
@@ -477,6 +523,7 @@ export function OrbitalNavigation({ className }: OrbitalNavigationProps) {
                   zIndex: showDetail || isSelected ? 999 : zIndex,
                   filter: blur > 0 && !showDetail ? `blur(${blur.toFixed(1)}px)` : undefined,
                   WebkitFilter: blur > 0 && !showDetail ? `blur(${blur.toFixed(1)}px)` : undefined,
+                  willChange: 'transform, opacity',
                   transition: isDragging
                     ? 'none'
                     : 'transform 0.15s ease-out, opacity 0.15s ease-out',

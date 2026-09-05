@@ -132,6 +132,15 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     'shelf.subtitle':
       'An interactive Three.js 3D bookshelf containing tactical guides, offensive engines, and authored architectures.',
     'shelf.hint': 'Interactive Three.js · Click books to open, rotate shelf, and flip pages',
+    'shelf.launch3d': 'Launch 3D Bookshelf',
+    'shelf.exit3d': 'Close 3D View',
+    'shelf.previewTitle': 'Working Volumes · 3D Atelier',
+    'shelf.previewDesc':
+      'An interactive 3D bookshelf authored in Three.js with 7 tactile volumes. Optimized for smooth navigation on all devices.',
+    'shelf.feature.volumes': '7 Tactical Volumes',
+    'shelf.feature.engine': 'Three.js r165',
+    'shelf.feature.optimized': 'Low-End Optimized',
+    'shelf.deviceHint': 'Tap Launch to enter full 3D interactive mode without touch scroll interference.',
     'connect.title': 'Open Channels',
     'connect.subtitle':
       'Direct contact points for engineering, architecture inquiries, and collaboration across the network.',
@@ -214,6 +223,15 @@ export const translations: Record<Language, Record<TranslationKey, string>> = {
     'shelf.subtitle':
       'Perpustakaan 3D Three.js interaktif yang merangkum panduan taktis, engine ofensif, dan arsitektur ciptaan atelier.',
     'shelf.hint': 'Interaktif Three.js · Klik buku untuk membuka, putar rak, dan baca halaman',
+    'shelf.launch3d': 'Buka Rak Buku 3D',
+    'shelf.exit3d': 'Tutup Mode 3D',
+    'shelf.previewTitle': 'Arsip Volume · Atelier 3D',
+    'shelf.previewDesc':
+      'Perpustakaan rak buku 3D interaktif Three.js dengan 7 volume taktis. Didesain mulus dan ringan untuk semua perangkat.',
+    'shelf.feature.volumes': '7 Volume Taktis',
+    'shelf.feature.engine': 'Three.js r165',
+    'shelf.feature.optimized': 'Ringan & Teroptimasi',
+    'shelf.deviceHint': 'Ketuk Buka untuk masuk ke mode 3D interaktif tanpa mengganggu kenyamanan scroll layar.',
     'connect.title': 'Saluran Terbuka',
     'connect.subtitle':
       'Titik kontak langsung untuk konsultasi rekayasa arsitektur, kode, dan kolaborasi dalam jaringan.',
