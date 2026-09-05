@@ -769,13 +769,19 @@ export function InteractiveBook() {
     camera.position.set(0, 0.25, isMobile ? 6.2 : 5.2)
     cameraRef.current = camera
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance',
-    })
+    // Renderer (Safely initialized with fallback guard)
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+      })
+    } catch (err) {
+      console.warn('WebGL initialization failed or context unavailable:', err)
+      return
+    }
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -1367,8 +1373,8 @@ export function InteractiveBook() {
     return () => {
       cancelAnimationFrame(reqId)
       window.removeEventListener('resize', handleResize)
-      controls.dispose()
-      renderer.dispose()
+      controls?.dispose()
+      renderer?.dispose()
     }
   }, [generateCoverTexture, generateSpineTexture, generateBackCoverTexture, generateEndpaperTexture, generateGutterTexture, getPageTexture])
 
